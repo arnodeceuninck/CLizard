@@ -193,9 +193,10 @@ bool PDA::isEndState(State *state) {
 
 // TODO: zorgt momenteel nog maar voor 1 eclose stap, terwijl dit er wel meerdere kunnen zijn (recursief)
 std::vector<EvaluationState> PDA::eclose(std::vector<EvaluationState> evaluations) {
+    bool addedSomething = false;
     std::vector<EvaluationState> newEvaluations;
     for (EvaluationState evaluation: evaluations) {
-        newEvaluations.emplace_back(evaluation);
+        std::vector<EvaluationState> recentEvaluations = {};
         for (Transition *transition: evaluation.currentStates->getTransitionsOnInput('e', evaluation.stack.top())) {
             std::stack<char> newStack = evaluation.stack;
             for (int j = transition->getStackPush().size() - 1; j >= 0; --j) {
@@ -203,10 +204,21 @@ std::vector<EvaluationState> PDA::eclose(std::vector<EvaluationState> evaluation
                     newStack.push(transition->getStackPush()[j]);
                 }
             }
-            newEvaluations.emplace_back(EvaluationState(newStack, transition->getStateTo()));
+            recentEvaluations.emplace_back(EvaluationState(newStack, transition->getStateTo()));
         }
+
+        if(recentEvaluations.size() > 0){
+            for(EvaluationState state: eclose(recentEvaluations)){
+                newEvaluations.emplace_back(state);
+            }
+        }
+        newEvaluations.emplace_back(evaluation);
     }
-    return newEvaluations;
+    if(!addedSomething){
+        return newEvaluations;
+    }
+
+    return eclose(newEvaluations);
 }
 
 void PDA::toDot(std::string filename) {
