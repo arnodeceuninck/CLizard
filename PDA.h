@@ -15,12 +15,21 @@ class Transition;
 
 class PDA;
 
+void read_json(std::string filename,
+               std::vector<State *> &states,
+               std::vector<char> &alphabet,
+               std::vector<std::string> &stackAlphabet,
+               std::vector<Transition *> &transition_function,
+               State *&start_state,
+               std::string &start_stack,
+               std::vector<State *> &final_states);
+
 class EvaluationState {
 public:
-    std::stack<char> stack;
+    std::stack<std::string> stack;
     State * currentStates;
 
-    EvaluationState(const std::stack<char> &stack, State *currentStates);
+    EvaluationState(const std::stack<std::string> &stack, State *currentStates);
 
 };
 
@@ -28,21 +37,21 @@ class Transition {
 private:
     State *stateFrom; // Q
     State *stateTo; // 2^Q
-    std::string stackPush; // 2^G*
+    std::vector<std::string> stackPush; // 2^G*
     char input; // S U e
-    char stackInput; // G
+    std::string stackInput; // G
 public:
-    Transition(State *stateFrom, State *stateTo, const std::string &stackPush, char input, char stackInput);
+    Transition(State *stateFrom, State *stateTo, const std::vector<std::string> &stackPush, char input, std::string stackInput);
 
     State *getStateFrom() const;
 
     State *getStateTo() const;
 
-    const std::string &getStackPush() const;
+    const std::vector<std::string> &getStackPush() const;
 
     char getInput() const;
 
-    char getStackInput() const;
+    std::string getStackInput() const;
 };
 
 class State {
@@ -56,24 +65,24 @@ public:
 
     const std::string &getName() const;
 
-    std::vector<Transition*> getTransitionsOnInput(char input, char stack);
+    std::vector<Transition*> getTransitionsOnInput(char input, std::string stack);
 };
 
 class PDA {
 private:
     std::vector<State *> statesQ;
     std::vector<char> inputAlphabetS;
-    std::vector<char> stackAlphabetG;
+    std::vector<std::string> stackAlphabetG;
     State *startState;
-    char startStackZ0;
+    std::string startStackZ0;
     std::vector<State *> endStatesF;
     std::vector<Transition *> transitionFunctionD;
 
     bool containsState(std::string stateName);
 
-    bool inStackAlphabet(char c);
+    bool inStackAlphabet(std::string c);
 
-    bool inStackAlphabet(std::string s);
+    bool inStackAlphabet(std::vector<std::string> s);
 
     bool inAlphabet(char c);
 
@@ -89,7 +98,7 @@ private:
 
 public:
     PDA(std::vector<State *> &statesQ, std::vector<char> &inputAlphabetS,
-        std::vector<char> &stackAlphabetG, State *startState, char startStackZ0,
+        std::vector<std::string> &stackAlphabetG, State *startState, std::string startStackZ0,
         std::vector<State *> &endStatesF, std::vector<Transition *> &transitionFunctionD);
 
     void toDot(std::string filename);
