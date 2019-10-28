@@ -251,6 +251,10 @@ void PDA::toDot(std::string filename) {
     graph.build_file(filename);
 }
 
+CFG *PDA::toCFG() {
+    return nullptr;
+}
+
 EvaluationState::EvaluationState(const std::stack<std::string> &stack, State *currentStates) : stack(stack),
                                                                                         currentStates(currentStates) {}
 

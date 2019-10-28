@@ -15,6 +15,8 @@ class Transition;
 
 class PDA;
 
+class CFG;
+
 void read_json(std::string filename,
                std::vector<State *> &states,
                std::vector<char> &alphabet,
@@ -104,6 +106,8 @@ public:
     void toDot(std::string filename);
 
     bool evaluate(std::string s);
+
+    CFG* toCFG();
 };
 
 

@@ -3,4 +3,4 @@ project(MB)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(MB main.cpp PDA.cpp Graph.cpp functions.h functions.cpp)
+add_executable(MB main.cpp PDA.cpp Graph.cpp functions.h functions.cpp CFG.cpp CFG.h)
