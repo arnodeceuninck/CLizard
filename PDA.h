@@ -98,6 +98,9 @@ private:
 
     std::vector<EvaluationState> eclose(std::vector<EvaluationState> evaluations);
 
+    // toCFG() help functions
+    std::vector<std::string> getCFGVariables();
+
 public:
     PDA(std::vector<State *> &statesQ, std::vector<char> &inputAlphabetS,
         std::vector<std::string> &stackAlphabetG, State *startState, std::string startStackZ0,

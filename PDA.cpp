@@ -252,7 +252,26 @@ void PDA::toDot(std::string filename) {
 }
 
 CFG *PDA::toCFG() {
+    std::vector<std::string> v = getCFGVariables(); // set of variables
     return nullptr;
+}
+
+std::vector<std::string> PDA::getCFGVariables() {
+
+    std::vector<std::string> variables = {"S"};
+
+    for (State* stateP: statesQ){
+        for (State* stateQ: statesQ){
+            for(std::string inputX: stackAlphabetG){ // TODO: Check whether stackAlphabetG contains all elements  of the alphabet
+                std::string variableName = stateP->getName() + inputX + stateQ->getName();
+                if(!inVector(variableName, variables)){
+                    variables.emplace_back(variableName);
+                }
+            }
+        }
+    }
+
+    return variables;
 }
 
 EvaluationState::EvaluationState(const std::stack<std::string> &stack, State *currentStates) : stack(stack),

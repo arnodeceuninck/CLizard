@@ -16,3 +16,12 @@ std::string toString(std::vector<std::string> strings) {
     }
     return final;
 }
+
+bool inVector(std::string s, std::vector<std::string> vec) {
+    for(std::string str: vec){
+        if(str==s){
+            return true;
+        }
+    }
+    return false;
+}

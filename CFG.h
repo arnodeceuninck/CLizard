@@ -15,8 +15,8 @@ class Production{
 };
 
 class CFG {
-    std::vector<char> nonTerminalsV;
-    std::vector<char> terminalsT;
+    std::vector<std::string> nonTerminalsV;
+    std::vector<std::string> terminalsT;
     std::vector<Production*> productionsP;
     char startS;
 };

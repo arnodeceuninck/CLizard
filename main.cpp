@@ -122,7 +122,7 @@ int main() {
 //    PDA pda = voorbeeldPDA1();
 //    PDA pda = testPDA3();
 
-    std::string filename = "pda.json";
+    std::string filename = "pdaToCFG1.json";
     std::vector<State *> states = {};
     std::vector<char> alphabet = {};
     std::vector<std::string> stackAlphabet = {};
@@ -149,6 +149,9 @@ int main() {
     evaluate(pda, evaluateString2);
 
     pda.toDot("pda");
+
+    pda.toCFG();
+
     return 0;
 }
 
