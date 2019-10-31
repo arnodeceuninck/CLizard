@@ -10,6 +10,7 @@
 
 #include "rapidjson/document.h"
 #include "rapidjson/istreamwrapper.h"
+#include "CFG.h"
 
 
 State::State(const std::string &name) : name(name) {}
@@ -253,6 +254,7 @@ void PDA::toDot(std::string filename) {
 
 CFG *PDA::toCFG() {
     std::vector<std::string> v = getCFGVariables(); // set of variables
+    std::vector<Production*> r = getCFGProductions();
     return nullptr;
 }
 
@@ -272,6 +274,21 @@ std::vector<std::string> PDA::getCFGVariables() {
     }
 
     return variables;
+}
+
+std::vector<Production *> PDA::getCFGProductions() {
+
+    std::vector<Production*> productions = {};
+
+    // Productions from start state
+    for(State* state: statesQ){
+        std::string toState = "q0Z0" + state->getName();
+        std::string fromState = "S";
+        Production* production = new Production(fromState, toState);
+        productions.emplace_back(production);
+    }
+
+    return productions;
 }
 
 EvaluationState::EvaluationState(const std::stack<std::string> &stack, State *currentStates) : stack(stack),

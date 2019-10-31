@@ -9,15 +9,19 @@
 #include <vector>
 #include <string>
 
-class Production{
-    char fromP;
+class Production {
+public:
+    Production(const std::string &fromP, const std::string &toP);
+
+private:
+    std::string fromP;
     std::string toP;
 };
 
 class CFG {
     std::vector<std::string> nonTerminalsV;
     std::vector<std::string> terminalsT;
-    std::vector<Production*> productionsP;
+    std::vector<Production *> productionsP;
     char startS;
 };
 

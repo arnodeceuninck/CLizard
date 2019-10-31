@@ -3,3 +3,5 @@
 //
 
 #include "CFG.h"
+
+Production::Production(const std::string &fromP, const std::string &toP) : fromP(fromP), toP(toP) {}

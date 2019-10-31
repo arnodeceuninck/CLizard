@@ -17,6 +17,8 @@ class PDA;
 
 class CFG;
 
+class Production;
+
 void read_json(std::string filename,
                std::vector<State *> &states,
                std::vector<char> &alphabet,
@@ -100,6 +102,7 @@ private:
 
     // toCFG() help functions
     std::vector<std::string> getCFGVariables();
+    std::vector<Production*> getCFGProductions();
 
 public:
     PDA(std::vector<State *> &statesQ, std::vector<char> &inputAlphabetS,
