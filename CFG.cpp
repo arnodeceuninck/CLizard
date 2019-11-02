@@ -396,7 +396,7 @@ void CFG::splitUpLongerBodies() {
                 previousVar = newVariable;
             }
 
-            int lastElement = productionsP.size() - 1;
+            int lastElement = productionTo.size() - 1;
             Production *production = new Production(previousVar,
                                                     {productionTo[lastElement - 1], productionTo[lastElement]});
             productionsP.emplace_back(production);
