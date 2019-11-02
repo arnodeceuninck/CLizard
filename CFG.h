@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include "rapidjson/pointer.h"
+#include "const.h"
 
 rapidjson::Value strJSON(std::string str, rapidjson::Document::AllocatorType& allocator);
 
@@ -44,6 +45,13 @@ private:
     bool expandGeneratingSymbols(std::vector<std::string>& generatingSymbols); // Returns whether something has been added
     bool expandReachableSymbols(std::vector<std::string>& reachableSymbols); // Returns whether something has been added
     bool reachableProduction(Production *&production, std::vector<std::string> reachableSymbols);
+    void eliminateEpsilonProductions();
+    bool expandNullableSymbols(std::vector<std::string>& nullableSymbols);
+
+    bool
+    consistOnlyOfNullableSymbols(const std::vector<std::string> &symbolList, std::vector<std::string> &nullableSymbols);
+
+    void removeNullableSymbol(std::string symbol, Production *production);
 };
 
 

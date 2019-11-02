@@ -10,6 +10,7 @@
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
+//#include "const.h"
 
 Production::Production(const std::string &fromP, const std::vector<std::string> &toP) : fromP(fromP), toP(toP) {}
 
@@ -203,6 +204,64 @@ bool CFG::reachableProduction(Production *&production, std::vector<std::string> 
         }
     }
     return true;
+}
+
+void CFG::eliminateEpsilonProductions() {
+    std::vector<std::string> nullableSymbols = {};
+    while (expandNullableSymbols(nullableSymbols)){
+
+    }
+
+    for(std::string symbol: nullableSymbols){
+
+        for(Production* production: productionsP) {
+            removeNullableSymbol(symbol, production);
+        }
+
+        for (int i = 0; i < productionsP.size(); ++i) {
+            if(productionsP[i]->getToP().empty()){
+                // Transition A -> e
+                productionsP.erase(productionsP.begin() + i);
+                i--;
+            }
+        }
+    }
+}
+
+bool CFG::expandNullableSymbols(std::vector<std::string> &nullableSymbols) {
+    bool changed = false;
+    for (Production *production: productionsP) {
+        if(consistOnlyOfNullableSymbols(production->getToP(), nullableSymbols)){
+            nullableSymbols.push_back(production->getFromP());
+        }
+    }
+    return changed;
+}
+
+bool CFG::consistOnlyOfNullableSymbols(const std::vector<std::string> &symbolList,
+                                       std::vector<std::string> &nullableSymbols) {
+    for(std::string symbol: symbolList){
+        if(!inVector(symbol, nullableSymbols) && symbol != toString(getEPSILON())){
+            return false;
+        }
+    }
+    return true;
+}
+
+void CFG::removeNullableSymbol(std::string symbol, Production *production) {
+    bool changed = false;
+    std::vector<std::string> productionsTo = production->getToP();
+    std::vector<std::string> withoutSymbol = {};
+    for (int i = 0; i < productionsTo.size(); ++i) {
+        if(productionsTo[i] != symbol){
+            withoutSymbol.push_back(productionsTo[i]);
+            changed = true;
+        }
+    }
+    if(changed) {
+        Production *newProduction = new Production(production->getFromP(), withoutSymbol);
+        productionsP.push_back(newProduction);
+    }
 }
 
 
