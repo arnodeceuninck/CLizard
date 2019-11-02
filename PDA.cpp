@@ -12,6 +12,7 @@
 #include "rapidjson/istreamwrapper.h"
 #include "CFG.h"
 
+char EPSILON = 'e';
 
 State::State(const std::string &name) : name(name) {}
 
@@ -148,7 +149,7 @@ bool PDA::inStackAlphabet(std::vector<std::string> s) {
 
 bool PDA::inAlphabet(char c) {
     for (auto a: inputAlphabetS) {
-        if (a == c or c == 'e') {
+        if (a == c or c == EPSILON) {
             return true;
         }
     }
@@ -214,7 +215,7 @@ std::vector<EvaluationState> PDA::eclose(std::vector<EvaluationState> evaluation
     std::vector<EvaluationState> newEvaluations;
     for (EvaluationState evaluation: evaluations) {
         std::vector<EvaluationState> recentEvaluations = {};
-        for (Transition *transition: evaluation.currentStates->getTransitionsOnInput('e', evaluation.stack.top())) {
+        for (Transition *transition: evaluation.currentStates->getTransitionsOnInput(EPSILON, evaluation.stack.top())) {
             std::stack<std::string> newStack = evaluation.stack;
             for (int j = transition->getStackPush().size() - 1; j >= 0; --j) {
 //                if (transition->getStackPush()[j] != "e") { // e is epsilon, so nothing has to be pushed then
@@ -483,7 +484,7 @@ void read_json(std::string filename,
 
         std::string inputStr = transition["input"].GetString();
         if(inputStr == ""){
-            inputStr = "e";
+            inputStr = toString(EPSILON);
         }
         char input = inputStr[0];
         transition_function.push_back(new Transition(findState(transition["from"].GetString(), states),
