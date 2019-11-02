@@ -41,6 +41,9 @@ private:
     void eliminateUselessSymbols();
     void eliminateNonGeneratingSymbols();
     void eliminateNonReachableSymbols();
+    bool expandGeneratingSymbols(std::vector<std::string>& generatingSymbols); // Returns whether something has been added
+    bool expandReachableSymbols(std::vector<std::string>& reachableSymbols); // Returns whether something has been added
+    bool reachableProduction(Production *&production, std::vector<std::string> reachableSymbols);
 };
 
 

@@ -113,11 +113,96 @@ void CFG::eliminateUselessSymbols() {
 }
 
 void CFG::eliminateNonGeneratingSymbols() {
+    // Find all generating symbols (and thus also the nongenerating)
+    std::vector<std::string> generatingSymbols = terminalsT;
+    while (expandGeneratingSymbols(generatingSymbols)) {
+
+    }
+
+    // Remove all non-generating symbols from variables, (terminals) and productions
+    for (int i = 0; i < nonTerminalsV.size(); ++i) {
+        if(!inVector(nonTerminalsV[i], generatingSymbols)){
+            nonTerminalsV.erase(nonTerminalsV.begin() + i);
+            --i;
+        }
+    }
+
+    for (int j = 0; j < productionsP.size(); ++j) {
+        if(!reachableProduction(productionsP[j], generatingSymbols)){
+            productionsP.erase(productionsP.begin() + j);
+            --j;
+        }
+    }
 
 }
 
 void CFG::eliminateNonReachableSymbols() {
+    // Find all reachable symbols (and thus also the nonreachable)
+    std::vector<std::string> reachableSymbols = {startS};
+    while (expandReachableSymbols(reachableSymbols)) {
 
+    }
+
+    // Remove all non-reachable symbols from variables, terminals and productions
+    for (int i = 0; i < nonTerminalsV.size(); ++i) {
+        if(!inVector(nonTerminalsV[i], reachableSymbols)){
+            nonTerminalsV.erase(nonTerminalsV.begin() + i);
+            --i;
+        }
+    }
+
+    for (int i = 0; i < terminalsT.size(); ++i) {
+        if(!inVector(terminalsT[i], reachableSymbols)){
+            terminalsT.erase(terminalsT.begin() + i);
+            --i;
+        }
+    }
+
+
+    for (int j = 0; j < productionsP.size(); ++j) {
+        if(!reachableProduction(productionsP[j], reachableSymbols)){
+            productionsP.erase(productionsP.begin() + j);
+            --j;
+        }
+    }
+}
+
+bool CFG::expandGeneratingSymbols(std::vector<std::string> &generatingSymbols) {
+    bool changed = false;
+    for (Production *production: productionsP) {
+        for (std::string productionTo: production->getToP()) {
+            if (inVector(productionTo, generatingSymbols) &&
+                !inVector(production->getFromP(), generatingSymbols)) {
+                generatingSymbols.push_back(production->getFromP());
+                changed = true;
+            }
+        }
+    }
+    return changed;
+}
+
+bool CFG::expandReachableSymbols(std::vector<std::string> &reachableSymbols) {
+    bool changed = false;
+    for (Production *production: productionsP) {
+        if(inVector(production->getFromP(), reachableSymbols)) {
+            for (std::string productionTo: production->getToP()) {
+                if (!inVector(productionTo, reachableSymbols)) {
+                    reachableSymbols.push_back(productionTo);
+                    changed = true;
+                }
+            }
+        }
+    }
+    return changed;
+}
+
+bool CFG::reachableProduction(Production *&production, std::vector<std::string> reachableSymbols) {
+    for(std::string stateTo: production->getToP()){
+        if(!inVector(stateTo, reachableSymbols)){
+            return false;
+        }
+    }
+    return true;
 }
 
 
