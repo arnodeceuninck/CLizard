@@ -104,6 +104,7 @@ private:
     std::vector<std::string> getCFGVariables();
     std::vector<Production*> getCFGProductions();
     std::vector<std::vector<State*>> getStateCombinations(int size);
+    std::vector<std::vector<State*>> cleanupCombinations(std::vector<std::vector<State*>> oldCombinations);
 
 public:
     PDA(std::vector<State *> &statesQ, std::vector<char> &inputAlphabetS,
@@ -115,6 +116,8 @@ public:
     bool evaluate(std::string s);
 
     CFG* toCFG();
+
+    bool inCombinations(std::vector<State *> combination, std::vector<std::vector<State *>> combinations);
 };
 
 

@@ -365,7 +365,30 @@ std::vector<std::vector<State *>> PDA::getStateCombinations(int size) {
             }
         }
     }
+
     return combinations;
+}
+
+std::vector<std::vector<State *>> PDA::cleanupCombinations(std::vector<std::vector<State *>> oldCombinations) {
+    std::vector<std::vector<State*>> newCombinations = {};
+    for(auto combination: oldCombinations){
+        if(!inCombinations(combination, newCombinations)){
+            newCombinations.push_back(combination);
+        }
+    }
+    return newCombinations;
+}
+
+bool PDA::inCombinations(std::vector<State *> combination, std::vector<std::vector<State *>> combinations) {
+    for(auto possibleCombination: combinations){
+        for (int i = 0; i < possibleCombination.size(); ++i) {
+            if(possibleCombination[i]->getName() != combination[i]->getName()) {
+                break;
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
 EvaluationState::EvaluationState(const std::stack<std::string> &stack, State *currentStates) : stack(stack),
