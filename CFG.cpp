@@ -6,10 +6,13 @@
 #include "functions.h"
 
 #include <fstream>
+#include <iostream>
 
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
+#include "rapidjson/istreamwrapper.h"
+
 //#include "const.h"
 
 Production::Production(const std::string &fromP, const std::vector<std::string> &toP) : fromP(fromP), toP(toP) {}
@@ -199,9 +202,9 @@ void CFG::eliminateEpsilonProductions() {
     while (expandNullableSymbols(nullableSymbols)) {}
 
     for (std::string symbol: nullableSymbols) {
-
-        for (Production *production: productionsP) {
-            removeNullableSymbol(symbol, production);
+        int pSize = productionsP.size();
+        for (int i = 0; i < pSize; ++i) {
+            removeNullableSymbol(symbol, productionsP[i]);
         }
 
         for (int i = 0; i < productionsP.size(); ++i) {
@@ -415,4 +418,63 @@ rapidjson::Value strJSON(std::string str, rapidjson::Document::AllocatorType &al
     rapidjson::Value strVal;
     strVal.SetString(str.c_str(), str.length(), allocator);
     return strVal;
+}
+
+void readJson(std::string filename,
+               std::vector<std::string> &nonTerminalsV,
+               std::vector<std::string> &terminalsT,
+               std::vector<Production *> &productionsP,
+               std::string &startS) {
+
+    // Read the file
+    std::ifstream pda_stream(filename);
+    rapidjson::IStreamWrapper pda_stream_wrapper(pda_stream);
+    rapidjson::Document pda_document;
+    pda_document.ParseStream(pda_stream_wrapper);
+
+    startS = pda_document["Start"].GetString();
+
+    // Terminals
+    rapidjson::Value &terminals_value = pda_document["Terminals"];
+
+    terminalsT = {};
+
+    for (rapidjson::SizeType i = 0; i < terminals_value.Size(); i++) {
+        std::string s = terminals_value[i].GetString();
+        terminalsT.emplace_back(s);
+    }
+
+    // non-Terminals
+    rapidjson::Value &nonterminals_value = pda_document["Variables"];
+
+    nonTerminalsV = {};
+
+    for (rapidjson::SizeType i = 0; i < nonterminals_value.Size(); i++) {
+        std::string s = nonterminals_value[i].GetString();
+        nonTerminalsV.emplace_back(s);
+    }
+
+
+    // Transitions
+    rapidjson::Value &transitions_value = pda_document["Productions"];
+
+    productionsP = {};
+
+    for (rapidjson::SizeType i = 0; i < transitions_value.Size(); i++) {
+
+        rapidjson::Value &transition = transitions_value[i];
+
+        std::vector<std::string> replacement = {};
+        rapidjson::Value &replacement_value = transition["body"];
+
+        for (rapidjson::SizeType i = 0; i < replacement_value.Size(); i++) {
+            replacement.emplace_back(replacement_value[i].GetString());
+        }
+
+        std::string inputStr = transition["head"].GetString();
+
+        Production* production = new Production(inputStr, replacement);
+        productionsP.push_back(production);
+    }
+
 }

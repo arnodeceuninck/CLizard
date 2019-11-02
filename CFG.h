@@ -34,7 +34,6 @@ public:
     void toJSON(std::string filename);
 
     void toCNF();
-
 private:
     std::vector<std::string> nonTerminalsV;
     std::vector<std::string> terminalsT;
@@ -77,6 +76,13 @@ private:
 
     std::string findNewUnusedVariableLetter();
 };
+
+
+void readJson(std::string filename,
+              std::vector<std::string> &nonTerminalsV,
+              std::vector<std::string> &terminalsT,
+              std::vector<Production *> &productionsP,
+              std::string &startS);
 
 
 #endif //MB_CFG_H

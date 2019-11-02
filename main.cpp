@@ -155,6 +155,17 @@ int main() {
     CFG* cfg = pda.toCFG(); // TODO: check on too many productions
     cfg->toJSON("pdaToCFG.json");
 
+    std::vector<std::string> nonTerminalsV;
+    std::vector<std::string> terminalsT;
+    std::vector<Production *> productionsP;
+    std::string startS;
+    readJson("Reeks7Oef2.json", nonTerminalsV, terminalsT, productionsP, startS);
+
+    cfg = new CFG(nonTerminalsV, terminalsT, productionsP, startS);
+
+    cfg->toCNF();
+    cfg->toJSON("cfgToCNF.json");
+
     pda.toCFG();
 
     return 0;
