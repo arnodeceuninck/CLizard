@@ -95,16 +95,9 @@ void CFG::toJSON(std::string filename) {
 }
 
 CFG *CFG::toCNF() {
-    // Eliminate e-productions, that is, prouctions of the form A->e;
-
-    // Eliminate unit productions, that is, produc-
-    //  tions of the form A -> B, where A and B
-    //  are variables.
-
-    // Eliminate useless symbols, those that do
-    //  not appear in any derivation S -*> w, for
-    //  start symbol S and terminal string w.
-
+    cleanUp();
+    fixOnlyVariablesProductions();
+//    splitUpLongerBodies();
     return nullptr;
 }
 
@@ -267,21 +260,21 @@ void CFG::eliminateUnitProductions() {
 
     while (expandUnitPairs(unitProductionPairs)) {}
 
-    for(auto pair: unitProductionPairs){
+    for (auto pair: unitProductionPairs) {
         std::vector<std::vector<std::string>> productions = findProductionsForVariable(pair.second);
-        for(auto production: productions) {
+        for (auto production: productions) {
             if (!productionExists(pair.first, production)) {
-                Production* newProduction = new Production(pair.first, production);
-                productions.emplace_back(newProduction);
+                Production *newProduction = new Production(pair.first, production);
+                productionsP.emplace_back(newProduction);
             }
         }
     }
 
     // Finally, remove all unit productions
     for (int i = 0; i < productionsP.size(); ++i) {
-        Production* production = productionsP[i];
+        Production *production = productionsP[i];
         auto productionTo = production->getToP();
-        if(productionTo.size() == 1 && inVector(productionTo[0], nonTerminalsV)){
+        if (productionTo.size() == 1 && inVector(productionTo[0], nonTerminalsV)) {
             productionsP.erase(productionsP.begin() + i);
             i--;
         }
@@ -311,8 +304,8 @@ bool CFG::expandUnitPairs(std::vector<std::pair<std::string, std::string>> &unit
 
 std::vector<std::vector<std::string>> CFG::findProductionsForVariable(std::string productionFrom) {
     std::vector<std::vector<std::string>> possibleProductions = {};
-    for(Production* production: productionsP){
-        if(production->getFromP() == productionFrom){
+    for (Production *production: productionsP) {
+        if (production->getFromP() == productionFrom) {
             possibleProductions.emplace_back(production->getToP());
         }
     }
@@ -320,13 +313,66 @@ std::vector<std::vector<std::string>> CFG::findProductionsForVariable(std::strin
 }
 
 bool CFG::productionExists(std::string productionFrom, std::vector<std::string> productionTo) {
-    for(Production* production: productionsP){
-        if(productionFrom == production->getFromP() &&
-           productionTo == production->getToP()){
+    for (Production *production: productionsP) {
+        if (productionFrom == production->getFromP() &&
+            productionTo == production->getToP()) {
             return true;
         }
     }
     return false;
+}
+
+void CFG::cleanUp() {
+    eliminateEpsilonProductions();
+    eliminateUnitProductions();
+    eliminateUselessSymbols();
+}
+
+void CFG::fixOnlyVariablesProductions() {
+    std::vector<std::string> terminalsOccuringInBodies = {};
+    for (Production *production: productionsP) {
+        auto productionTo = production->getToP();
+        if (productionTo.size() >= 2) {
+            // Add all terminals in list
+            for (std::string replacement: productionTo) {
+                if (inVector(replacement, terminalsT)) {
+                    terminalsOccuringInBodies.push_back(replacement);
+                }
+            }
+        }
+    }
+
+    // We have now collected all terminals in productions that have to be replaced,
+    //  time to replace them.
+    std::vector<std::pair<std::string, std::string>> replacementRules; // A set of rules to determine which terminal gets replaced by which variable
+    for (std::string terminal: terminalsOccuringInBodies) {
+        char t = terminal[0];
+        t -= 32; // Make t an uppercase letter (or another symbol if not a letter) // TODO: check whether this makes it a uppercase letter
+        while (inVector(toString(t), nonTerminalsV)) {
+            t += 1; // Change te letter of t if it's already used as variable
+        }
+
+        // Add the new pair to the replacementRules
+        std::pair<std::string, std::string> replacement(toString(t), terminal);
+        replacementRules.push_back(replacement);
+
+        // Add the new production to the list:
+        Production* newProduction = new Production(replacement.first, {replacement.second});
+        nonTerminalsV.emplace_back(replacement.first);
+    }
+
+    // Replace the terminal in the productions
+    for (Production *production: productionsP) {
+        auto productionTo = production->getToP();
+        if (productionTo.size() < 2) continue;
+        for (std::string &replacement: productionTo) {
+            for (auto replacementRule: replacementRules) {
+                if (replacement == replacementRule.second) {
+                    replacement = replacementRule.first;
+                }
+            }
+        }
+    }
 }
 
 

@@ -68,6 +68,10 @@ private:
     std::vector<std::vector<std::string>> findProductionsForVariable(std::string productionFrom);
 
     bool productionExists(std::string productionFrom, std::vector<std::string> productionTo);
+
+    void cleanUp();
+
+    void fixOnlyVariablesProductions();
 };
 
 
