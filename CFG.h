@@ -27,15 +27,20 @@ private:
 
 class CFG {
 public:
-    CFG(const std::vector<std::string> &nonTerminalsV, const std::vector<char> &terminalsT,
+    CFG(const std::vector<std::string> &nonTerminalsV, const std::vector<std::string> &terminalsT,
         const std::vector<Production *> &productionsP, const std::string &startS);
+
     void toJSON(std::string filename);
 
+    CFG* toCNF();
 private:
     std::vector<std::string> nonTerminalsV;
-    std::vector<char> terminalsT;
+    std::vector<std::string> terminalsT;
     std::vector<Production *> productionsP;
     std::string startS;
+    void eliminateUselessSymbols();
+    void eliminateNonGeneratingSymbols();
+    void eliminateNonReachableSymbols();
 };
 
 

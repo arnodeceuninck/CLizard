@@ -119,6 +119,8 @@ public:
     CFG* toCFG();
 
     bool inCombinations(std::vector<State *> combination, std::vector<std::vector<State *>> combinations);
+
+    std::vector<std::string> toVecStr(std::vector<char> vecChar);
 };
 
 

@@ -21,11 +21,13 @@ const std::vector<std::string> &Production::getToP() const {
     return toP;
 }
 
-CFG::CFG(const std::vector<std::string> &nonTerminalsV, const std::vector<char> &terminalsT,
-         const std::vector<Production *> &productionsP, const std::string &startS) : nonTerminalsV(nonTerminalsV),
-                                                                                     terminalsT(terminalsT),
-                                                                                     productionsP(productionsP),
-                                                                                     startS(startS) {}
+CFG::CFG(const std::vector<std::string> &nonTerminalsV, const std::vector<std::string> &terminalsT,
+         const std::vector<Production *> &productionsP, const std::string &startS) {
+    this->nonTerminalsV = nonTerminalsV;
+    this->terminalsT = terminalsT;
+    this->productionsP = productionsP;
+    this->startS = startS;
+}
 
 void CFG::toJSON(std::string filename) {
     // document is the root of a json message
@@ -49,8 +51,8 @@ void CFG::toJSON(std::string filename) {
 
     // Terminals
     rapidjson::Value terminalsRJ(rapidjson::kArrayType);
-    for (char character: terminalsT) {
-        terminalsRJ.PushBack(strJSON(toString(character), allocator), allocator);
+    for (std::string character: terminalsT) {
+        terminalsRJ.PushBack(strJSON(character, allocator), allocator);
     }
     document.AddMember("Terminals", terminalsRJ, allocator);
 
@@ -58,7 +60,7 @@ void CFG::toJSON(std::string filename) {
 //    document.AddMember("eps", strJSON(string(1, epsilon), allocator), allocator);
 
     rapidjson::Value productionsRJ(rapidjson::kArrayType);
-    for (Production* production: productionsP) {
+    for (Production *production: productionsP) {
 
         rapidjson::Value productionRJ(rapidjson::kObjectType);
 
@@ -73,7 +75,7 @@ void CFG::toJSON(std::string filename) {
     }
     document.AddMember("Productions", productionsRJ, allocator);
 
-    document.AddMember("Start", startS, allocator);
+    document.AddMember("Start", strJSON(startS, allocator), allocator);
 
     rapidjson::StringBuffer strbuf;
     rapidjson::Writer<rapidjson::StringBuffer> writer(strbuf);
@@ -88,6 +90,33 @@ void CFG::toJSON(std::string filename) {
     myfile << strbuf.GetString() << std::endl;
 
     myfile.close();
+
+}
+
+CFG *CFG::toCNF() {
+    // Eliminate e-productions, that is, prouctions of the form A->e;
+
+    // Eliminate unit productions, that is, produc-
+    //  tions of the form A -> B, where A and B
+    //  are variables.
+
+    // Eliminate useless symbols, those that do
+    //  not appear in any derivation S -*> w, for
+    //  start symbol S and terminal string w.
+
+    return nullptr;
+}
+
+void CFG::eliminateUselessSymbols() {
+    eliminateNonGeneratingSymbols();
+    eliminateNonReachableSymbols();
+}
+
+void CFG::eliminateNonGeneratingSymbols() {
+
+}
+
+void CFG::eliminateNonReachableSymbols() {
 
 }
 

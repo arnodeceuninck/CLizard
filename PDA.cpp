@@ -64,9 +64,10 @@ std::vector<std::string> Transition::removeEpsilon(std::vector<std::string> oldS
     for (int i = 0; i < oldStackPush.size(); ++i) {
         if(stackPush[i] == "e"){
             oldStackPush.erase(oldStackPush.begin() + i);
-            i--;
+            --i;
         }
     }
+    return oldStackPush;
 }
 
 
@@ -268,7 +269,8 @@ CFG *PDA::toCFG() {
     std::vector<std::string> v = getCFGVariables(); // set of variables
     std::vector<Production*> r = getCFGProductions();
 
-    CFG* cfg = new CFG(v, inputAlphabetS, r, "S");
+    std::vector<std::string> strVec = toVecStr(inputAlphabetS);
+    CFG* cfg = new CFG(v, strVec, r, "S");
     return cfg;
 }
 
@@ -401,6 +403,14 @@ bool PDA::inCombinations(std::vector<State *> combination, std::vector<std::vect
         }
     }
     return false;
+}
+
+std::vector<std::string> PDA::toVecStr(std::vector<char> vecChar) {
+    std::vector<std::string> vecStr = {};
+    for(char c: vecChar){
+        vecStr.emplace_back(toString(c));
+    }
+    return vecStr;
 }
 
 EvaluationState::EvaluationState(const std::stack<std::string> &stack, State *currentStates) : stack(stack),
