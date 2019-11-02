@@ -11,11 +11,11 @@
 
 class Production {
 public:
-    Production(const std::string &fromP, const std::string &toP);
+    Production(const std::string &fromP, const std::vector<std::string> &toP);
 
 private:
     std::string fromP;
-    std::string toP;
+    std::vector<std::string> toP;
 };
 
 class CFG {

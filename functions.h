@@ -8,8 +8,11 @@
 #include <string>
 #include <vector>
 
+class State;
+
 std::string toString(char c);
 std::string toString(std::vector<std::string> strings);
 bool inVector(std::string s, std::vector<std::string> vec);
+std::vector<State*> vectorUnion(const std::vector<State*>& a, const std::vector<State*>& b);
 
 #endif //MB_FUNCTIONS_H

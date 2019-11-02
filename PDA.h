@@ -103,6 +103,7 @@ private:
     // toCFG() help functions
     std::vector<std::string> getCFGVariables();
     std::vector<Production*> getCFGProductions();
+    std::vector<std::vector<State*>> getStateCombinations(int size);
 
 public:
     PDA(std::vector<State *> &statesQ, std::vector<char> &inputAlphabetS,

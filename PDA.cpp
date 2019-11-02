@@ -284,11 +284,65 @@ std::vector<Production *> PDA::getCFGProductions() {
     for(State* state: statesQ){
         std::string toState = "q0Z0" + state->getName();
         std::string fromState = "S";
-        Production* production = new Production(fromState, toState);
+        Production* production = new Production(fromState, {toState});
         productions.emplace_back(production);
     }
 
+    // Productions from q pop X to rk
+    for (Transition* transition: transitionFunctionD){
+
+        char a = transition->getInput();
+        std::string x = transition->getStackInput();
+        std::vector<std::string> y = transition->getStackPush();
+        State* r = transition->getStateTo();
+        State* q = transition->getStateFrom();
+
+        std::vector<std::vector<State*>> combinations = getStateCombinations(y.size());
+
+        for(std::vector<State*> combination: combinations) {
+
+            State *rk = combination[combination.size() - 1];
+            std::string productionFrom = q->getName() + x + rk->getName();
+
+            std::string rY1r1 = r->getName() + y[0] + combination[0]->getName();
+            std::vector<std::string> productionTo = {toString(a), rY1r1};
+
+            for (int k = 0; k+1 < combination.size(); ++k) {
+
+                std::string rk1 = combination[k]->getName(); // r(k-1)
+                std::string yk = y[k+1];
+                std::string rk = combination[k+1]->getName();
+
+                std::string rk1Ykrk = rk1 + yk + rk;
+                productionTo.emplace_back(rk1Ykrk);
+            }
+
+            Production* production = new Production(productionFrom, productionTo);
+            productions.emplace_back(production);
+        }
+
+    }
+
     return productions;
+}
+
+std::vector<std::vector<State *>> PDA::getStateCombinations(int size) {
+    std::vector<std::vector<State*>> combinations = {};
+    if(size == 1) {
+        for(State* state: statesQ){
+            combinations.push_back({state});
+        }
+    } else if (size < 1) {
+        return {};
+    } else {
+        std::vector<std::vector<State*>> smallerCombinations = getStateCombinations(size-1);
+        for (State* state: statesQ) {
+            for(std::vector<State*> combination: smallerCombinations){
+                combinations.push_back(vectorUnion({state}, combination));
+            }
+        }
+    }
+    return combinations;
 }
 
 EvaluationState::EvaluationState(const std::stack<std::string> &stack, State *currentStates) : stack(stack),

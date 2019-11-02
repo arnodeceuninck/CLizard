@@ -11,17 +11,32 @@ std::string toString(char c) {
 
 std::string toString(std::vector<std::string> strings) {
     std::string final = "";
-    for(auto s: strings){
+    for (auto s: strings) {
         final += s;
     }
     return final;
 }
 
 bool inVector(std::string s, std::vector<std::string> vec) {
-    for(std::string str: vec){
-        if(str==s){
+    for (std::string str: vec) {
+        if (str == s) {
             return true;
         }
     }
     return false;
+}
+
+std::vector<State *> vectorUnion(const std::vector<State *> &a, const std::vector<State *> &b) {
+
+    std::vector<State *> vecUnion = {};
+
+    for (State *state: a) {
+        vecUnion.emplace_back(state);
+    }
+
+    for (State *state: b) {
+        vecUnion.emplace_back(state);
+    }
+
+    return vecUnion;
 }
