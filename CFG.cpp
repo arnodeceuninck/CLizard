@@ -116,20 +116,18 @@ void CFG::eliminateUselessSymbols() {
 void CFG::eliminateNonGeneratingSymbols() {
     // Find all generating symbols (and thus also the nongenerating)
     std::vector<std::string> generatingSymbols = terminalsT;
-    while (expandGeneratingSymbols(generatingSymbols)) {
-
-    }
+    while (expandGeneratingSymbols(generatingSymbols)) {}
 
     // Remove all non-generating symbols from variables, (terminals) and productions
     for (int i = 0; i < nonTerminalsV.size(); ++i) {
-        if(!inVector(nonTerminalsV[i], generatingSymbols)){
+        if (!inVector(nonTerminalsV[i], generatingSymbols)) {
             nonTerminalsV.erase(nonTerminalsV.begin() + i);
             --i;
         }
     }
 
     for (int j = 0; j < productionsP.size(); ++j) {
-        if(!reachableProduction(productionsP[j], generatingSymbols)){
+        if (!reachableProduction(productionsP[j], generatingSymbols)) {
             productionsP.erase(productionsP.begin() + j);
             --j;
         }
@@ -140,20 +138,18 @@ void CFG::eliminateNonGeneratingSymbols() {
 void CFG::eliminateNonReachableSymbols() {
     // Find all reachable symbols (and thus also the nonreachable)
     std::vector<std::string> reachableSymbols = {startS};
-    while (expandReachableSymbols(reachableSymbols)) {
-
-    }
+    while (expandReachableSymbols(reachableSymbols)) {}
 
     // Remove all non-reachable symbols from variables, terminals and productions
     for (int i = 0; i < nonTerminalsV.size(); ++i) {
-        if(!inVector(nonTerminalsV[i], reachableSymbols)){
+        if (!inVector(nonTerminalsV[i], reachableSymbols)) {
             nonTerminalsV.erase(nonTerminalsV.begin() + i);
             --i;
         }
     }
 
     for (int i = 0; i < terminalsT.size(); ++i) {
-        if(!inVector(terminalsT[i], reachableSymbols)){
+        if (!inVector(terminalsT[i], reachableSymbols)) {
             terminalsT.erase(terminalsT.begin() + i);
             --i;
         }
@@ -161,7 +157,7 @@ void CFG::eliminateNonReachableSymbols() {
 
 
     for (int j = 0; j < productionsP.size(); ++j) {
-        if(!reachableProduction(productionsP[j], reachableSymbols)){
+        if (!reachableProduction(productionsP[j], reachableSymbols)) {
             productionsP.erase(productionsP.begin() + j);
             --j;
         }
@@ -185,7 +181,7 @@ bool CFG::expandGeneratingSymbols(std::vector<std::string> &generatingSymbols) {
 bool CFG::expandReachableSymbols(std::vector<std::string> &reachableSymbols) {
     bool changed = false;
     for (Production *production: productionsP) {
-        if(inVector(production->getFromP(), reachableSymbols)) {
+        if (inVector(production->getFromP(), reachableSymbols)) {
             for (std::string productionTo: production->getToP()) {
                 if (!inVector(productionTo, reachableSymbols)) {
                     reachableSymbols.push_back(productionTo);
@@ -198,8 +194,8 @@ bool CFG::expandReachableSymbols(std::vector<std::string> &reachableSymbols) {
 }
 
 bool CFG::reachableProduction(Production *&production, std::vector<std::string> reachableSymbols) {
-    for(std::string stateTo: production->getToP()){
-        if(!inVector(stateTo, reachableSymbols)){
+    for (std::string stateTo: production->getToP()) {
+        if (!inVector(stateTo, reachableSymbols)) {
             return false;
         }
     }
@@ -208,18 +204,16 @@ bool CFG::reachableProduction(Production *&production, std::vector<std::string> 
 
 void CFG::eliminateEpsilonProductions() {
     std::vector<std::string> nullableSymbols = {};
-    while (expandNullableSymbols(nullableSymbols)){
+    while (expandNullableSymbols(nullableSymbols)) {}
 
-    }
+    for (std::string symbol: nullableSymbols) {
 
-    for(std::string symbol: nullableSymbols){
-
-        for(Production* production: productionsP) {
+        for (Production *production: productionsP) {
             removeNullableSymbol(symbol, production);
         }
 
         for (int i = 0; i < productionsP.size(); ++i) {
-            if(productionsP[i]->getToP().empty()){
+            if (productionsP[i]->getToP().empty()) {
                 // Transition A -> e
                 productionsP.erase(productionsP.begin() + i);
                 i--;
@@ -231,7 +225,7 @@ void CFG::eliminateEpsilonProductions() {
 bool CFG::expandNullableSymbols(std::vector<std::string> &nullableSymbols) {
     bool changed = false;
     for (Production *production: productionsP) {
-        if(consistOnlyOfNullableSymbols(production->getToP(), nullableSymbols)){
+        if (consistOnlyOfNullableSymbols(production->getToP(), nullableSymbols)) {
             nullableSymbols.push_back(production->getFromP());
         }
     }
@@ -240,8 +234,8 @@ bool CFG::expandNullableSymbols(std::vector<std::string> &nullableSymbols) {
 
 bool CFG::consistOnlyOfNullableSymbols(const std::vector<std::string> &symbolList,
                                        std::vector<std::string> &nullableSymbols) {
-    for(std::string symbol: symbolList){
-        if(!inVector(symbol, nullableSymbols) && symbol != toString(getEPSILON())){
+    for (std::string symbol: symbolList) {
+        if (!inVector(symbol, nullableSymbols) && symbol != toString(getEPSILON())) {
             return false;
         }
     }
@@ -253,15 +247,48 @@ void CFG::removeNullableSymbol(std::string symbol, Production *production) {
     std::vector<std::string> productionsTo = production->getToP();
     std::vector<std::string> withoutSymbol = {};
     for (int i = 0; i < productionsTo.size(); ++i) {
-        if(productionsTo[i] != symbol){
+        if (productionsTo[i] != symbol) {
             withoutSymbol.push_back(productionsTo[i]);
             changed = true;
         }
     }
-    if(changed) {
+    if (changed) {
         Production *newProduction = new Production(production->getFromP(), withoutSymbol);
         productionsP.push_back(newProduction);
     }
+}
+
+void CFG::eliminateUnitProductions() {
+    std::vector<std::pair<std::string, std::string>> unitProductionPairs = {};
+    for (std::string variable: nonTerminalsV) {
+        std::pair<std::string, std::string> unitPair(variable, variable);
+        unitProductionPairs.emplace_back(unitPair);
+    }
+
+    while (expandUnitPairs(unitProductionPairs)) {}
+
+
+}
+
+bool CFG::expandUnitPairs(std::vector<std::pair<std::string, std::string>> &unitPairs) {
+    bool changed = false;
+    for (Production *production: productionsP) {
+        std::vector<std::string> productionsTo = production->getToP();
+        if (productionsTo.size() != 1) {
+            continue;
+        }
+        std::string productionTo = productionsTo[0];
+
+        for (std::pair<std::string, std::string> unitPair: unitPairs) {
+            if (unitPair.second == productionTo) {
+                std::pair<std::string, std::string> newPair(unitPair.first, productionTo);
+                if (!inVector(newPair, unitPairs)) {
+                    unitPairs.push_back(newPair);
+                }
+            }
+        }
+    }
+    return changed;
 }
 
 

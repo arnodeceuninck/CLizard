@@ -11,7 +11,7 @@
 #include "rapidjson/pointer.h"
 #include "const.h"
 
-rapidjson::Value strJSON(std::string str, rapidjson::Document::AllocatorType& allocator);
+rapidjson::Value strJSON(std::string str, rapidjson::Document::AllocatorType &allocator);
 
 class Production {
 public:
@@ -33,25 +33,37 @@ public:
 
     void toJSON(std::string filename);
 
-    CFG* toCNF();
+    CFG *toCNF();
+
 private:
     std::vector<std::string> nonTerminalsV;
     std::vector<std::string> terminalsT;
     std::vector<Production *> productionsP;
     std::string startS;
+
     void eliminateUselessSymbols();
+
     void eliminateNonGeneratingSymbols();
+
     void eliminateNonReachableSymbols();
-    bool expandGeneratingSymbols(std::vector<std::string>& generatingSymbols); // Returns whether something has been added
-    bool expandReachableSymbols(std::vector<std::string>& reachableSymbols); // Returns whether something has been added
+
+    bool
+    expandGeneratingSymbols(std::vector<std::string> &generatingSymbols); // Returns whether something has been added
+    bool expandReachableSymbols(std::vector<std::string> &reachableSymbols); // Returns whether something has been added
     bool reachableProduction(Production *&production, std::vector<std::string> reachableSymbols);
+
     void eliminateEpsilonProductions();
-    bool expandNullableSymbols(std::vector<std::string>& nullableSymbols);
+
+    bool expandNullableSymbols(std::vector<std::string> &nullableSymbols);
 
     bool
     consistOnlyOfNullableSymbols(const std::vector<std::string> &symbolList, std::vector<std::string> &nullableSymbols);
 
     void removeNullableSymbol(std::string symbol, Production *production);
+
+    void eliminateUnitProductions();
+
+    bool expandUnitPairs(std::vector<std::pair<std::string, std::string>>& unitPairs);
 };
 
 
