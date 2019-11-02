@@ -323,6 +323,27 @@ std::vector<Production *> PDA::getCFGProductions() {
 
     }
 
+    // Productions qXr -> a
+    for(Transition* transition: transitionFunctionD){
+
+        // TODO: check that epsilon always leads to empty stackPush
+        if(transition->getStackPush().size() == 0 &&
+            inAlphabet(transition->getInput())){ // So if it is an epsilon transition
+
+            State* r = transition->getStateTo();
+            State* q = transition->getStateFrom();
+
+            std::string a = transition->getInput();
+
+            std::string qXr = q->getName() + transition->getStackInput() + r->getName();
+
+            Production* production = new Production(qXr, {a});
+
+            productions.emplace_back(production);
+
+        }
+    }
+
     return productions;
 }
 
