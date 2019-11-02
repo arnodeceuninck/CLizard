@@ -94,11 +94,10 @@ void CFG::toJSON(std::string filename) {
 
 }
 
-CFG *CFG::toCNF() {
+void CFG::toCNF() {
     cleanUp();
     fixOnlyVariablesProductions();
-//    splitUpLongerBodies();
-    return nullptr;
+    splitUpLongerBodies();
 }
 
 void CFG::eliminateUselessSymbols() {
@@ -357,7 +356,7 @@ void CFG::fixOnlyVariablesProductions() {
         replacementRules.push_back(replacement);
 
         // Add the new production to the list:
-        Production* newProduction = new Production(replacement.first, {replacement.second});
+        Production *newProduction = new Production(replacement.first, {replacement.second});
         nonTerminalsV.emplace_back(replacement.first);
     }
 
@@ -373,6 +372,42 @@ void CFG::fixOnlyVariablesProductions() {
             }
         }
     }
+}
+
+void CFG::splitUpLongerBodies() {
+
+    for (int i = 0; i < productionsP.size(); ++i) {
+
+        auto productionTo = productionsP[i]->getToP();
+
+        // Only modify variables longer than 2
+        if (productionTo.size() > 2) {
+
+            std::string previousVar = productionsP[i]->getFromP();
+
+            for (int j = 0; j < productionTo.size() - 2; ++j) {
+                std::string newVariable = findNewUnusedVariableLetter();
+                nonTerminalsV.push_back(newVariable);
+                Production *production = new Production(previousVar, {productionTo[j], newVariable});
+                productionsP.emplace_back(production);
+                previousVar = newVariable;
+            }
+
+            int lastElement = productionsP.size() - 1;
+            Production *production = new Production(previousVar,
+                                                    {productionTo[lastElement - 1], productionTo[lastElement]});
+            productionsP.emplace_back(production);
+
+            productionsP.erase(productionsP.begin() + i);
+            i--;
+        }
+    }
+}
+
+std::string CFG::findNewUnusedVariableLetter() {
+    char newVariable = 'A';
+    while (inVector(toString(newVariable), terminalsT)) { newVariable++; }
+    return toString(newVariable);
 }
 
 

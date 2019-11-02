@@ -33,7 +33,7 @@ public:
 
     void toJSON(std::string filename);
 
-    CFG *toCNF();
+    void toCNF();
 
 private:
     std::vector<std::string> nonTerminalsV;
@@ -72,6 +72,10 @@ private:
     void cleanUp();
 
     void fixOnlyVariablesProductions();
+
+    void splitUpLongerBodies();
+
+    std::string findNewUnusedVariableLetter();
 };
 
 
