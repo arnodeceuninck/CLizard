@@ -124,7 +124,7 @@ int main() {
 //    PDA pda = voorbeeldPDA1();
 //    PDA pda = testPDA3();
 
-    std::string filename = "pdaToCFG1.json";
+    std::string filename = "pdaReeks5Oef4.json";
     std::vector<State *> states = {};
     std::vector<char> alphabet = {};
     std::vector<std::string> stackAlphabet = {};

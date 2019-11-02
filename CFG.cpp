@@ -73,6 +73,8 @@ void CFG::toJSON(std::string filename) {
     }
     document.AddMember("Productions", productionsRJ, allocator);
 
+    document.AddMember("Start", startS, allocator);
+
     rapidjson::StringBuffer strbuf;
     rapidjson::Writer<rapidjson::StringBuffer> writer(strbuf);
     document.Accept(writer);
