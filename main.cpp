@@ -1,5 +1,7 @@
 #include <iostream>
+
 #include "PDA.h"
+#include "CFG.h"
 
 void evaluate(PDA &pda, const std::string &evaluateString1);
 
@@ -149,6 +151,9 @@ int main() {
     evaluate(pda, evaluateString2);
 
     pda.toDot("pda");
+
+    CFG* cfg = pda.toCFG(); // TODO: check on too many productions
+    cfg->toJSON("pdaToCFG.json");
 
     pda.toCFG();
 
