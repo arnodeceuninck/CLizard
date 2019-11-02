@@ -35,7 +35,9 @@ std::vector<Transition *> State::getTransitionsOnInput(char input, std::string s
 
 Transition::Transition(State *stateFrom, State *stateTo, const std::vector<std::string> &stackPush, char input,
                        std::string stackInput)
-        : stateFrom(stateFrom), stateTo(stateTo), stackPush(stackPush), input(input), stackInput(stackInput) {}
+        : stateFrom(stateFrom), stateTo(stateTo), stackPush(stackPush), input(input), stackInput(stackInput) {
+    this->stackPush = removeEpsilon(stackPush);
+}
 
 State *Transition::getStateFrom() const {
     return stateFrom;
@@ -55,6 +57,15 @@ char Transition::getInput() const {
 
 std::string Transition::getStackInput() const {
     return stackInput;
+}
+
+std::vector<std::string> Transition::removeEpsilon(std::vector<std::string> oldStackPush) {
+    for (int i = 0; i < oldStackPush.size(); ++i) {
+        if(stackPush[i] == "e"){
+            oldStackPush.erase(oldStackPush.begin() + i);
+            i--;
+        }
+    }
 }
 
 
@@ -169,9 +180,9 @@ std::vector<EvaluationState> PDA::nextEvaluations(std::vector<EvaluationState> e
         for (Transition *transition: transitions) {
             std::stack<std::string> newStack = evaluation.stack;
             for (int j = transition->getStackPush().size() - 1; j >= 0; --j) {
-                if (transition->getStackPush()[j] != "e") { // e is epsilon, so nothing has to be pushed then
+//                if (transition->getStackPush()[j] != "e") { // e is epsilon, so nothing has to be pushed then
                     newStack.push(transition->getStackPush()[j]);
-                }
+//                }
             }
             newEvaluations.push_back(EvaluationState(newStack, transition->getStateTo()));
         }
@@ -206,9 +217,9 @@ std::vector<EvaluationState> PDA::eclose(std::vector<EvaluationState> evaluation
         for (Transition *transition: evaluation.currentStates->getTransitionsOnInput('e', evaluation.stack.top())) {
             std::stack<std::string> newStack = evaluation.stack;
             for (int j = transition->getStackPush().size() - 1; j >= 0; --j) {
-                if (transition->getStackPush()[j] != "e") { // e is epsilon, so nothing has to be pushed then
+//                if (transition->getStackPush()[j] != "e") { // e is epsilon, so nothing has to be pushed then
                     newStack.push(transition->getStackPush()[j]);
-                }
+//                }
             }
             recentEvaluations.emplace_back(EvaluationState(newStack, transition->getStateTo()));
         }

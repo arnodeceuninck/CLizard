@@ -44,6 +44,7 @@ private:
     std::vector<std::string> stackPush; // 2^G*
     char input; // S U e
     std::string stackInput; // G
+    std::vector<std::string> removeEpsilon(std::vector<std::string> oldStackPush);
 public:
     Transition(State *stateFrom, State *stateTo, const std::vector<std::string> &stackPush, char input, std::string stackInput);
 
