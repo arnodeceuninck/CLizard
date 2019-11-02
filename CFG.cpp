@@ -267,7 +267,25 @@ void CFG::eliminateUnitProductions() {
 
     while (expandUnitPairs(unitProductionPairs)) {}
 
+    for(auto pair: unitProductionPairs){
+        std::vector<std::vector<std::string>> productions = findProductionsForVariable(pair.second);
+        for(auto production: productions) {
+            if (!productionExists(pair.first, production)) {
+                Production* newProduction = new Production(pair.first, production);
+                productions.emplace_back(newProduction);
+            }
+        }
+    }
 
+    // Finally, remove all unit productions
+    for (int i = 0; i < productionsP.size(); ++i) {
+        Production* production = productionsP[i];
+        auto productionTo = production->getToP();
+        if(productionTo.size() == 1 && inVector(productionTo[0], nonTerminalsV)){
+            productionsP.erase(productionsP.begin() + i);
+            i--;
+        }
+    }
 }
 
 bool CFG::expandUnitPairs(std::vector<std::pair<std::string, std::string>> &unitPairs) {
@@ -289,6 +307,26 @@ bool CFG::expandUnitPairs(std::vector<std::pair<std::string, std::string>> &unit
         }
     }
     return changed;
+}
+
+std::vector<std::vector<std::string>> CFG::findProductionsForVariable(std::string productionFrom) {
+    std::vector<std::vector<std::string>> possibleProductions = {};
+    for(Production* production: productionsP){
+        if(production->getFromP() == productionFrom){
+            possibleProductions.emplace_back(production->getToP());
+        }
+    }
+    return possibleProductions;
+}
+
+bool CFG::productionExists(std::string productionFrom, std::vector<std::string> productionTo) {
+    for(Production* production: productionsP){
+        if(productionFrom == production->getFromP() &&
+           productionTo == production->getToP()){
+            return true;
+        }
+    }
+    return false;
 }
 
 

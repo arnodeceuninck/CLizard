@@ -64,6 +64,10 @@ private:
     void eliminateUnitProductions();
 
     bool expandUnitPairs(std::vector<std::pair<std::string, std::string>>& unitPairs);
+
+    std::vector<std::vector<std::string>> findProductionsForVariable(std::string productionFrom);
+
+    bool productionExists(std::string productionFrom, std::vector<std::string> productionTo);
 };
 
 
