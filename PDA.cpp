@@ -265,7 +265,7 @@ std::vector<std::string> PDA::getCFGVariables() {
     for (State* stateP: statesQ){
         for (State* stateQ: statesQ){
             for(std::string inputX: stackAlphabetG){ // TODO: Check whether stackAlphabetG contains all elements  of the alphabet
-                std::string variableName = stateP->getName() + inputX + stateQ->getName();
+                std::string variableName = "[" + stateP->getName() + inputX + stateQ->getName() + "]";
                 if(!inVector(variableName, variables)){
                     variables.emplace_back(variableName);
                 }
@@ -282,7 +282,7 @@ std::vector<Production *> PDA::getCFGProductions() {
 
     // Productions from start state
     for(State* state: statesQ){
-        std::string toState = "q0Z0" + state->getName();
+        std::string toState = "[q0Z0" + state->getName() + "]";
         std::string fromState = "S";
         Production* production = new Production(fromState, {toState});
         productions.emplace_back(production);
@@ -302,9 +302,9 @@ std::vector<Production *> PDA::getCFGProductions() {
         for(std::vector<State*> combination: combinations) {
 
             State *rk = combination[combination.size() - 1];
-            std::string productionFrom = q->getName() + x + rk->getName();
+            std::string productionFrom = "[" + q->getName() + x + rk->getName() + "]";
 
-            std::string rY1r1 = r->getName() + y[0] + combination[0]->getName();
+            std::string rY1r1 = "[" + r->getName() + y[0] + combination[0]->getName() + "]";
             std::vector<std::string> productionTo = {toString(a), rY1r1};
 
             for (int k = 0; k+1 < combination.size(); ++k) {
@@ -313,7 +313,7 @@ std::vector<Production *> PDA::getCFGProductions() {
                 std::string yk = y[k+1];
                 std::string rk = combination[k+1]->getName();
 
-                std::string rk1Ykrk = rk1 + yk + rk;
+                std::string rk1Ykrk = "[" + rk1 + yk + rk + "]";
                 productionTo.emplace_back(rk1Ykrk);
             }
 
@@ -333,11 +333,11 @@ std::vector<Production *> PDA::getCFGProductions() {
             State* r = transition->getStateTo();
             State* q = transition->getStateFrom();
 
-            std::string a = transition->getInput();
+            char a = transition->getInput();
 
-            std::string qXr = q->getName() + transition->getStackInput() + r->getName();
+            std::string qXr = "[" + q->getName() + transition->getStackInput() + r->getName() + "]";
 
-            Production* production = new Production(qXr, {a});
+            Production* production = new Production(qXr, {toString(a)});
 
             productions.emplace_back(production);
 
