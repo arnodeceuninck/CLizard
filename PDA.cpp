@@ -255,7 +255,9 @@ void PDA::toDot(std::string filename) {
 CFG *PDA::toCFG() {
     std::vector<std::string> v = getCFGVariables(); // set of variables
     std::vector<Production*> r = getCFGProductions();
-    return nullptr;
+
+    CFG* cfg = new CFG(v, inputAlphabetS, r, "S");
+    return cfg;
 }
 
 std::vector<std::string> PDA::getCFGVariables() {

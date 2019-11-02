@@ -19,10 +19,15 @@ private:
 };
 
 class CFG {
+public:
+    CFG(const std::vector<std::string> &nonTerminalsV, const std::vector<char> &terminalsT,
+        const std::vector<Production *> &productionsP, const std::string &startS);
+
+private:
     std::vector<std::string> nonTerminalsV;
-    std::vector<std::string> terminalsT;
+    std::vector<char> terminalsT;
     std::vector<Production *> productionsP;
-    char startS;
+    std::string startS;
 };
 
 
