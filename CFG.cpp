@@ -409,7 +409,7 @@ void CFG::splitUpLongerBodies() {
 
 std::string CFG::findNewUnusedVariableLetter() {
     char newVariable = 'A';
-    while (inVector(toString(newVariable), terminalsT)) { newVariable++; }
+    while (inVector(toString(newVariable), nonTerminalsV)) { newVariable++; }
     return toString(newVariable);
 }
 
