@@ -460,21 +460,24 @@ bool CFG::toCYK(std::string strToEvaluate, std::string& htmlString) {
 
     htmlString = rowHtmlString(firstRow) + htmlString;
 
-    for (int j = 1; j < cykTable.size(); ++j) { // Row we're going to fill
-        for (int i = 0; i < cykTable.size(); ++i) { // Column we're going to fill
+    for (int row = 1; row < cykTable.size(); ++row) { // Row we're going to fill
+        for (int column = 0; column < cykTable.size(); ++column) { // Column we're going to fill
+            if (row + column >= cykTable.size()) continue;
+            int i = column;
+            int j = i + row; // row = j-i+1 <=> j = row + i - 1;
             if (i > j) continue;
-            std::string subString = strToEvaluate.substr(i, j+1);
+            std::string subString = strToEvaluate.substr(i, j-i);
             for (int k = i; k < j; ++k) {
-                std::string subStr1 = strToEvaluate.substr(k, j - k);
+                std::string subStr1 = strToEvaluate.substr(i, k-i+1);
                 std::string subStr2 = strToEvaluate.substr(k + 1, j);
                 std::vector<std::string> productionsSubstr1 = findProductionsInCYK(i, k, cykTable);
                 std::vector<std::string> productionsSubstr2 = findProductionsInCYK(k+1, j, cykTable);
                 std::vector<std::string> productionsToStr = findAtoBCproductions(productionsSubstr1,
                                                                                  productionsSubstr2);
-                cykTable[j][i] = productionsToStr;
+                cykTable[column][row] = productionsToStr;
             }
         }
-        htmlString = rowHtmlString(cykTable[j]) + htmlString;
+        htmlString = rowHtmlString(cykTable[row]) + htmlString;
     }
 
     htmlString = "<table>" + htmlString;
