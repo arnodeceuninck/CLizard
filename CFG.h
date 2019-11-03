@@ -34,6 +34,8 @@ public:
     void toJSON(std::string filename);
 
     void toCNF();
+    bool toCYK(std::string strToEvaluate, std::string& htmlOutput);
+
 private:
     std::vector<std::string> nonTerminalsV;
     std::vector<std::string> terminalsT;
@@ -77,6 +79,16 @@ private:
     std::string findNewUnusedVariableLetter();
 
     bool findVariable(std::string& var, std::vector<std::string> productionTo);
+
+    std::vector<std::string> findVariables(std::vector<std::string> productionTo);
+
+
+    std::vector<std::string>
+    findProductionsInCYK(int startSubStr, int endSubStr, std::vector<std::vector<std::vector<std::string>>> &cykTable);
+
+    std::vector<std::string> findAtoBCproductions(std::vector<std::string>& B, std::vector<std::string>& C);
+
+    std::string rowHtmlString(std::vector<std::vector<std::string>> vector);
 };
 
 

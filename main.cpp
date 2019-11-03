@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "PDA.h"
 #include "CFG.h"
@@ -167,6 +168,23 @@ int main() {
     cfg->toJSON("cfgToCNF.json");
 
     pda.toCFG();
+
+    readJson("Reeks7Oef3.json", nonTerminalsV, terminalsT, productionsP, startS);
+    cfg = new CFG(nonTerminalsV, terminalsT, productionsP, startS);
+
+
+    std::ofstream file;
+    file.open ("output.html");
+
+    std::string html;
+    if(cfg->toCYK("abbc", html)){
+        std::cout << "Succes." << std::endl;
+    } else {
+        std::cout << "Failed." << std::endl;
+    }
+
+    file << html;
+    file.close();
 
     return 0;
 }

@@ -357,7 +357,7 @@ void CFG::fixOnlyVariablesProductions() {
         std::pair<std::string, std::string> replacement(toString(t), terminal);
 
         std::string var;
-        if(findVariable(var, {terminal})){
+        if (findVariable(var, {terminal})) {
             replacement.first = var;
         } else {
             // Add the new production to the list:
@@ -373,7 +373,7 @@ void CFG::fixOnlyVariablesProductions() {
 
     // Replace the terminal in the productions
     for (int i = 0; i < productionsP.size(); ++i) {
-        Production* production = productionsP[i];
+        Production *production = productionsP[i];
         auto productionTo = production->getToP();
         if (productionTo.size() < 2) continue;
         bool changed = false;
@@ -385,8 +385,8 @@ void CFG::fixOnlyVariablesProductions() {
                 }
             }
         }
-        if(changed){
-            productionsP.erase(productionsP.begin()+i);
+        if (changed) {
+            productionsP.erase(productionsP.begin() + i);
             i--;
         }
     }
@@ -429,13 +429,104 @@ std::string CFG::findNewUnusedVariableLetter() {
 }
 
 bool CFG::findVariable(std::string &var, std::vector<std::string> productionTo) {
-    for(Production* production: productionsP){
-        if(production->getToP() == productionTo){
+    for (Production *production: productionsP) {
+        if (production->getToP() == productionTo) {
             var = production->getFromP();
             return true;
         }
     }
     return false;
+}
+
+bool CFG::toCYK(std::string strToEvaluate, std::string& htmlString) {
+
+    htmlString = "</table>";
+
+    // I assume we're working with a CNF
+    std::vector<std::vector<std::vector<std::string>>> cykTable = {};
+    for (int l = 0; l < strToEvaluate.size(); ++l) {
+        std::vector<std::vector<std::string>> row = {};
+        for (int i = 0; i < strToEvaluate.size(); ++i) {
+            row.push_back({});
+        }
+        cykTable.push_back(row);
+    }
+
+    std::vector<std::vector<std::string>> firstRow = {};
+    for (char c: strToEvaluate) {
+        firstRow.emplace_back(findVariables({toString(c)}));
+    }
+    cykTable[0] = firstRow;
+
+    htmlString = rowHtmlString(firstRow) + htmlString;
+
+    for (int j = 1; j < cykTable.size(); ++j) { // Row we're going to fill
+        for (int i = 0; i < cykTable.size(); ++i) { // Column we're going to fill
+            if (i > j) continue;
+            std::string subString = strToEvaluate.substr(i, j+1);
+            for (int k = i; k < j; ++k) {
+                std::string subStr1 = strToEvaluate.substr(k, j - k);
+                std::string subStr2 = strToEvaluate.substr(k + 1, j);
+                std::vector<std::string> productionsSubstr1 = findProductionsInCYK(i, k, cykTable);
+                std::vector<std::string> productionsSubstr2 = findProductionsInCYK(k+1, j, cykTable);
+                std::vector<std::string> productionsToStr = findAtoBCproductions(productionsSubstr1,
+                                                                                 productionsSubstr2);
+                cykTable[j][i] = productionsToStr;
+            }
+        }
+        htmlString = rowHtmlString(cykTable[j]) + htmlString;
+    }
+
+    htmlString = "<table>" + htmlString;
+
+    // Cyk table should now be finished, check whether the startstate is in the upper left corner
+    return inVector(startS, cykTable[cykTable.size()-1][0]);
+}
+
+std::vector<std::string> CFG::findVariables(std::vector<std::string> productionTo) {
+    std::vector<std::string> variables = {};
+    for (Production *production: productionsP) {
+        if (production->getToP() == productionTo) {
+            variables.emplace_back(production->getFromP());
+        }
+    }
+    return variables;
+}
+
+std::vector<std::string>
+CFG::findProductionsInCYK(int startSubStr, int endSubStr,
+                          std::vector<std::vector<std::vector<std::string>>> &cykTable) {
+
+    return cykTable[endSubStr-startSubStr][startSubStr];
+}
+
+std::vector<std::string> CFG::findAtoBCproductions(std::vector<std::string>& B, std::vector<std::string>& C) {
+    std::vector<std::string> A = {};
+    for(Production* production: productionsP){
+        if(production->getToP().size() == 2){ // Check whether it's not a terminal
+            if(inVector(production->getToP()[0], B) &&
+            inVector(production->getToP()[1], C) &&
+            !inVector(production->getFromP(), A)){
+                A.push_back(production->getFromP());
+            }
+        }
+    }
+
+    return A;
+}
+
+std::string CFG::rowHtmlString(std::vector<std::vector<std::string>> vector) {
+    std::string row = "<tr>";
+    for(auto subvec: vector){
+        row += "<td>{";
+        for(auto el: subvec) {
+            row += el + ", ";
+        }
+        row = row.substr(0, row.size()-1);
+        row += "}</td>";
+    }
+    row += "</tr>";
+    return row;
 }
 
 
@@ -446,10 +537,10 @@ rapidjson::Value strJSON(std::string str, rapidjson::Document::AllocatorType &al
 }
 
 void readJson(std::string filename,
-               std::vector<std::string> &nonTerminalsV,
-               std::vector<std::string> &terminalsT,
-               std::vector<Production *> &productionsP,
-               std::string &startS) {
+              std::vector<std::string> &nonTerminalsV,
+              std::vector<std::string> &terminalsT,
+              std::vector<Production *> &productionsP,
+              std::string &startS) {
 
     // Read the file
     std::ifstream pda_stream(filename);
@@ -498,7 +589,7 @@ void readJson(std::string filename,
 
         std::string inputStr = transition["head"].GetString();
 
-        Production* production = new Production(inputStr, replacement);
+        Production *production = new Production(inputStr, replacement);
         productionsP.push_back(production);
     }
 

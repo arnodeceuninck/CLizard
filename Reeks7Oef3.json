@@ -1,0 +1,75 @@
+{
+  "Variables": [
+    "S",
+    "A",
+    "B",
+    "C"
+  ],
+  "Terminals": [
+    "a",
+    "b",
+    "c"
+  ],
+  "Productions": [
+    {
+      "head": "S",
+      "body": [
+        "A",
+        "B"
+      ]
+    },
+    {
+      "head": "A",
+      "body": [
+        "C",
+        "C"
+      ]
+    },
+    {
+      "head": "A",
+      "body": [
+        "a"
+      ]
+    },
+    {
+      "head": "A",
+      "body": [
+        "c"
+      ]
+    },
+    {
+      "head": "B",
+      "body": [
+        "B",
+        "C"
+      ]
+    },
+    {
+      "head": "B",
+      "body": [
+        "b"
+      ]
+    },
+    {
+      "head": "C",
+      "body": [
+        "C",
+        "B"
+      ]
+    },
+    {
+      "head": "C",
+      "body": [
+        "c"
+      ]
+    },
+    {
+      "head": "C",
+      "body": [
+        "B",
+        "A"
+      ]
+    }
+  ],
+  "Start": "S"
+}
