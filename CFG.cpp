@@ -337,7 +337,7 @@ void CFG::fixOnlyVariablesProductions() {
         if (productionTo.size() >= 2) {
             // Add all terminals in list
             for (std::string replacement: productionTo) {
-                if (inVector(replacement, terminalsT)) {
+                if (inVector(replacement, terminalsT) && !inVector(replacement, terminalsOccuringInBodies)) {
                     terminalsOccuringInBodies.push_back(replacement);
                 }
             }
@@ -354,25 +354,40 @@ void CFG::fixOnlyVariablesProductions() {
             t += 1; // Change te letter of t if it's already used as variable
         }
 
-        // Add the new pair to the replacementRules
         std::pair<std::string, std::string> replacement(toString(t), terminal);
+
+        std::string var;
+        if(findVariable(var, {terminal})){
+            replacement.first = var;
+        } else {
+            // Add the new production to the list:
+            Production *newProduction = new Production(replacement.first, {replacement.second});
+            nonTerminalsV.emplace_back(replacement.first);
+        }
+
+        // Add the new pair to the replacementRules
         replacementRules.push_back(replacement);
 
-        // Add the new production to the list:
-        Production *newProduction = new Production(replacement.first, {replacement.second});
-        nonTerminalsV.emplace_back(replacement.first);
+
     }
 
     // Replace the terminal in the productions
-    for (Production *production: productionsP) {
+    for (int i = 0; i < productionsP.size(); ++i) {
+        Production* production = productionsP[i];
         auto productionTo = production->getToP();
         if (productionTo.size() < 2) continue;
+        bool changed = false;
         for (std::string &replacement: productionTo) {
             for (auto replacementRule: replacementRules) {
                 if (replacement == replacementRule.second) {
+                    changed = true;
                     replacement = replacementRule.first;
                 }
             }
+        }
+        if(changed){
+            productionsP.erase(productionsP.begin()+i);
+            i--;
         }
     }
 }
@@ -411,6 +426,16 @@ std::string CFG::findNewUnusedVariableLetter() {
     char newVariable = 'A';
     while (inVector(toString(newVariable), nonTerminalsV)) { newVariable++; }
     return toString(newVariable);
+}
+
+bool CFG::findVariable(std::string &var, std::vector<std::string> productionTo) {
+    for(Production* production: productionsP){
+        if(production->getToP() == productionTo){
+            var = production->getFromP();
+            return true;
+        }
+    }
+    return false;
 }
 
 

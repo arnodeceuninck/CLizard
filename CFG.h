@@ -75,6 +75,8 @@ private:
     void splitUpLongerBodies();
 
     std::string findNewUnusedVariableLetter();
+
+    bool findVariable(std::string& var, std::vector<std::string> productionTo);
 };
 
 
