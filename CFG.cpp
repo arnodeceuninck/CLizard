@@ -462,20 +462,27 @@ bool CFG::toCYK(std::string strToEvaluate, std::string& htmlString) {
 
     for (int row = 1; row < cykTable.size(); ++row) { // Row we're going to fill
         for (int column = 0; column < cykTable.size(); ++column) { // Column we're going to fill
-            if (row + column >= cykTable.size()) continue;
             int i = column;
             int j = i + row; // row = j-i+1 <=> j = row + i - 1;
-            if (i > j) continue;
-            std::string subString = strToEvaluate.substr(i, j-i);
+
+            if (i >= j or j > cykTable.size()-1 or i > cykTable.size()-1) continue;
+
+            std::string subString = strToEvaluate.substr(i, j-i+1);
+            std::vector<std::string> productionsToStr = {};
             for (int k = i; k < j; ++k) {
                 std::string subStr1 = strToEvaluate.substr(i, k-i+1);
-                std::string subStr2 = strToEvaluate.substr(k + 1, j);
+                std::string subStr2 = strToEvaluate.substr(k+1, j-k);
                 std::vector<std::string> productionsSubstr1 = findProductionsInCYK(i, k, cykTable);
                 std::vector<std::string> productionsSubstr2 = findProductionsInCYK(k+1, j, cykTable);
-                std::vector<std::string> productionsToStr = findAtoBCproductions(productionsSubstr1,
+                std::vector<std::string> productionsToSubStr = findAtoBCproductions(productionsSubstr1,
                                                                                  productionsSubstr2);
-                cykTable[column][row] = productionsToStr;
+                for(auto production: productionsToSubStr){
+                    if(!inVector(production, productionsToStr)){
+                        productionsToStr.push_back(production);
+                    }
+                }
             }
+            cykTable[row][column] = productionsToStr;
         }
         htmlString = rowHtmlString(cykTable[row]) + htmlString;
     }
@@ -499,8 +506,8 @@ std::vector<std::string> CFG::findVariables(std::vector<std::string> productionT
 std::vector<std::string>
 CFG::findProductionsInCYK(int startSubStr, int endSubStr,
                           std::vector<std::vector<std::vector<std::string>>> &cykTable) {
-
-    return cykTable[endSubStr-startSubStr][startSubStr];
+    int row = endSubStr-startSubStr;
+    return cykTable[row][startSubStr+row];
 }
 
 std::vector<std::string> CFG::findAtoBCproductions(std::vector<std::string>& B, std::vector<std::string>& C) {

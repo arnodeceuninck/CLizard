@@ -41,6 +41,8 @@ std::vector<State *> vectorUnion(const std::vector<State *> &a, const std::vecto
     return vecUnion;
 }
 
+
+
 bool inVector(std::pair<std::string, std::string> pair, std::vector<std::pair<std::string, std::string>> pairs) {
     for(auto element: pairs){
         if(element.first == pair.first &&
