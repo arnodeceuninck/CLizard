@@ -385,6 +385,7 @@ bool CFG::expandUnitPairs(std::vector<std::pair<std::string, std::string>> &unit
                 std::pair<std::string, std::string> newPair(unitPair.first, productionTo);
                 if (!inVector(newPair, unitPairs)) {
                     unitPairs.push_back(newPair);
+                    changed = true;
                 }
             }
         }
