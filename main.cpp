@@ -52,6 +52,10 @@ int main(int argc, char *argv[]) {
 
         std::cout.rdbuf(coutbuf); //reset to standard output again
 
+        if(argc > 4){
+            cfg->toJSON(argv[4]);
+        }
+
     } else if (type == "cnf") {
 
         std::string inputFile = argv[2];
@@ -75,6 +79,10 @@ int main(int argc, char *argv[]) {
         cfg->toCNF();
 
         std::cout.rdbuf(coutbuf); //reset to standard output again
+
+        if(argc > 4){
+            cfg->toJSON(argv[4]);
+        }
 
     } else if (type == "cyk") {
 

@@ -2,5 +2,5 @@
 # op de versie van ubuntu van G025
 # je mag hier zoveel aanpassen als je wil
 # een voorbeeld zou kunnen zijn
-sudo apt-get install nlohmann-json-dev
-g++ -std=c++11 src/*.cpp -o indiv
+#sudo apt-get install nlohmann-json-dev
+g++ -std=c++11 *.cpp -o indiv
