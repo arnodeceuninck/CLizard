@@ -4,4 +4,4 @@
 
 ./indiv pda2cfg pdaReeks5Oef4.json pda2cfg-output.txt pda2cfg-output.json
 ./indiv cnf pda2cfg-output.json cnf-output.txt cnf-output.json
-./indiv cyk cnf-output.json aabb cyk-output.txt
+./indiv cyk cnf-output.json 1111 cyk-output.txt

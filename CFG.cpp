@@ -382,7 +382,7 @@ bool CFG::expandUnitPairs(std::vector<std::pair<std::string, std::string>> &unit
 
         for (std::pair<std::string, std::string> unitPair: unitPairs) {
             if (unitPair.second == productionTo) {
-                std::pair<std::string, std::string> newPair(unitPair.first, productionTo);
+                std::pair<std::string, std::string> newPair(production->getFromP(), productionTo);
                 if (!inVector(newPair, unitPairs)) {
                     unitPairs.push_back(newPair);
                     changed = true;
@@ -446,6 +446,7 @@ void CFG::fixOnlyVariablesProductions() {
     std::vector<std::pair<std::string, std::string>> replacementRules; // A set of rules to determine which terminal gets replaced by which variable
     for (std::string terminal: terminalsOccuringInBodies) {
         char t = terminal[0];
+        if (t < 97 or t > 122) { t = 'a'; }
         t -= 32; // Make t an uppercase letter (or another symbol if not a letter) // TODO: check whether this makes it a uppercase letter
         while (inVector(toString(t), nonTerminalsV)) {
             t += 1; // Change te letter of t if it's already used as variable
