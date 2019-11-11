@@ -25,6 +25,10 @@ const std::vector<std::string> &Production::getToP() const {
     return toP;
 }
 
+void Production::setToP(const std::vector<std::string> &toP) {
+    Production::toP = toP;
+}
+
 CFG::CFG(const std::vector<std::string> &nonTerminalsV, const std::vector<std::string> &terminalsT,
          const std::vector<Production *> &productionsP, const std::string &startS) {
     this->nonTerminalsV = nonTerminalsV;
@@ -98,20 +102,52 @@ void CFG::toJSON(std::string filename) {
 }
 
 void CFG::toCNF() {
+
+    std::cout << "Start Grammar: " << std::endl;
+    printReadable();
+
     cleanUp();
     fixOnlyVariablesProductions();
+
+    std::cout << "Fixed terminals in longer productions: " << std::endl;
+    printReadable();
+
     splitUpLongerBodies();
+
+    std::cout << "Splitted up longer bodies, final grammar: " << std::endl;
+    printReadable();
 }
 
 void CFG::eliminateUselessSymbols() {
     eliminateNonGeneratingSymbols();
+
+    std::cout << "Eliminated non-generating symbols: " << std::endl;
+    printReadable();
+
     eliminateNonReachableSymbols();
+
+    std::cout << "Eliminated non-reachable symbols: " << std::endl;
+    printReadable();
 }
 
 void CFG::eliminateNonGeneratingSymbols() {
     // Find all generating symbols (and thus also the nongenerating)
-    std::vector<std::string> generatingSymbols = terminalsT;
+    std::vector<std::string> generatingSymbols;
+    for (Production *production: productionsP) {
+        bool onlyTerminals = true;
+        for (auto el: production->getToP()) {
+            if (!inVector(el, terminalsT)) {
+                onlyTerminals = false;
+            }
+        }
+        if (onlyTerminals and !inVector(production->getFromP(), generatingSymbols)) {
+            generatingSymbols.push_back(production->getFromP());
+        }
+    }
+
     while (expandGeneratingSymbols(generatingSymbols)) {}
+
+    std::cout << "Generating symbols: " << vecToStr(generatingSymbols) << std::endl;
 
     // Remove all non-generating symbols from variables, (terminals) and productions
     for (int i = 0; i < nonTerminalsV.size(); ++i) {
@@ -122,7 +158,7 @@ void CFG::eliminateNonGeneratingSymbols() {
     }
 
     for (int j = 0; j < productionsP.size(); ++j) {
-        if (!reachableProduction(productionsP[j], generatingSymbols)) {
+        if (!reachableProduction(productionsP[j], vectorUnion(terminalsT, generatingSymbols))) {
             productionsP.erase(productionsP.begin() + j);
             --j;
         }
@@ -134,6 +170,8 @@ void CFG::eliminateNonReachableSymbols() {
     // Find all reachable symbols (and thus also the nonreachable)
     std::vector<std::string> reachableSymbols = {startS};
     while (expandReachableSymbols(reachableSymbols)) {}
+
+    std::cout << "Reachable symbols: " << vecToStr(reachableSymbols) << std::endl;
 
     // Remove all non-reachable symbols from variables, terminals and productions
     for (int i = 0; i < nonTerminalsV.size(); ++i) {
@@ -201,6 +239,8 @@ void CFG::eliminateEpsilonProductions() {
     std::vector<std::string> nullableSymbols = {};
     while (expandNullableSymbols(nullableSymbols)) {}
 
+    std::cout << "Nullable symbols: " << vecToStr(nullableSymbols) << std::endl;
+
     for (std::string symbol: nullableSymbols) {
         int pSize = productionsP.size();
         for (int i = 0; i < pSize; ++i) {
@@ -208,13 +248,26 @@ void CFG::eliminateEpsilonProductions() {
         }
 
         for (int i = 0; i < productionsP.size(); ++i) {
-            if (productionsP[i]->getToP().empty()) {
+            if (productionsP[i]->getToP().empty() or
+                (productionsP[i]->getToP().size() == 1 and
+                 productionsP[i]->getToP()[0] == "e")) { // TODO: fix that it should always be empty if "e"
                 // Transition A -> e
                 productionsP.erase(productionsP.begin() + i);
                 i--;
             }
         }
     }
+}
+
+std::string CFG::vecToStr(const std::vector<std::string> &strVec) const {
+    std::string output = "";
+    for (auto el: strVec) {
+        output += el + ", ";
+    }
+    if (output.size() != 0) {
+        output = output.substr(0, output.size() - 2);
+    }
+    return output;
 }
 
 bool CFG::expandNullableSymbols(std::vector<std::string> &nullableSymbols) {
@@ -241,15 +294,40 @@ void CFG::removeNullableSymbol(std::string symbol, Production *production) {
     bool changed = false;
     std::vector<std::string> productionsTo = production->getToP();
     std::vector<std::string> withoutSymbol = {};
+    int symbolCount = 0;
     for (int i = 0; i < productionsTo.size(); ++i) {
         if (productionsTo[i] != symbol) {
             withoutSymbol.push_back(productionsTo[i]);
+        } else {
+            symbolCount++;
             changed = true;
         }
     }
     if (changed) {
         Production *newProduction = new Production(production->getFromP(), withoutSymbol);
         productionsP.push_back(newProduction);
+    }
+
+    if (symbolCount > 1) {
+        std::vector<std::vector<bool>> permutations = findPermutations(symbolCount);
+        permutations = filterAll0orAll1(permutations); // Since already included
+
+        for (auto permu: permutations) {
+            std::vector<std::string> withoutSymbol = {};
+            int symbolCount = 0;
+            for (int i = 0; i < productionsTo.size(); ++i) {
+                if (productionsTo[i] != symbol) {
+                    withoutSymbol.push_back(productionsTo[i]);
+                } else {
+                    if (permu[symbolCount]) {
+                        withoutSymbol.push_back(productionsTo[i]);
+                    }
+                    symbolCount++;
+                }
+            }
+            Production *newProduction = new Production(production->getFromP(), withoutSymbol);
+            productionsP.push_back(newProduction);
+        }
     }
 }
 
@@ -261,6 +339,16 @@ void CFG::eliminateUnitProductions() {
     }
 
     while (expandUnitPairs(unitProductionPairs)) {}
+
+    std::cout << "Unit pairs: ";
+    std::string output = "";
+    for (auto el: unitProductionPairs) {
+        output += "(" + el.first + ", " + el.second + "), ";
+    }
+    if (output.size() != 0) {
+        output = output.substr(0, output.size() - 2);
+    }
+    std::cout << output << std::endl;
 
     for (auto pair: unitProductionPairs) {
         std::vector<std::vector<std::string>> productions = findProductionsForVariable(pair.second);
@@ -326,7 +414,15 @@ bool CFG::productionExists(std::string productionFrom, std::vector<std::string> 
 
 void CFG::cleanUp() {
     eliminateEpsilonProductions();
+
+    std::cout << "Eliminated epsilon productions: " << std::endl;
+    printReadable();
+
     eliminateUnitProductions();
+
+    std::cout << "Eliminated unit productions: " << std::endl;
+    printReadable();
+
     eliminateUselessSymbols();
 }
 
@@ -356,14 +452,12 @@ void CFG::fixOnlyVariablesProductions() {
 
         std::pair<std::string, std::string> replacement(toString(t), terminal);
 
-        std::string var;
-        if (findVariable(var, {terminal})) {
-            replacement.first = var;
-        } else {
-            // Add the new production to the list:
-            Production *newProduction = new Production(replacement.first, {replacement.second});
-            nonTerminalsV.emplace_back(replacement.first);
-        }
+        // Add the new production to the list:
+        Production *newProduction = new Production(replacement.first, {replacement.second});
+        nonTerminalsV.emplace_back(replacement.first);
+
+        productionsP.push_back(newProduction);
+
 
         // Add the new pair to the replacementRules
         replacementRules.push_back(replacement);
@@ -386,7 +480,7 @@ void CFG::fixOnlyVariablesProductions() {
             }
         }
         if (changed) {
-            productionsP.erase(productionsP.begin() + i);
+            productionsP[i]->setToP(productionTo);
             i--;
         }
     }
@@ -438,7 +532,7 @@ bool CFG::findVariable(std::string &var, std::vector<std::string> productionTo) 
     return false;
 }
 
-bool CFG::toCYK(std::string strToEvaluate, std::string& htmlString) {
+bool CFG::toCYK(std::string strToEvaluate, std::string &htmlString) {
 
     htmlString = "</table>";
 
@@ -465,19 +559,19 @@ bool CFG::toCYK(std::string strToEvaluate, std::string& htmlString) {
             int i = column;
             int j = i + row; // row = j-i+1 <=> j = row + i - 1;
 
-            if (i >= j or j > cykTable.size()-1 or i > cykTable.size()-1) continue;
+            if (i >= j or j > cykTable.size() - 1 or i > cykTable.size() - 1) continue;
 
-            std::string subString = strToEvaluate.substr(i, j-i+1);
+            std::string subString = strToEvaluate.substr(i, j - i + 1);
             std::vector<std::string> productionsToStr = {};
             for (int k = i; k < j; ++k) {
-                std::string subStr1 = strToEvaluate.substr(i, k-i+1);
-                std::string subStr2 = strToEvaluate.substr(k+1, j-k);
+                std::string subStr1 = strToEvaluate.substr(i, k - i + 1);
+                std::string subStr2 = strToEvaluate.substr(k + 1, j - k);
                 std::vector<std::string> productionsSubstr1 = findProductionsInCYK(i, k, cykTable);
-                std::vector<std::string> productionsSubstr2 = findProductionsInCYK(k+1, j, cykTable);
+                std::vector<std::string> productionsSubstr2 = findProductionsInCYK(k + 1, j, cykTable);
                 std::vector<std::string> productionsToSubStr = findAtoBCproductions(productionsSubstr1,
-                                                                                 productionsSubstr2);
-                for(auto production: productionsToSubStr){
-                    if(!inVector(production, productionsToStr)){
+                                                                                    productionsSubstr2);
+                for (auto production: productionsToSubStr) {
+                    if (!inVector(production, productionsToStr)) {
                         productionsToStr.push_back(production);
                     }
                 }
@@ -487,10 +581,10 @@ bool CFG::toCYK(std::string strToEvaluate, std::string& htmlString) {
         htmlString = rowHtmlString(cykTable[row]) + htmlString;
     }
 
-    htmlString = "<table>" + htmlString;
+    htmlString = "<table border=\"1\">" + htmlString;
 
     // Cyk table should now be finished, check whether the startstate is in the upper left corner
-    return inVector(startS, cykTable[cykTable.size()-1][0]);
+    return inVector(startS, cykTable[cykTable.size() - 1][0]);
 }
 
 std::vector<std::string> CFG::findVariables(std::vector<std::string> productionTo) {
@@ -504,19 +598,20 @@ std::vector<std::string> CFG::findVariables(std::vector<std::string> productionT
 }
 
 std::vector<std::string>
-CFG::findProductionsInCYK(int startSubStr, int endSubStr,
+CFG::findProductionsInCYK(int i, int j,
                           std::vector<std::vector<std::vector<std::string>>> &cykTable) {
-    int row = endSubStr-startSubStr;
-    return cykTable[row][startSubStr+row];
+    int row = j - i;
+    int column = i;
+    return cykTable[row][column];
 }
 
-std::vector<std::string> CFG::findAtoBCproductions(std::vector<std::string>& B, std::vector<std::string>& C) {
+std::vector<std::string> CFG::findAtoBCproductions(std::vector<std::string> &B, std::vector<std::string> &C) {
     std::vector<std::string> A = {};
-    for(Production* production: productionsP){
-        if(production->getToP().size() == 2){ // Check whether it's not a terminal
-            if(inVector(production->getToP()[0], B) &&
-            inVector(production->getToP()[1], C) &&
-            !inVector(production->getFromP(), A)){
+    for (Production *production: productionsP) {
+        if (production->getToP().size() == 2) { // Check whether it's not a terminal
+            if (inVector(production->getToP()[0], B) &&
+                inVector(production->getToP()[1], C) &&
+                !inVector(production->getFromP(), A)) {
                 A.push_back(production->getFromP());
             }
         }
@@ -527,16 +622,78 @@ std::vector<std::string> CFG::findAtoBCproductions(std::vector<std::string>& B, 
 
 std::string CFG::rowHtmlString(std::vector<std::vector<std::string>> vector) {
     std::string row = "<tr>";
-    for(auto subvec: vector){
+    for (auto subvec: vector) {
         row += "<td>{";
-        for(auto el: subvec) {
+        for (auto el: subvec) {
             row += el + ", ";
         }
-        row = row.substr(0, row.size()-1);
+        if (!subvec.empty()) {
+            row = row.substr(0, row.size() - 2);
+        }
         row += "}</td>";
     }
     row += "</tr>";
     return row;
+}
+
+void CFG::printReadable() {
+    std::cout << std::endl;
+
+    std::cout << "Nonterminals: " << vecToStr(nonTerminalsV) << std::endl;
+
+    std::cout << "Terminals: " << vecToStr(terminalsT) << std::endl;
+
+    std::cout << "Productions: " << std::endl;
+    for (Production *production: productionsP) {
+        std::cout << "\t" << production->getFromP() << " -> ";
+        for (auto el: production->getToP()) {
+            std::cout << el;
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << "Startsymbol: " << startS << std::endl;
+    std::cout << std::endl;
+}
+
+std::vector<std::vector<bool>> CFG::findPermutations(int count) {
+    if (count == 1) {
+        return {{0},
+                {1}};
+    } else if (count == 0) {
+        return {};
+    } else {
+        std::vector<std::vector<bool>> allPermutations;
+        for (auto permutation: findPermutations(count - 1)) {
+            std::vector<bool> permutationNew = permutation;
+            permutation.push_back(false);
+            allPermutations.push_back(permutation);
+            permutation = permutationNew;
+            permutation.push_back(true);
+            allPermutations.push_back(permutation);
+        }
+        return allPermutations;
+    }
+
+    return std::vector<std::vector<bool>>();
+}
+
+std::vector<std::vector<bool>> CFG::filterAll0orAll1(std::vector<std::vector<bool>> vector) {
+    std::vector<std::vector<bool>> filtered;
+
+    if (vector.size() == 0 or vector[0].size() == 0) return vector;
+
+    for (auto permu: vector) {
+        bool symbol = permu[0];
+        bool done = false;
+        for (auto el: permu) {
+            if (!done and symbol != el) {
+                filtered.push_back(permu);
+                done = true;
+            }
+        }
+    }
+    return filtered;
 }
 
 

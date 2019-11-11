@@ -24,6 +24,8 @@ public:
 private:
     std::string fromP;
     std::vector<std::string> toP;
+public:
+    void setToP(const std::vector<std::string> &toP);
 };
 
 class CFG {
@@ -35,6 +37,8 @@ public:
 
     void toCNF();
     bool toCYK(std::string strToEvaluate, std::string& htmlOutput);
+
+    void printReadable();
 
 private:
     std::vector<std::string> nonTerminalsV;
@@ -89,6 +93,12 @@ private:
     std::vector<std::string> findAtoBCproductions(std::vector<std::string>& B, std::vector<std::string>& C);
 
     std::string rowHtmlString(std::vector<std::vector<std::string>> vector);
+
+    std::string vecToStr(const std::vector<std::string> &strVec) const;
+
+    std::vector<std::vector<bool>> findPermutations(int count);
+
+    std::vector<std::vector<bool>> filterAll0orAll1(std::vector<std::vector<bool>> vector);
 };
 
 

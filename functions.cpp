@@ -52,3 +52,17 @@ bool inVector(std::pair<std::string, std::string> pair, std::vector<std::pair<st
     }
     return false;
 }
+
+std::vector<std::string> vectorUnion(const std::vector<std::string> &a, const std::vector<std::string> &b) {
+    std::vector<std::string> vecUnion = {};
+
+    for (std::string state: a) {
+        vecUnion.emplace_back(state);
+    }
+
+    for (std::string state: b) {
+        vecUnion.emplace_back(state);
+    }
+
+    return vecUnion;
+}
