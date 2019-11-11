@@ -65,8 +65,6 @@ int main(int argc, char *argv[]) {
 
         CFG* cfg = new CFG(nonTerminalsV, terminalsT, productionsP, startS);
 
-        cfg->toCNF();
-
         std::string outputFile = argv[3];
 
         // Source: Nawaz (2012). How to redirect cin and cout to files. Visited on November 11, 2019 via https://stackoverflow.com/questions/10150468/how-to-redirect-cin-and-cout-to-files.
@@ -74,7 +72,7 @@ int main(int argc, char *argv[]) {
         std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
         std::cout.rdbuf(out.rdbuf()); //redirect std::cout to outputFile!
 
-        cfg->printReadable();
+        cfg->toCNF();
 
         std::cout.rdbuf(coutbuf); //reset to standard output again
 
