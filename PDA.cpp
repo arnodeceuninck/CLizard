@@ -297,7 +297,7 @@ std::vector<Production *> PDA::getCFGProductions() {
 
     // Productions from start state
     for(State* state: statesQ){
-        std::string toState = "[" + startState->getName() + "Z0" + state->getName() + "]";
+        std::string toState = "[" + startState->getName() + startStackZ0 + state->getName() + "]";
         std::string fromState = "S";
         Production* production = new Production(fromState, {toState});
         productions.emplace_back(production);
