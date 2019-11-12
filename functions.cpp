@@ -3,6 +3,7 @@
 //
 
 #include "functions.h"
+#include "CFG.h"
 
 std::string toString(char c) {
     std::string s(1, c);
@@ -65,4 +66,13 @@ std::vector<std::string> vectorUnion(const std::vector<std::string> &a, const st
     }
 
     return vecUnion;
+}
+
+bool inVector(Production *p, std::vector<Production *> productions) {
+    for (auto prod: productions) {
+        if (prod->getFromP() == p->getFromP() && prod->getToP() == p->getToP()) {
+            return true;
+        }
+    }
+    return false;
 }

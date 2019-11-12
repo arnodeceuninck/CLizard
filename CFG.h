@@ -99,6 +99,8 @@ private:
     std::vector<std::vector<bool>> findPermutations(int count);
 
     std::vector<std::vector<bool>> filterAll0orAll1(std::vector<std::vector<bool>> vector);
+
+    std::vector<Production *> removeDoubleProductions(std::vector<Production *> productions);
 };
 
 

@@ -132,18 +132,7 @@ void CFG::eliminateUselessSymbols() {
 
 void CFG::eliminateNonGeneratingSymbols() {
     // Find all generating symbols (and thus also the nongenerating)
-    std::vector<std::string> generatingSymbols;
-    for (Production *production: productionsP) {
-        bool onlyTerminals = true;
-        for (auto el: production->getToP()) {
-            if (!inVector(el, terminalsT)) {
-                onlyTerminals = false;
-            }
-        }
-        if (onlyTerminals and !inVector(production->getFromP(), generatingSymbols)) {
-            generatingSymbols.push_back(production->getFromP());
-        }
-    }
+    std::vector<std::string> generatingSymbols = terminalsT;
 
     while (expandGeneratingSymbols(generatingSymbols)) {}
 
@@ -250,7 +239,7 @@ void CFG::eliminateEpsilonProductions() {
         for (int i = 0; i < productionsP.size(); ++i) {
             if (productionsP[i]->getToP().empty() or
                 (productionsP[i]->getToP().size() == 1 and
-                 productionsP[i]->getToP()[0] == "e")) { // TODO: fix that it should always be empty if "e"
+                 productionsP[i]->getToP()[0] == "e")) {
                 // Transition A -> e
                 productionsP.erase(productionsP.begin() + i);
                 i--;
@@ -329,6 +318,8 @@ void CFG::removeNullableSymbol(std::string symbol, Production *production) {
             productionsP.push_back(newProduction);
         }
     }
+
+    productionsP = removeDoubleProductions(productionsP);
 }
 
 void CFG::eliminateUnitProductions() {
@@ -698,6 +689,15 @@ std::vector<std::vector<bool>> CFG::filterAll0orAll1(std::vector<std::vector<boo
     return filtered;
 }
 
+std::vector<Production *> CFG::removeDoubleProductions(std::vector<Production *> productions) {
+    std::vector<Production* > newProductions = {};
+    for(auto prod: productions){
+        if(!inVector(prod, newProductions)){
+            newProductions.emplace_back(prod);
+        }
+    }
+    return newProductions;
+}
 
 rapidjson::Value strJSON(std::string str, rapidjson::Document::AllocatorType &allocator) {
     rapidjson::Value strVal;

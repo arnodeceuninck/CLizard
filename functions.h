@@ -9,6 +9,9 @@
 #include <vector>
 
 class State;
+class Production;
+
+bool inVector(Production* p, std::vector<Production*> productions);
 
 std::string toString(char c);
 std::string toString(std::vector<std::string> strings);
