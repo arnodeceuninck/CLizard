@@ -1,0 +1,2 @@
+The string "aaabb" is rejected.
+You can find the CYK-table in the file "output-cyk2-aaabb.txt.html".
