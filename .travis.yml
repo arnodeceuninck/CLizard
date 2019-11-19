@@ -7,6 +7,10 @@ compiler:
 
 # credits to Sam Legrand
 before_install:
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+  - sudo apt-get update
+  - sudo apt-get install gcc-7 g++-7
+  - gcc-7 --version
   - mkdir cmake-dist
   - travis_retry wget -qO- https://cmake.org/files/v3.15/cmake-3.15.1-Linux-x86_64.tar.gz | sudo tar --strip-components=1 -C cmake-dist -xz
   - export PATH=$PWD/cmake-dist/bin:$PATH;
