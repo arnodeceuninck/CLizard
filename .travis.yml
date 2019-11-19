@@ -9,13 +9,11 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-#    packages:
-#      - g++-7
+    packages:
+      - g++-7
 
 # credits to Sam Legrand
 before_install:
-  - sudo apt-get update
-  - sudo apt-get -y install g++-7 gcc7
   - mkdir cmake-dist
   - travis_retry wget -qO- https://cmake.org/files/v3.15/cmake-3.15.1-Linux-x86_64.tar.gz | sudo tar --strip-components=1 -C cmake-dist -xz
   - export PATH=$PWD/cmake-dist/bin:$PATH;
