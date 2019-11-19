@@ -10,7 +10,8 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-7
+#      - g++-7
+      - gcc-7
 
 # credits to Sam Legrand
 before_install:
