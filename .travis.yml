@@ -7,7 +7,7 @@ compiler:
 
 # credits to Sam Legrand
 before_install:
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update
   - sudo apt-get install gcc-7 g++-7
   - gcc-7 --version
