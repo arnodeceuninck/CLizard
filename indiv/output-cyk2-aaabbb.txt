@@ -1,0 +1,2 @@
+The string "aaabbb" is accepted.
+You can find the CYK-table in the file "output-cyk2-aaabbb.txt.html".

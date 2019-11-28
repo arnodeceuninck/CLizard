@@ -1,0 +1,16 @@
+
+Nonterminals: S, [pXp], [pZ0p], [pXq], [pZ0q], [qXp], [qZ0p], [qXq], [qZ0q]
+Terminals: 0, 1
+Productions: 
+	S -> [qZ0p]
+	S -> [qZ0q]
+	[qZ0p] -> 0[qXp]
+	[qZ0q] -> 0[qXq]
+	[qXp] -> 0[qXp][pXp]
+	[qXq] -> 0[qXp][pXq]
+	[qXp] -> 0[qXq][qXp]
+	[qXq] -> 0[qXq][qXq]
+	[qXp] -> 1
+	[pXp] -> 1
+Startsymbol: S
+
