@@ -1,0 +1,2 @@
+The string "abba" is rejected.
+You can find the CYK-table in the file "output-cyk1.txt.html".

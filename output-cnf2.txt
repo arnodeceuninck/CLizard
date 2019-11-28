@@ -1,0 +1,143 @@
+Start Grammar: 
+
+Nonterminals: A, B, C, D, S
+Terminals: a, b, c, d
+Productions: 
+	A -> aAb
+	A -> ab
+	B -> cBd
+	B -> cd
+	C -> aCd
+	C -> aDd
+	D -> bDc
+	D -> bc
+	S -> AB
+	S -> C
+Startsymbol: S
+
+Nullable symbols: 
+Eliminated epsilon productions: 
+
+Nonterminals: A, B, C, D, S
+Terminals: a, b, c, d
+Productions: 
+	A -> aAb
+	A -> ab
+	B -> cBd
+	B -> cd
+	C -> aCd
+	C -> aDd
+	D -> bDc
+	D -> bc
+	S -> AB
+	S -> C
+Startsymbol: S
+
+Unit pairs: (A, A), (B, B), (C, C), (D, D), (S, S), (S, C)
+Eliminated unit productions: 
+
+Nonterminals: A, B, C, D, S
+Terminals: a, b, c, d
+Productions: 
+	A -> aAb
+	A -> ab
+	B -> cBd
+	B -> cd
+	C -> aCd
+	C -> aDd
+	D -> bDc
+	D -> bc
+	S -> AB
+	S -> aCd
+	S -> aDd
+Startsymbol: S
+
+Generating symbols: a, b, c, d, A, B, C, D, S
+Eliminated non-generating symbols: 
+
+Nonterminals: A, B, C, D, S
+Terminals: a, b, c, d
+Productions: 
+	A -> aAb
+	A -> ab
+	B -> cBd
+	B -> cd
+	C -> aCd
+	C -> aDd
+	D -> bDc
+	D -> bc
+	S -> AB
+	S -> aCd
+	S -> aDd
+Startsymbol: S
+
+Reachable symbols: S, A, B, a, C, d, D, b, c
+Eliminated non-reachable symbols: 
+
+Nonterminals: A, B, C, D, S
+Terminals: a, b, c, d
+Productions: 
+	A -> aAb
+	A -> ab
+	B -> cBd
+	B -> cd
+	C -> aCd
+	C -> aDd
+	D -> bDc
+	D -> bc
+	S -> AB
+	S -> aCd
+	S -> aDd
+Startsymbol: S
+
+Fixed terminals in longer productions: 
+
+Nonterminals: A, B, C, D, S, E, F, G, H
+Terminals: a, b, c, d
+Productions: 
+	A -> EAF
+	A -> EF
+	B -> GBH
+	B -> GH
+	C -> ECH
+	C -> EDH
+	D -> FDG
+	D -> FG
+	S -> AB
+	S -> ECH
+	S -> EDH
+	E -> a
+	F -> b
+	G -> c
+	H -> d
+Startsymbol: S
+
+Splitted up longer bodies, final grammar: 
+
+Nonterminals: A, B, C, D, S, E, F, G, H, I, J, K, L, M, N, O
+Terminals: a, b, c, d
+Productions: 
+	A -> EF
+	B -> GH
+	D -> FG
+	S -> AB
+	E -> a
+	F -> b
+	G -> c
+	H -> d
+	A -> EI
+	I -> AF
+	B -> GJ
+	J -> BH
+	C -> EK
+	K -> CH
+	C -> EL
+	L -> DH
+	D -> FM
+	M -> DG
+	S -> EN
+	N -> CH
+	S -> EO
+	O -> DH
+Startsymbol: S
+

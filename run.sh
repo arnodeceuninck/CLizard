@@ -17,10 +17,10 @@
 
 # CYK: de output bestaat uit de resulterende tabel, niet in dot formaat, bv in html en de conclusie van CYK
 # de input bestaat uit de cfg en de gegeven inputstring
-./indiv cyk input-cyk1.json baaba output-cyk1.txt
-./indiv cyk input-cyk1.json abba output-cyk1.txt
-./indiv cyk input-cyk2.json aaabb output-cyk2.txt
-./indiv cyk input-cyk2.json aaabbb output-cyk2.txt
+./indiv cyk input-cyk1.json baaba output-cyk1-baaba.txt
+./indiv cyk input-cyk1.json abba output-cyk1-abba.txt
+./indiv cyk input-cyk2.json aaabb output-cyk2-aaabb.txt
+./indiv cyk input-cyk2.json aaabbb output-cyk2-aaabbb.txt
 
 # LL1: de output bestaat uit de resulterende parse table, niet in dot, bv in html, tonen van First en Follow sets
 ./indiv ll input-ll1.json output-ll1.txt
