@@ -8,6 +8,7 @@
 #include <string>
 
 char getEPSILON();
+std::string getMarker();
 
 #endif //MB_CONST_H
 

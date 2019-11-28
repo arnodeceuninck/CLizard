@@ -89,7 +89,10 @@ string Graph::to_string() {
     for(vector<Connection>::iterator connection = connections.begin(); connection != connections.end(); ++connection){
         str += connection->to_string() + "\n";
     }
-    str += "rankdir=LR\n}";
+    if(rankdir.empty()){
+        rankdir = "LR";
+    }
+    str += "rankdir=" + rankdir + "\n}";
     return str;
 }
 
@@ -103,4 +106,8 @@ void Graph::build_file(string filename) {
     // Source: http://www.cplusplus.com/reference/cstdlib/system/
     const string command = "dot -Tpng " + filename + " -o " + filename + ".png";
     system(command.c_str());
+}
+
+void Graph::setRankdir(const string &rankdir) {
+    Graph::rankdir = rankdir;
 }

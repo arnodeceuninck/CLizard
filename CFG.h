@@ -10,6 +10,8 @@
 #include <string>
 #include "rapidjson/pointer.h"
 #include "const.h"
+//#include "GLRParser.h"
+
 
 rapidjson::Value strJSON(std::string str, rapidjson::Document::AllocatorType &allocator);
 
@@ -20,6 +22,8 @@ public:
     const std::string &getFromP() const;
 
     const std::vector<std::string> &getToP() const;
+
+    bool operator ==(const Production& p);
 
 private:
     std::string fromP;
@@ -36,15 +40,28 @@ public:
     void toJSON(std::string filename);
 
     void toCNF();
-    bool toCYK(std::string strToEvaluate, std::string& htmlOutput);
+
+    bool toCYK(std::string strToEvaluate, std::string &htmlOutput);
+
+    void toLRParser();
 
     void printReadable();
+
+    const std::vector<std::string> &getNonTerminalsV() const;
+
+    const std::vector<std::string> &getTerminalsT() const;
+
+    const std::vector<Production *> &getProductionsP() const;
+
+    const std::string &getStartS() const;
 
 private:
     std::vector<std::string> nonTerminalsV;
     std::vector<std::string> terminalsT;
     std::vector<Production *> productionsP;
     std::string startS;
+
+private:
 
     void eliminateUselessSymbols();
 
@@ -68,7 +85,7 @@ private:
 
     void eliminateUnitProductions();
 
-    bool expandUnitPairs(std::vector<std::pair<std::string, std::string>>& unitPairs);
+    bool expandUnitPairs(std::vector<std::pair<std::string, std::string>> &unitPairs);
 
     std::vector<std::vector<std::string>> findProductionsForVariable(std::string productionFrom);
 
@@ -82,7 +99,7 @@ private:
 
     std::string findNewUnusedVariableLetter();
 
-    bool findVariable(std::string& var, std::vector<std::string> productionTo);
+    bool findVariable(std::string &var, std::vector<std::string> productionTo);
 
     std::vector<std::string> findVariables(std::vector<std::string> productionTo);
 
@@ -90,7 +107,7 @@ private:
     std::vector<std::string>
     findProductionsInCYK(int startSubStr, int endSubStr, std::vector<std::vector<std::vector<std::string>>> &cykTable);
 
-    std::vector<std::string> findAtoBCproductions(std::vector<std::string>& B, std::vector<std::string>& C);
+    std::vector<std::string> findAtoBCproductions(std::vector<std::string> &B, std::vector<std::string> &C);
 
     std::string rowHtmlString(std::vector<std::vector<std::string>> vector);
 
@@ -102,7 +119,6 @@ private:
 
     std::vector<Production *> removeDoubleProductions(std::vector<Production *> productions);
 };
-
 
 void readJson(std::string filename,
               std::vector<std::string> &nonTerminalsV,

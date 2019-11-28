@@ -68,7 +68,7 @@ std::vector<std::string> vectorUnion(const std::vector<std::string> &a, const st
     return vecUnion;
 }
 
-bool inVector(Production *p, std::vector<Production *> productions) {
+bool inVector(const Production *p,const std::vector<Production *> &productions) {
     for (auto prod: productions) {
         if (prod->getFromP() == p->getFromP() && prod->getToP() == p->getToP()) {
             return true;
@@ -76,3 +76,4 @@ bool inVector(Production *p, std::vector<Production *> productions) {
     }
     return false;
 }
+

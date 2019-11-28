@@ -3,6 +3,7 @@
 
 #include "PDA.h"
 #include "CFG.h"
+#include "GLRParser.h"
 
 int main(int argc, char *argv[]) {
 
@@ -124,6 +125,35 @@ int main(int argc, char *argv[]) {
         file.open(outputHtmlFile);
         file << html;
         file.close();
+
+    } else if (type == "lr"){
+        // Example arguments: lr AppendixA.json LRoutput.txt zazabzbz
+
+        std::string inputFile = argv[2];
+
+        std::vector<std::string> nonTerminalsV;
+        std::vector<std::string> terminalsT;
+        std::vector<Production *> productionsP;
+        std::string startS;
+
+        readJson(inputFile, nonTerminalsV, terminalsT, productionsP, startS);
+
+        CFG* cfg = new CFG(nonTerminalsV, terminalsT, productionsP, startS);
+
+        std::string outputFile = argv[3];
+
+        // Source: Nawaz (2012). How to redirect cin and cout to files. Visited on November 11, 2019 via https://stackoverflow.com/questions/10150468/how-to-redirect-cin-and-cout-to-files.
+        std::ofstream out(outputFile);
+        std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+        std::cout.rdbuf(out.rdbuf()); //redirect std::cout to outputFile!
+
+        GLRParser* glrParser = new GLRParser(cfg);
+
+        if(argc > 4){
+            glrParser->parseString(argv[4]);
+        }
+
+        std::cout.rdbuf(coutbuf); //reset to standard output again
 
     } else {
         std::cerr << "Type \"" << type << "\" not supported." << std::endl;

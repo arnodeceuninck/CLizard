@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -27,6 +28,10 @@ const std::vector<std::string> &Production::getToP() const {
 
 void Production::setToP(const std::vector<std::string> &toP) {
     Production::toP = toP;
+}
+
+bool Production::operator==(const Production &p) {
+    return p.getFromP() == fromP && p.getToP() == toP;
 }
 
 CFG::CFG(const std::vector<std::string> &nonTerminalsV, const std::vector<std::string> &terminalsT,
@@ -690,14 +695,36 @@ std::vector<std::vector<bool>> CFG::filterAll0orAll1(std::vector<std::vector<boo
 }
 
 std::vector<Production *> CFG::removeDoubleProductions(std::vector<Production *> productions) {
-    std::vector<Production* > newProductions = {};
-    for(auto prod: productions){
-        if(!inVector(prod, newProductions)){
+    std::vector<Production *> newProductions = {};
+    for (auto prod: productions) {
+        if (!inVector(prod, newProductions)) {
             newProductions.emplace_back(prod);
         }
     }
     return newProductions;
 }
+
+void CFG::toLRParser() {
+
+
+}
+
+const std::vector<std::string> &CFG::getNonTerminalsV() const {
+    return nonTerminalsV;
+}
+
+const std::vector<std::string> &CFG::getTerminalsT() const {
+    return terminalsT;
+}
+
+const std::vector<Production *> &CFG::getProductionsP() const {
+    return productionsP;
+}
+
+const std::string &CFG::getStartS() const {
+    return startS;
+}
+
 
 rapidjson::Value strJSON(std::string str, rapidjson::Document::AllocatorType &allocator) {
     rapidjson::Value strVal;

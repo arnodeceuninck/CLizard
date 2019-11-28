@@ -67,6 +67,10 @@ public:
 class Graph {
     vector<Node> nodes;
     vector<Connection> connections;
+    std::string rankdir;
+public:
+    void setRankdir(const string &rankdir);
+
 public:
     string to_string();
     void build_file(string filename);
