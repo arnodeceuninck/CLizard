@@ -514,13 +514,20 @@ bool GLRParser::parseString(std::string toParse) {
             }
         }
         possibleParseStacks = newPossibleParseStacks;
+        std::set<std::stack<std::string>> alreadyReducedStacks; // S -> a, S->ab, after input a, you only want one of the stacks to be reduced
         // Check the production rules in the new added stacks
         for (int i = 0; i < possibleParseStacks.size(); ++i) {
             const std::stack<std::string> stack = possibleParseStacks[i];
             GLRState *currentState = findState(stack.top());
-            checkProductionRules(possibleParseStacks, stack, currentState);
+            checkProductionRules(possibleParseStacks, stack, currentState, alreadyReducedStacks);
         }
-        // TODO: Reduce these stacks to filter out the duplicates
+
+        // TODO: if there are two identical stacks, remove one of them
+        for (int j = 0; j < possibleParseStacks.size(); ++j) {
+            if (std::count(possibleParseStacks.begin(), possibleParseStacks.end(), possibleParseStacks[j]) > 1) {
+                possibleParseStacks.erase(possibleParseStacks.begin() + j);
+            }
+        }
     }
 
     bool final = false;
@@ -539,7 +546,8 @@ bool GLRParser::parseString(std::string toParse) {
 void
 GLRParser::checkProductionRules(std::vector<std::stack<std::string>> &possibleParseStacks,
                                 const std::stack<std::string> &stack,
-                                const GLRState *currentState) {// Check for possible reduces
+                                const GLRState *currentState,
+                                std::set<std::stack<std::string>> alreadyReducedStacks) {// Check for possible reduces
 
     if (currentState->isAccepting()) {
 
@@ -547,8 +555,10 @@ GLRParser::checkProductionRules(std::vector<std::stack<std::string>> &possiblePa
 
         // Find the possible reduces
         for (auto prod: currentState->getProductions()) {
-            if (prod->getToP()[prod->getToP().size() - 1] == getMarker()) {
+            if (prod->getToP()[prod->getToP().size() - 1] == getMarker() &&
+                alreadyReducedStacks.find(stack) == alreadyReducedStacks.end()) {
                 parseOperations.insert(new ParseOperation(prod));
+                alreadyReducedStacks.insert(stack);
             }
         }
 
