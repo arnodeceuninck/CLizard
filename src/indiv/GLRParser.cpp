@@ -68,14 +68,31 @@ GLRParser::GLRParser(CFG *cfg) {
         GLRState *stateA;
         for (GLRState *glrState: states) {
             // TODO: Debug glrState->getName == "C"
-//            std::cout << glrState->getName() << " has " << glrState->getProdEstablished() << " of " << glrState->getProductions().size()  << " productions established."<< std::endl;
-            if (glrState->getProductions().size() <= glrState->getProdEstablished() or
-                glrState->getProdEstablished() < 0) {
+            std::cout << glrState->getName() << " has " << glrState->getProdEstablished().size() << " of " << glrState->getProductions().size()  << " productions established."<< std::endl;
+
+            // Debugzone:
+            if(glrState->getName() == "4"){
+                std::cout << "Reached 4" << std::endl;
+            }
+            if (glrState->getProductions().size() <= glrState->getProdEstablished().size()) {
                 continue;
             }
 
-            Production *production = *std::next(glrState->getProductions().begin(), glrState->getProdEstablished());
-            glrState->increaseEstablished();
+            auto productionItr = glrState->getProductions().begin();
+            Production* production;
+            while (true){
+                // Check whether the current production is already established
+                if(std::find(glrState->getProdEstablished().begin(), glrState->getProdEstablished().end(), *productionItr) == glrState->getProdEstablished().end()){
+                    production = *productionItr;
+                    glrState->increaseEstablished(production);
+                    break;
+                } else {
+                    // TODO: fix stuck in Moved loop
+//                    std::cerr << "Moved" << std::endl;
+                    productionItr++;
+                }
+            }
+
 
             s = symbolAfterMarker(production);
             // Marker at end
@@ -87,6 +104,7 @@ GLRParser::GLRParser(CFG *cfg) {
 
         }
         if (s.empty()) {
+            std::cout << "No more found." << std::endl;
             break;
         }
 
@@ -302,7 +320,6 @@ const std::set<GLRTransition *> &GLRState::getStatesTo() const {
 
 GLRState::GLRState(const std::string &name, const std::set<Production *> &productions) : name(name),
                                                                                          productions(productions),
-                                                                                         prodEstablished(0),
                                                                                          accepting(false) {
 //    prodEstablished = productions.size();
 }
@@ -320,12 +337,9 @@ void GLRState::setAccepting(bool accepting) {
     GLRState::accepting = accepting;
 }
 
-int GLRState::getProdEstablished() const {
-    return prodEstablished;
-}
 
-void GLRState::increaseEstablished() {
-    prodEstablished += 1;
+void GLRState::increaseEstablished(Production* prod) {
+    prodEstablished.insert(prod);
 }
 
 std::set<GLRState *> GLRState::statesOnInput(std::string input) {
@@ -336,6 +350,10 @@ std::set<GLRState *> GLRState::statesOnInput(std::string input) {
         }
     }
     return statesOnInp;
+}
+
+const set<Production *> &GLRState::getProdEstablished() const {
+    return prodEstablished;
 }
 
 void GLRParser::addState(GLRState *s) {

@@ -60,13 +60,14 @@ public:
 class GLRState {
     std::string name;
     bool accepting;
-    int prodEstablished;
+    std::set<Production*> prodEstablished;
+public:
+    const std::set<Production *> &getProdEstablished() const;
+
 public:
     std::set<GLRState *> statesOnInput(std::string input);
 
-    int getProdEstablished() const;
-
-    void increaseEstablished();
+    void increaseEstablished(Production* prod);
 
 public:
     bool isAccepting() const;
