@@ -130,7 +130,7 @@ private:
     void
     checkProductionRules(std::vector<std::stack<std::string>> &possibleParseStacks,
                          const std::stack<std::string> &stack,
-                         const GLRState *currentState, std::set<std::stack<std::string>> set);
+                         const GLRState *currentState, std::set<std::pair<std::stack<std::string>, Production *>> set);
 };
 
 template<class T>
