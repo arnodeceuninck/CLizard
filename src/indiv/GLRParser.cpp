@@ -532,13 +532,11 @@ bool GLRParser::parseString(std::string toParse) {
 
     bool final = false;
     for (auto stack: possibleParseStacks) {
+        // TODO: Check: is it always the case when top == 1, the string is accepted?
         if (stack.top() == "1") {
-            stack.pop();
-            if (stack.top() == "1" && stack.size() == 1) {
                 final = true;
                 std::cout << "String accepted." << std::endl;
             }
-        }
     }
     return final;
 }
