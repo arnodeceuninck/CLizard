@@ -66,14 +66,15 @@ GLRParser::GLRParser(CFG *cfg) {
         //     some established state A.
         std::string s;
         GLRState *stateA;
-        for (GLRState *glrState: states) {
+        for (int i = 0; i < states.size(); ++i) {
+            // Get the i-th element
+            auto glrStateItr = states.begin();
+            std::advance(glrStateItr, i);
+            GLRState* glrState = *glrStateItr;
+
             // TODO: Debug glrState->getName == "C"
             std::cout << glrState->getName() << " has " << glrState->getProdEstablished().size() << " of " << glrState->getProductions().size()  << " productions established."<< std::endl;
 
-            // Debugzone:
-            if(glrState->getName() == "4"){
-                std::cout << "Reached 4" << std::endl;
-            }
             if (glrState->getProductions().size() <= glrState->getProdEstablished().size()) {
                 continue;
             }
@@ -97,6 +98,7 @@ GLRParser::GLRParser(CFG *cfg) {
             s = symbolAfterMarker(production);
             // Marker at end
             if (s == "") {
+                i--;
                 continue;
             }
             stateA = glrState;
@@ -104,7 +106,7 @@ GLRParser::GLRParser(CFG *cfg) {
 
         }
         if (s.empty()) {
-            std::cout << "No more found." << std::endl;
+//            std::cout << "No more found." << std::endl;
             break;
         }
 
@@ -468,71 +470,6 @@ void GLRParser::printTable() {
         std::cout << endl;
     }
 }
-
-//// ParseString using the map parseTable
-//bool GLRParser::parseString(std::string toParse) {
-//
-//    std::set<std::stack<std::string>> possibleParseStacks;
-//
-//    std::stack<std::string> startStack;
-//    startStack.push(startState->getName());
-//    possibleParseStacks.insert(startStack);
-//
-//    for (auto c: toParse) {
-//        std::set<std::stack<std::string>> newPossibleParseStacks;
-//        for (auto &stack: possibleParseStacks) {
-//
-//            GLRState *currentState = findState(stack.top());
-//
-//            std::pair<std::string, GLRState *> searchKey{toString(c), currentState};
-//            std::set<ParseOperation *> parseOperations = parseTable[searchKey];
-//
-//            for (auto parseOperation: parseOperations) {
-//
-//                std::stack<std::string> newStack = stack;
-//
-//                if (parseOperation->getOperationType() == ParseOperation::shift) {
-//                    newStack.push(toString(c));
-//                    newStack.push(parseOperation->getNewState()->getName());
-//                    newPossibleParseStacks.insert(newStack);
-//                } else if (parseOperation->getOperationType() == ParseOperation::reduce) {
-//                    for (int i = 0; i < parseOperation->getReduceProduction()->getToP().size() - 1; ++i) {
-//                        // pop all elements from the stack (exclude the marker)
-//                        newStack.pop(); // pop the state marker
-//                        newStack.pop(); // pop the string element
-//                    }
-//                    GLRState *currentTopState = findState(newStack.top());
-//                    std::string newVariable = parseOperation->getReduceProduction()->getFromP();
-//
-//                    newStack.push(newVariable);
-//
-//                    std::pair<std::string, GLRState *> searchKeyb{newVariable, currentTopState};
-//                    std::set<ParseOperation *> parseOperationsb = parseTable[searchKey];
-//
-//                    for (auto stackOp: parseOperationsb) {
-//                        std::stack<std::string> newNewStack = newStack;
-//                        newNewStack.push(stackOp->getNewState()->getName());
-//                        newPossibleParseStacks.insert(newNewStack);
-//                    }
-//
-//                } else {
-//                    continue; // Don't push the stack back
-//                }
-//
-//            }
-//
-//        }
-//        possibleParseStacks = newPossibleParseStacks; // TODO: Reduce these stacks to filter out the duplicates
-//    }
-//
-//    bool final = false;
-//    for (auto stack: possibleParseStacks) {
-//        if (findState(stack.top())->isAccepting()) {
-//            final = true;
-//        }
-//    }
-//    return final;
-//}
 
 // ParseString using the transition scheme
 bool GLRParser::parseString(std::string toParse) {
