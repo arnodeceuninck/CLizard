@@ -11,6 +11,8 @@
 #include <map>
 #include <stack>
 #include "CFG.h"
+#include "ASTree.h"
+#include <queue>
 
 class CFG;
 
@@ -98,7 +100,7 @@ public:
 
     void printTable();
 
-    bool parseString(std::string toParse);
+    std::set<std::stack<Production *>> parseString(std::string toParse);
 
 private:
     std::vector<std::string> nonTerminalsV;
@@ -125,12 +127,15 @@ private:
 
     std::set<ParseOperation *> findParseOptions(std::string inputChar, const GLRState *currentState) const;
 
-    void printStackSet(const std::vector<std::stack<std::string>> &possibleParseStacks) const;
+    void
+    printStackSet(std::vector<std::pair<std::stack<std::string>, std::stack<Production *>>> possibleParseStacks) const;
 
     void
-    checkProductionRules(std::vector<std::stack<std::string>> &possibleParseStacks,
+    checkProductionRules(std::vector<std::pair<std::stack<std::string>, std::stack<Production *>>> &possibleParseStacks,
                          const std::stack<std::string> &stack,
-                         const GLRState *currentState, std::set<std::pair<std::stack<std::string>, Production *>> set);
+                         std::stack<Production *> productions,
+                         const GLRState *currentState,
+                         std::set<std::pair<std::stack<std::string>, Production *>> &alreadyReduced);
 };
 
 template<class T>
