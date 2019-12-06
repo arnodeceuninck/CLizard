@@ -2,6 +2,8 @@
 
 import re  # Source: https://stackoverflow.com/questions/3368969/find-string-between-two-substrings
 
+charactersToEscape = ["\"", "\\"]  # A list of all characters that need an \ in front of them in json
+
 
 class Production:
     fromV = ""
@@ -49,11 +51,13 @@ for line in html:
 
     # Check end of production to
     elif '</td>' in line:
-        production = Production()
-        production.fromV = lastReadRuleFrom
-        production.toV = currentProductionTo
-        productions.add(production)
-        currentProductionTo = []
+        if currentProductionTo:
+            # Only add it when currentProductionTo is not empty
+            production = Production()
+            production.fromV = lastReadRuleFrom
+            production.toV = currentProductionTo
+            productions.add(production)
+            currentProductionTo = []
 
     # Check for the exceptions
     elif 'class="Description"' in line:
@@ -96,23 +100,32 @@ for line in html:
         elif lastReadRuleFrom == "h-char":
             # any member of the source character set except new-line and &gt;
             continue
-        elif lastReadRuleFrom == "preprocessing-op-or-punc":
+        elif lastReadRuleFrom == "preprocessing-token":
             # each non-white-space character that cannot be one of the above
             continue
 html.close()
+
+def addJsonStr(variable):
+    string = "\""
+    for char in variable:
+        if char in charactersToEscape:
+            string += "\\"
+        string += char
+    string += "\"" + ", "
+    return string
 
 jsonstr = "{"
 
 jsonstr += "\"Variables\": ["
 for variable in nonTerminals:
-    jsonstr += "\"" + variable + "\"" + ", "
-jsonstr = jsonstr[:-1]  # Remove the last ,
+    jsonstr += addJsonStr(variable)
+jsonstr = jsonstr[:-2]  # Remove the last ,
 jsonstr += "],"
 
 jsonstr += "\"Terminals\": ["
 for terminal in terminals:
-    jsonstr += "\"" + terminal + "\"" + ", "
-jsonstr = jsonstr[:-1]  # Remove the last ,
+    jsonstr += addJsonStr(terminal)
+jsonstr = jsonstr[:-2]  # Remove the last ,
 jsonstr += "],"
 
 jsonstr += "\"Productions\": ["
@@ -120,16 +133,16 @@ for production in productions:
     jsonstr += "{"
 
     jsonstr += "\"head\": "
-    jsonstr += "\"" + production.fromV + "\"" + ", "
+    jsonstr += addJsonStr(production.fromV)
 
     jsonstr += "\"body\": ["
     for productionTo in production.toV:
-        jsonstr += "\"" + productionTo + "\"" + ", "
-    jsonstr = jsonstr[:-1]  # Remove the last ,
+        jsonstr += addJsonStr(productionTo)
+    jsonstr = jsonstr[:-2]  # Remove the last ,
     jsonstr += "]"
 
     jsonstr += "}, "
-jsonstr = jsonstr[:-1]  # Remove the last ,
+jsonstr = jsonstr[:-2]  # Remove the last ,
 jsonstr += "],"
 
 jsonstr += "\"Start\": \"translation-unit\""  # TODO: Maybe translation-unit and pre-processing file both
