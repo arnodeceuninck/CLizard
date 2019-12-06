@@ -19,7 +19,15 @@ class ASTree {
     std::vector<ASTree *> subtrees;
     std::string root;
 
+    ASTree *parent;
+public:
+    ASTree *getParent() const;
+
+private:
+
     void expandDot(Graph &g);
+
+    std::string dotName(ASTree *ast);
 
 public:
     std::string yield();
@@ -28,7 +36,8 @@ public:
     // The yield determines the string, e.g. if production Variable is a "function", yield gives the contents of this function
     // Terminal if subtrees is empty, it's a terminal, else a variable
 public:
-    ASTree(std::stack<Production *> &productions, const std::set<std::string> &nonTerminals, std::string newRoot);
+    ASTree(std::stack<Production *> &productions, const std::set<std::string> &nonTerminals, std::string newRoot,
+           ASTree *parent);
 };
 
 

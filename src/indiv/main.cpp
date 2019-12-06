@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
                             nonTerminals.insert(str);
                         }
                         std::stack<Production *> productions = *(parsedVersions.begin());
-                        ASTree ast{productions, nonTerminals, productions.top()->getFromP()};
+                        ASTree ast{productions, nonTerminals, productions.top()->getFromP(), nullptr};
                         ast.toDot(argv[5]);
                     }
             }
