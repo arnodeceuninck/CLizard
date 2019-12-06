@@ -16,22 +16,6 @@ ASTree::ASTree(std::stack<Production *> &productions, const std::set<std::string
     Production *production = productions.top();
     productions.pop();
 
-    bool containsNonTerminals = false;
-    for (const auto &character: production->getToP()) {
-        if (nonTerminals.find(character) != nonTerminals.end()) {
-            containsNonTerminals = true;
-            break;
-        }
-    }
-
-    if (!containsNonTerminals) {
-        for (const auto &prod: production->getToP()) {
-            if(prod == getMarker()){ continue; }
-            subtrees.push_back(new ASTree(productions, nonTerminals, prod, this));
-        }
-        return;
-    }
-
 //    root = production->getFromP();
 
     int totProd = production->getToP().size();
@@ -45,6 +29,9 @@ ASTree::ASTree(std::stack<Production *> &productions, const std::set<std::string
 
         if (nonTerminals.find(prodToJ) != nonTerminals.end()) {
             subtrees.insert(subtrees.begin(), new ASTree(productions, nonTerminals, prodToJ, this));
+        } else {
+            std::stack<Production *> emptyStack;
+            subtrees.insert(subtrees.begin(), new ASTree(emptyStack, nonTerminals, prodToJ, this));
         }
     }
 
@@ -65,6 +52,7 @@ std::string ASTree::yield() {
 
 void ASTree::toDot(std::string filename) {
     Graph graph = Graph();
+    graph.setRankdir("TB");
     expandDot(graph);
     graph.build_file(filename);
 }
