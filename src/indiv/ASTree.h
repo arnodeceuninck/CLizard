@@ -16,12 +16,14 @@ class Production;
 class ASTree {
     std::vector<ASTree *> subtrees;
     std::string root;
+public:
+    std::string yield();
 
-    ASTree(std::stack<Production *> &productions, const std::set<std::string> &nonTerminals);
-
-    ASTree(std::string root);
+    void toDot(std::string filename);
     // The yield determines the string, e.g. if production Variable is a "function", yield gives the contents of this function
     // Terminal if subtrees is empty, it's a terminal, else a variable
+public:
+    ASTree(std::stack<Production *> &productions, const std::set<std::string> &nonTerminals, std::string newRoot);
 };
 
 

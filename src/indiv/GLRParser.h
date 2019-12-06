@@ -104,6 +104,10 @@ public:
 
 private:
     std::vector<std::string> nonTerminalsV;
+public:
+    const std::vector<std::string> &getNonTerminalsV() const;
+
+private:
     std::vector<std::string> terminalsT;
 
     void buildTable(); // Converts the states to the parseTable variable

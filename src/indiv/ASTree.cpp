@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-ASTree::ASTree(std::stack<Production *> &productions, const std::set<std::string> &nonTerminals) {
+ASTree::ASTree(std::stack<Production *> &productions, const std::set<std::string> &nonTerminals, std::string newRoot) : root(newRoot) {
 
     if (productions.empty()) { return; }
 
@@ -24,19 +24,43 @@ ASTree::ASTree(std::stack<Production *> &productions, const std::set<std::string
 
     if (!containsNonTerminals) {
         for (const auto &prod: production->getToP()) {
-            subtrees.push_back(new ASTree(prod));
+            if(prod == getMarker()){ continue; }
+            subtrees.push_back(new ASTree(productions, nonTerminals, prod));
         }
         return;
     }
 
-    root = production->getFromP();
+//    root = production->getFromP();
 
-    for (int j = 0; j < production->getToP().size(); ++j) {
-        subtrees.insert(subtrees.begin(), new ASTree(productions, nonTerminals));
+    int totProd = production->getToP().size();
+    for (int j = 0; j < totProd; ++j) {
+
+        std::string prodToJ = production->getToP()[totProd-j-1];
+
+        if(prodToJ == getMarker()){
+            continue;
+        }
+
+        if (nonTerminals.find(prodToJ) != nonTerminals.end()) {
+            subtrees.insert(subtrees.begin(), new ASTree(productions, nonTerminals, prodToJ));
+        }
     }
 
     return;
 }
 
-ASTree::ASTree(std::string root) : root(std::move(root)) {
+std::string ASTree::yield() {
+    if(subtrees.size() == 0){
+        // terminal
+        return root;
+    }
+    std::string yield;
+    for(auto subtree: subtrees){
+        yield += subtree->yield();
+    }
+    return yield;
+}
+
+void ASTree::toDot(std::string filename) {
+
 }

@@ -649,6 +649,10 @@ GLRState *GLRParser::findState(std::string stateName) {
     return nullptr;
 }
 
+const vector<std::string> &GLRParser::getNonTerminalsV() const {
+    return nonTerminalsV;
+}
+
 GLRTransition::GLRTransition(const std::string &label, GLRState *stateTo) : label(label), stateTo(stateTo) {}
 
 const string &GLRTransition::getLabel() const {

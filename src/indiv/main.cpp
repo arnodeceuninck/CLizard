@@ -150,7 +150,22 @@ int main(int argc, char *argv[]) {
         GLRParser* glrParser = new GLRParser(cfg);
 
         if(argc > 4){
-            glrParser->parseString(argv[4]);
+            std::set<std::stack<Production *>> parsedVersions = glrParser->parseString(argv[4]);
+            switch (parsedVersions.size()) {
+                case 0:
+                    std::cerr << "Error parsing: Code has ambiguities" << std::endl;
+                    break;
+                case 1:
+                    if (argc > 5) {
+                        std::set<std::string> nonTerminals;
+                        for (auto str: glrParser->getNonTerminalsV()) {
+                            nonTerminals.insert(str);
+                        }
+                        std::stack<Production *> productions = *(parsedVersions.begin());
+                        ASTree ast{productions, nonTerminals, productions.top()->getFromP()};
+                        std::cout << ast.yield() << std::endl;
+                    }
+            }
         }
 
         std::cout.rdbuf(coutbuf); //reset to standard output again
