@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
             std::set<std::stack<Production *>> parsedVersions = glrParser->parseString(argv[4]);
             switch (parsedVersions.size()) {
                 case 0:
-                    std::cerr << "Error parsing: Code has ambiguities" << std::endl;
+                    std::cerr << "Error parsing: Incorrect code" << std::endl;
                     break;
                 case 1:
                     if (argc > 5) {
@@ -165,6 +165,9 @@ int main(int argc, char *argv[]) {
                         ASTree ast{productions, nonTerminals, productions.top()->getFromP(), nullptr};
                         ast.toDot(argv[5]);
                     }
+                    break;
+                default:
+                    std::cerr << "Error parsing: Code has ambiguities" << std::endl;
             }
         }
 

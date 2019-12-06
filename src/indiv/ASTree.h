@@ -17,6 +17,12 @@ class Production;
 
 class ASTree {
     std::vector<ASTree *> subtrees;
+public:
+    const vector<ASTree *> &getSubtrees() const;
+
+    const string &getRoot() const;
+
+private:
     std::string root;
 
     ASTree *parent;

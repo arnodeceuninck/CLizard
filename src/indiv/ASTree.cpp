@@ -80,28 +80,36 @@ void ASTree::expandDot(Graph &graph) {
 
         std::string nameSub = dotName(subtree);
 
-        graph.addConnection(Connection(name, nameSub, "yeet"));
+        graph.addConnection(Connection(name, nameSub, ""));
 
         subtree->expandDot(graph);
     }
 }
 
 std::string ASTree::dotName(ASTree *ast) {
-    // Source: https://stackoverflow.com/questions/7850125/convert-this-pointer-to-string
-    const void *address = static_cast<const void *>(ast);
-    std::stringstream ss;
-    ss << address;
-    std::string name = ss.str();
-
-    unsigned int x;
-    std::stringstream ss2;
-    ss2 << std::hex << name;
-    ss2 >> x;
-
-    std::string nameNum = std::to_string(x);
-    return nameNum;
+    // This generates an unique identifier
+    if (!ast->getParent()) {
+        return "T";
+    } else {
+        auto subtreesParent = ast->getParent()->getSubtrees();
+        int j;
+        for (j = 0; j < subtreesParent.size(); ++j) {
+            if (subtreesParent[j] == ast) {
+                break;
+            }
+        }
+        return dotName(ast->parent) + std::to_string(j) + "N";
+    }
 }
 
 ASTree *ASTree::getParent() const {
     return parent;
+}
+
+const vector<ASTree *> &ASTree::getSubtrees() const {
+    return subtrees;
+}
+
+const string &ASTree::getRoot() const {
+    return root;
 }
