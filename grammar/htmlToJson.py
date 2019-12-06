@@ -1,8 +1,14 @@
 # Created by Arno on 02/12/2019
 
-import re  # Source: https://stackoverflow.com/questions/3368969/find-string-between-two-substrings
+# Source: https://stackoverflow.com/questions/3368969/find-string-between-two-substrings
+import re
+
+# Source: https://stackoverflow.com/questions/54059917/generate-all-length-n-permutations-of-true-false
+import itertools
 
 charactersToEscape = ["\"", "\\"]  # A list of all characters that need an \ in front of them in json
+uniqueTag = "#715585#"  # Random number to ensure this is unique and not accidentally in the code
+optionalTag = "#OPTIONAL" + uniqueTag
 
 
 class Production:
@@ -11,13 +17,11 @@ class Production:
 
 
 html = open("Hyperlinked C++ BNF Grammar.html")
-
-optionalTag = "#OPTIONAL#715585#"  # Random number to ensure this is unique and not accidentally in the code
-
+# html = open("test.html")
 terminals = set()
 nonTerminals = set()
 
-productions = set()
+productions = []
 
 lastReadRuleFrom = ""
 currentProductionTo = []
@@ -37,7 +41,7 @@ for line in html:
         nonTerminalSymbol = nonTerminalSymbolWithTags.group(1)
         nonTerminals.add(nonTerminalSymbol)
         if '<sub>opt</sub>' in line:
-            nonTerminalSymbol = optionalTag + nonTerminalSymbol  # TODO: filter out all optional
+            currentProductionTo.append(optionalTag)  # TODO: filter out all optional
         currentProductionTo.append(nonTerminalSymbol)
 
     # Check production to element terminal
@@ -46,7 +50,7 @@ for line in html:
         terminalSymbol = terminalSymbolWithTags.group(1)
         terminals.add(terminalSymbol)
         if '<sub>opt</sub>' in line:
-            nonTerminalSymbol = optionalTag + terminalSymbol
+            currentProductionTo.append(optionalTag)
         currentProductionTo.append(terminalSymbol)
 
     # Check end of production to
@@ -56,7 +60,7 @@ for line in html:
             production = Production()
             production.fromV = lastReadRuleFrom
             production.toV = currentProductionTo
-            productions.add(production)
+            productions.append(production)
             currentProductionTo = []
 
     # Check for the exceptions
@@ -105,6 +109,58 @@ for line in html:
             continue
 html.close()
 
+# Remove all OPTIONALTAGS (by generating all combinations with/without them
+for production in productions:
+    if optionalTag in production.toV:
+        occurances = production.toV.count(optionalTag)
+        combinations = list(itertools.product([False, True], repeat=occurances))
+        for combination in combinations:
+
+            newProduction = Production()
+            newProduction.fromV = production.fromV
+            newProduction.toV = []
+
+            optionalTagNr = 0
+            optionalel = False
+            for prodTo in production.toV:
+                if prodTo == optionalTag:
+                    optionalel = True
+                elif optionalel:
+                    if combination[optionalTagNr]:
+                        newProduction.toV.append(prodTo)
+                    optionalel = False
+                else:
+                    newProduction.toV.append(prodTo)
+
+            productions.append(newProduction)
+
+i = 0
+while i < len(productions):
+    prod = productions[i]
+    if optionalTag in prod.toV:
+        productions.pop(i)
+    else:
+        i += 1
+
+
+# TODO: Do this in the parser
+# The c++ parser only supports terminals of one char -> split up any terminal that is more than one char
+# i = 0
+# newTerminals = set()
+# for terminal in terminals:
+#     if len(terminal) > 1:
+#         # TODO: Should I remove the original production here? -> only if it gives problems
+#         newVar = composedTerminal + str(i) + "#"
+#         i += 1
+#         production = Production()
+#         production.fromV = newVar
+#         for char in terminal:
+#             production.toV.append(char)
+#             newTerminals.add(char)
+#         productions.add(production)
+# for terminal in newTerminals:
+#     terminals.add(terminal)
+
 def addJsonStr(variable):
     string = "\""
     for char in variable:
@@ -114,18 +170,19 @@ def addJsonStr(variable):
     string += "\"" + ", "
     return string
 
+
 jsonstr = "{"
 
 jsonstr += "\"Variables\": ["
 for variable in nonTerminals:
     jsonstr += addJsonStr(variable)
-jsonstr = jsonstr[:-2]  # Remove the last ,
+if nonTerminals: jsonstr = jsonstr[:-2]  # Remove the last ,
 jsonstr += "],"
 
 jsonstr += "\"Terminals\": ["
 for terminal in terminals:
     jsonstr += addJsonStr(terminal)
-jsonstr = jsonstr[:-2]  # Remove the last ,
+if terminals: jsonstr = jsonstr[:-2]  # Remove the last ,
 jsonstr += "],"
 
 jsonstr += "\"Productions\": ["
@@ -138,11 +195,11 @@ for production in productions:
     jsonstr += "\"body\": ["
     for productionTo in production.toV:
         jsonstr += addJsonStr(productionTo)
-    jsonstr = jsonstr[:-2]  # Remove the last ,
+    if production.toV: jsonstr = jsonstr[:-2]  # Remove the last ,
     jsonstr += "]"
 
     jsonstr += "}, "
-jsonstr = jsonstr[:-2]  # Remove the last ,
+if productions: jsonstr = jsonstr[:-2]  # Remove the last ,
 jsonstr += "],"
 
 jsonstr += "\"Start\": \"translation-unit\""  # TODO: Maybe translation-unit and pre-processing file both
