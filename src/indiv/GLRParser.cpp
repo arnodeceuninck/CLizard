@@ -16,6 +16,7 @@ GLRParser::GLRParser(CFG *cfg) {
 
     nonTerminalsV = cfg->getNonTerminalsV();
     terminalsT = cfg->getTerminalsT();
+    // TODO: fix all terminals only 1 char
     std::vector<Production *> productionsP = cfg->getProductionsP();
     std::string startS = cfg->getStartS();
 
@@ -72,8 +73,7 @@ GLRParser::GLRParser(CFG *cfg) {
             std::advance(glrStateItr, i);
             GLRState* glrState = *glrStateItr;
 
-            // TODO: Debug glrState->getName == "C"
-            std::cout << glrState->getName() << " has " << glrState->getProdEstablished().size() << " of " << glrState->getProductions().size()  << " productions established."<< std::endl;
+//            std::cout << glrState->getName() << " has " << glrState->getProdEstablished().size() << " of " << glrState->getProductions().size()  << " productions established."<< std::endl;
 
             if (glrState->getProductions().size() <= glrState->getProdEstablished().size()) {
                 continue;
@@ -157,8 +157,8 @@ GLRParser::GLRParser(CFG *cfg) {
 
         // e. Draw an arc labeled s from state A to closure of Y
         stateA->addStateTo(closureY, s);
-//        std::string filename = "debug/yeet" + var + ".dot";
-//        toDot(filename);
+        std::string filename = "output/yeet" + var + ".dot";
+        toDot(filename);
     }
 
     // 3. Let each state represented by marked rules in terminal form be accept states in the automaton.
@@ -175,7 +175,7 @@ GLRParser::GLRParser(CFG *cfg) {
         }
     }
 
-    toDot("GLRParserTransitionScheme.dot");
+    toDot("output/GLRParserTransitionScheme.dot");
 //    buildTable();
 //    printTable();
 }

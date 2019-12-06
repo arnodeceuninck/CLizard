@@ -36,12 +36,13 @@ for line in html:
         betweenTags = ruleColumn.group(1)
         rule = betweenTags[:-1]  # Remove the ":" at the end
         lastReadRuleFrom = rule
+        nonTerminals.add(rule);
 
     # Check production to element non-terminal
     elif 'class="NonTerminalSymbol"' in line:
         nonTerminalSymbolWithTags = re.search(">(.*)</a>", line)  # <b>ProductionFrom:</b>
         nonTerminalSymbol = nonTerminalSymbolWithTags.group(1)
-        nonTerminals.add(nonTerminalSymbol)
+        # nonTerminals.add(nonTerminalSymbol) # TOCHECK: Is this required, since we already add all rulecolumns
         if '<sub>opt</sub>' in line:
             currentProductionTo.append(optionalTag)  # TODO: filter out all optional
         currentProductionTo.append(nonTerminalSymbol)

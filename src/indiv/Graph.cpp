@@ -71,7 +71,7 @@ void Connection::setLabel(const string &label) {
 string Connection::to_string() {
     string str = name_from + "->" + name_to;
     if (!label.empty()) {
-        str += "[label=" + label + "]";
+        str += "[label=\"" + label + "\"]";
     }
     return str;
 }

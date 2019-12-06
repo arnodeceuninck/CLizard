@@ -101,3 +101,7 @@ const vector<ASTree *> &ASTree::getSubtrees() const {
 const string &ASTree::getRoot() const {
     return root;
 }
+
+ASTree::ASTree() : root(""), parent(nullptr), subtrees({}) {
+
+}
