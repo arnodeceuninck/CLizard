@@ -40,7 +40,7 @@ for line in html:
 
     # Check production to element terminal
     elif 'class="TerminalSymbol"' in line:
-        terminalSymbolWithTags = re.search(">(.*)</a>", line)  # <b>ProductionFrom:</b>
+        terminalSymbolWithTags = re.search("<b>(.*)</b>", line)  # <b>ProductionFrom:</b>
         terminalSymbol = terminalSymbolWithTags.group(1)
         terminals.add(terminalSymbol)
         if '<sub>opt</sub>' in line:
@@ -52,7 +52,7 @@ for line in html:
         production = Production()
         production.fromV = lastReadRuleFrom
         production.toV = currentProductionTo
-        productions.append(production)
+        productions.add(production)
         currentProductionTo = []
 
     # Check for the exceptions
@@ -99,3 +99,43 @@ for line in html:
         elif lastReadRuleFrom == "preprocessing-op-or-punc":
             # each non-white-space character that cannot be one of the above
             continue
+html.close()
+
+jsonstr = "{"
+
+jsonstr += "\"Variables\": ["
+for variable in nonTerminals:
+    jsonstr += "\"" + variable + "\"" + ", "
+jsonstr = jsonstr[:-1]  # Remove the last ,
+jsonstr += "],"
+
+jsonstr += "\"Terminals\": ["
+for terminal in terminals:
+    jsonstr += "\"" + terminal + "\"" + ", "
+jsonstr = jsonstr[:-1]  # Remove the last ,
+jsonstr += "],"
+
+jsonstr += "\"Productions\": ["
+for production in productions:
+    jsonstr += "{"
+
+    jsonstr += "\"head\": "
+    jsonstr += "\"" + production.fromV + "\"" + ", "
+
+    jsonstr += "\"body\": ["
+    for productionTo in production.toV:
+        jsonstr += "\"" + productionTo + "\"" + ", "
+    jsonstr = jsonstr[:-1]  # Remove the last ,
+    jsonstr += "]"
+
+    jsonstr += "}, "
+jsonstr = jsonstr[:-1]  # Remove the last ,
+jsonstr += "],"
+
+jsonstr += "\"Start\": \"translation-unit\""  # TODO: Maybe translation-unit and pre-processing file both
+
+jsonstr += "}"
+
+f = open("cpp.json", "w+")
+f.write(jsonstr)
+f.close()
