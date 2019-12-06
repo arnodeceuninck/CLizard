@@ -163,7 +163,7 @@ int main(int argc, char *argv[]) {
                         }
                         std::stack<Production *> productions = *(parsedVersions.begin());
                         ASTree ast{productions, nonTerminals, productions.top()->getFromP()};
-                        std::cout << ast.yield() << std::endl;
+                        ast.toDot(argv[5]);
                     }
             }
         }

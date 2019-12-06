@@ -6,6 +6,7 @@
 #include "CFG.h"
 #include <algorithm>
 #include <utility>
+#include <sstream>
 
 ASTree::ASTree(std::stack<Production *> &productions, const std::set<std::string> &nonTerminals, std::string newRoot) : root(newRoot) {
 
@@ -62,5 +63,32 @@ std::string ASTree::yield() {
 }
 
 void ASTree::toDot(std::string filename) {
+    Graph graph = Graph();
+    expandDot(graph);
+    graph.build_file(filename);
+}
 
+void ASTree::expandDot(Graph &graph) {
+
+    // Source: https://stackoverflow.com/questions/7850125/convert-this-pointer-to-string
+    const void *address = static_cast<const void *>(this);
+    std::stringstream ss;
+    ss << address;
+    std::string name = ss.str();
+    name = name.substr(2, name.length() - 2);
+
+    graph.addNode(Node(name, root, "circle"));
+
+    for (auto subtree: subtrees) {
+
+        const void *address2 = static_cast<const void *>(subtree);
+        std::stringstream ss2;
+        ss2 << address;
+        std::string nameSub = ss.str();
+        nameSub = nameSub.substr(2, name.length() - 2);
+
+        graph.addConnection(Connection(name, nameSub, ""));
+
+        subtree->expandDot(graph);
+    }
 }

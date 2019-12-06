@@ -11,11 +11,16 @@
 #include <set>
 //#include "CFG.h"
 
+#include "Graph.h"
+
 class Production;
 
 class ASTree {
     std::vector<ASTree *> subtrees;
     std::string root;
+
+    void expandDot(Graph &g);
+
 public:
     std::string yield();
 
