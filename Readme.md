@@ -5,7 +5,7 @@ by JetBigBrains
 Run the "compile.sh" file to compile the program, folowed by the "run.sh" to run the program. 
 
 ```
-./run.sh && ./compile.sh
+./compile.sh && ./run.sh
 ```
 
 ## Features

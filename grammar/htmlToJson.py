@@ -6,6 +6,8 @@ import re
 # Source: https://stackoverflow.com/questions/54059917/generate-all-length-n-permutations-of-true-false
 import itertools
 
+import sys
+
 charactersToEscape = ["\"", "\\"]  # A list of all characters that need an \ in front of them in json
 uniqueTag = "#715585#"  # Random number to ensure this is unique and not accidentally in the code
 optionalTag = "#OPTIONAL" + uniqueTag
@@ -16,7 +18,7 @@ class Production:
     toV = []
 
 
-html = open("Hyperlinked C++ BNF Grammar.html")
+html = open(sys.argv[1])  # The command line argument should point to this file: "Hyperlinked C++ BNF Grammar.html"
 # html = open("test.html")
 terminals = set()
 nonTerminals = set()
@@ -206,6 +208,6 @@ jsonstr += "\"Start\": \"translation-unit\""  # TODO: Maybe translation-unit and
 
 jsonstr += "}"
 
-f = open("cpp.json", "w+")
+f = open(sys.argv[2], "w+")  # argv[2] should be cpp.json
 f.write(jsonstr)
 f.close()
