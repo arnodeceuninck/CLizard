@@ -55,6 +55,8 @@ public:
 
     const std::string &getStartS() const;
 
+    void splitUpLongerTerminals();
+
 private:
     std::vector<std::string> nonTerminalsV;
     std::vector<std::string> terminalsT;

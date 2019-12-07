@@ -51,11 +51,21 @@ AST::AST(std::string filename) {
         std::vector<std::string> glrNonTerminals = glrParser->getNonTerminalsV();
         std::set<std::string> nonTerminals(glrNonTerminals.begin(), glrNonTerminals.end());
 
-        // Get the only element in the set
-        std::stack<Production *> productions = *(parsedVersions.begin());
+//        // Get the only element in the set
+//        std::stack<Production *> productions = *(parsedVersions.begin());
 
-        // Create an ASTree with this list of productions
-        ast = ASTree(productions, nonTerminals, productions.top()->getFromP(), nullptr);
+        int i = 0;
+        for (auto productions: parsedVersions) {
+            if (productions.empty()) {
+                std::cerr << "Error: Empty productions" << std::endl;
+                return;
+            }
+            // Create an ASTree with this list of productions
+            ast = ASTree(productions, nonTerminals, productions.top()->getFromP(), nullptr);
+            filename = "output/parsed" + std::to_string(i);
+            ast.toDot(filename);
+            i++;
+        }
     }
 }
 

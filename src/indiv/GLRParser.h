@@ -108,6 +108,7 @@ public:
     const std::vector<std::string> &getNonTerminalsV() const;
 
 private:
+    GLRState *acceptState;
     std::vector<std::string> terminalsT;
 
     void buildTable(); // Converts the states to the parseTable variable
@@ -129,17 +130,19 @@ private:
 
     GLRState *findState(std::string stateName);
 
-    std::set<ParseOperation *> findParseOptions(std::string inputChar, const GLRState *currentState) const;
+    std::set<ParseOperation *>
+    findParseOptions(std::string inputChar, const GLRState *currentState, bool final = false) const;
 
     void
     printStackSet(std::vector<std::pair<std::stack<std::string>, std::stack<Production *>>> possibleParseStacks) const;
 
-    void
+    bool
     checkProductionRules(std::vector<std::pair<std::stack<std::string>, std::stack<Production *>>> &possibleParseStacks,
                          const std::stack<std::string> &stack,
                          std::stack<Production *> productions,
                          const GLRState *currentState,
-                         std::set<std::pair<std::stack<std::string>, Production *>> &alreadyReduced);
+                         std::set<std::pair<std::stack<std::string>, Production *>> &alreadyReduced,
+                         bool final = false);
 };
 
 template<class T>

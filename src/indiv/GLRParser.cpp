@@ -14,6 +14,8 @@
 
 GLRParser::GLRParser(CFG *cfg) {
 
+    cfg->splitUpLongerTerminals();
+
     nonTerminalsV = cfg->getNonTerminalsV();
     terminalsT = cfg->getTerminalsT();
     // TODO: fix all terminals only 1 char
@@ -31,6 +33,7 @@ GLRParser::GLRParser(CFG *cfg) {
     // (This ensures the start state appears in only one rewrite rule)
     productionsP.push_back(start);
 
+    acceptState = new GLRState("accept", {new Production("accept", {startS})});
 
     // Introduce the marker ^ in all productions
     std::set<Production *> markedProductions = {};
@@ -71,19 +74,20 @@ GLRParser::GLRParser(CFG *cfg) {
             // Get the i-th element
             auto glrStateItr = states.begin();
             std::advance(glrStateItr, i);
-            GLRState* glrState = *glrStateItr;
-
-//            std::cout << glrState->getName() << " has " << glrState->getProdEstablished().size() << " of " << glrState->getProductions().size()  << " productions established."<< std::endl;
+            GLRState *glrState = *glrStateItr;
 
             if (glrState->getProductions().size() <= glrState->getProdEstablished().size()) {
                 continue;
             }
 
+//            std::cout << glrState->getName() << " has " << glrState->getProdEstablished().size() << " of " << glrState->getProductions().size()  << " productions established."<< std::endl;
+
             auto productionItr = glrState->getProductions().begin();
-            Production* production;
-            while (true){
+            Production *production;
+            while (true) {
                 // Check whether the current production is already established
-                if(std::find(glrState->getProdEstablished().begin(), glrState->getProdEstablished().end(), *productionItr) == glrState->getProdEstablished().end()){
+                if (std::find(glrState->getProdEstablished().begin(), glrState->getProdEstablished().end(),
+                              *productionItr) == glrState->getProdEstablished().end()) {
                     production = *productionItr;
                     glrState->increaseEstablished(production);
                     break;
@@ -157,8 +161,8 @@ GLRParser::GLRParser(CFG *cfg) {
 
         // e. Draw an arc labeled s from state A to closure of Y
         stateA->addStateTo(closureY, s);
-        std::string filename = "output/yeet" + var + ".dot";
-        toDot(filename);
+//        std::string filename = "output/yeet" + var + ".dot";
+//        toDot(filename);
     }
 
     // 3. Let each state represented by marked rules in terminal form be accept states in the automaton.
@@ -340,7 +344,7 @@ void GLRState::setAccepting(bool accepting) {
 }
 
 
-void GLRState::increaseEstablished(Production* prod) {
+void GLRState::increaseEstablished(Production *prod) {
     prodEstablished.insert(prod);
 }
 
@@ -480,7 +484,13 @@ set<stack<Production *>> GLRParser::parseString(std::string toParse) {
     startStack.push(startState->getName());
     possibleParseStacks.push_back(std::pair<std::stack<std::string>, std::stack<Production *>>(startStack, {}));
 
+    bool finalStack = false;
+
+    int position = 0;
     for (auto c: toParse) {
+        position++;
+
+        if (c == ' ') { continue; } // TODO: fix support for spaces
 
         std::cout << std::endl << "Output before consuming " << toString(c) << std::endl;
         printStackSet(possibleParseStacks);
@@ -490,12 +500,14 @@ set<stack<Production *>> GLRParser::parseString(std::string toParse) {
             // Can't use auto iterator, because we're inserting elements during the loop
 
             std::pair<std::stack<std::string>, std::stack<Production *>> &stack = possibleParseStacks[i];
+            if (stack.first.top() == "accept" and position == toParse.size()) { break; }
             GLRState *currentState = findState(stack.first.top());
 
             //            std::pair<std::string, GLRState *> searchKey{toString(c), currentState};
 //            std::set<ParseOperation *> parseOperations = parseTable[searchKey];
 
-            set<ParseOperation *> parseOperations = findParseOptions(toString(c), currentState);
+            set<ParseOperation *> parseOperations = findParseOptions(toString(c), currentState,
+                                                                     position == toParse.size());
 
             for (auto parseOperation: parseOperations) {
 
@@ -520,7 +532,15 @@ set<stack<Production *>> GLRParser::parseString(std::string toParse) {
             const std::pair<std::stack<std::string>, std::stack<Production *>> stack = possibleParseStacks[i];
             GLRState *currentState = findState(stack.first.top());
             std::stack<Production *> productions = stack.second;
-            checkProductionRules(possibleParseStacks, stack.first, productions, currentState, alreadyReducedStacks);
+            if (checkProductionRules(possibleParseStacks, stack.first, productions, currentState,
+                                     alreadyReducedStacks, finalStack)) {
+                if (position == toParse.size()) {
+                    finalStack = true;
+                    break;
+                } else {
+                    continue;
+                }
+            }
         }
 
         // if there are two identical stacks, remove one of them
@@ -535,7 +555,7 @@ set<stack<Production *>> GLRParser::parseString(std::string toParse) {
     std::set<std::stack<Production *>> finals;
     for (auto stack: possibleParseStacks) {
         // TODO: Check: is it always the case when top == 1, the string is accepted?
-        if (stack.first.top() == "1") {
+        if (stack.first.top() == "accept") {
 //                final = true;
             finals.insert(
                     stack.second); // TODO: Check whether it still returns and the object doesn't get destroyed when leaving the function
@@ -545,13 +565,16 @@ set<stack<Production *>> GLRParser::parseString(std::string toParse) {
     return finals;
 }
 
-void
-GLRParser::checkProductionRules(vector<pair<std::stack<std::string>, std::stack<Production *>>> &possibleParseStacks,
-                                const std::stack<std::string> &stack,
-                                std::stack<Production *> productions,
-                                const GLRState *currentState,
-                                set<pair<std::stack<std::string>, Production *>> &alreadyReducedStacks) {// Check for possible reduces
+bool
+GLRParser::checkProductionRules(
+        vector<pair<std::stack<std::string>, std::stack<Production *>>> &possibleParseStacks,
+        const std::stack<std::string> &stack,
+        std::stack<Production *> productions,
+        const GLRState *currentState,
+        set<pair<std::stack<std::string>, Production *>> &alreadyReducedStacks,
+        bool final) {// Check for possible reduces
 
+    bool finalStack = false;
     if (currentState->isAccepting()) {
         // TODO: push production on stack
         set<ParseOperation *> parseOperations;
@@ -583,18 +606,30 @@ GLRParser::checkProductionRules(vector<pair<std::stack<std::string>, std::stack<
             newStack.push(newVariable);
             newProductions.push(parseOperation->getReduceProduction());
 
-            set<ParseOperation *> parseOperationsb = findParseOptions(newVariable, currentTopState);
+            set<ParseOperation *> parseOperationsb = findParseOptions(newVariable, currentTopState, final);
 
             for (auto stackOp: parseOperationsb) {
 
                 // For every new possible stack, create a new state
                 std::stack<string> newNewStack = newStack;
-                if (stackOp->getOperationType() != ParseOperation::accept) {
-                    newNewStack.push(stackOp->getNewState()->getName());
+                std::string stateName;
+                if (stackOp->getOperationType() == ParseOperation::accept) {
+//                    if (!final) {
+//                        continue;
+//                    }
+//                    std::stack<std::string> acceptStack;
+//                    acceptStack.push("accept");
+//                    possibleParseStacks.emplace_back(acceptStack,
+//                                                     newProductions);
+                    finalStack = true && final;
+                    stateName = "accept";
+                } else {
+                    stateName = stackOp->getNewState()->getName();
                 }
+                newNewStack.push(stateName);
                 // Add this to the possibleParseStacks, so it can still be evaluated this round. (because this stack hasn't yet consumed char c)
-                possibleParseStacks.push_back(std::pair<std::stack<std::string>, std::stack<Production *>>(newNewStack,
-                                                                                                           newProductions)); // i (on which we're iterating) mustn't decrease, because we're checking the size & inserting at the end
+                possibleParseStacks.emplace_back(newNewStack,
+                                                 newProductions); // i (on which we're iterating) mustn't decrease, because we're checking the size & inserting at the end
 
                 cout << "Reduced, new stack: ";
                 printStack(newNewStack);
@@ -602,10 +637,14 @@ GLRParser::checkProductionRules(vector<pair<std::stack<std::string>, std::stack<
             }
         }
     }
+
+
+    return finalStack;
 }
 
 void
-GLRParser::printStackSet(vector<pair<std::stack<std::string>, std::stack<Production *>>> possibleParseStacks) const {
+GLRParser::printStackSet(
+        vector<pair<std::stack<std::string>, std::stack<Production *>>> possibleParseStacks) const {
     for (auto stack: possibleParseStacks) {
         printStack(stack.first);
         cout << endl;
@@ -613,11 +652,12 @@ GLRParser::printStackSet(vector<pair<std::stack<std::string>, std::stack<Product
     cout << endl;
 }
 
-set<ParseOperation *> GLRParser::findParseOptions(std::string inputChar, const GLRState *currentState) const {
+set<ParseOperation *>
+GLRParser::findParseOptions(std::string inputChar, const GLRState *currentState, bool final) const {
 
     set<ParseOperation *> parseOperations;
 
-    if (currentState == startState && inputChar == "1") {
+    if (currentState->getName() == "1" && inputChar == startState->getName()) {
         parseOperations.insert(new ParseOperation(new Production("accept", {"1"})));
     }
 
@@ -646,6 +686,10 @@ GLRState *GLRParser::findState(std::string stateName) {
             return state;
         }
     }
+    if (stateName == "accept") {
+        return acceptState;
+    }
+
     return nullptr;
 }
 
@@ -653,7 +697,9 @@ const vector<std::string> &GLRParser::getNonTerminalsV() const {
     return nonTerminalsV;
 }
 
-GLRTransition::GLRTransition(const std::string &label, GLRState *stateTo) : label(label), stateTo(stateTo) {}
+GLRTransition::GLRTransition(
+        const std::string &label, GLRState
+*stateTo) : label(label), stateTo(stateTo) {}
 
 const string &GLRTransition::getLabel() const {
     return label;

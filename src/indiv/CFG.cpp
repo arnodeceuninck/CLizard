@@ -725,6 +725,28 @@ const std::string &CFG::getStartS() const {
     return startS;
 }
 
+void CFG::splitUpLongerTerminals() {
+    for (int i = 0; i < terminalsT.size(); ++i) {
+
+        auto terminal = terminalsT[i];
+
+        // Only modify variables longer than 2
+        if (terminal.size() > 1) {
+
+            nonTerminalsV.push_back(terminal);
+            std::vector<std::string> terminalProductions;
+            for (int k = 0; k < terminal.size(); ++k) {
+                std::string charStr{terminal[k]};
+                terminalProductions.push_back(charStr);
+                terminalsT.push_back(charStr);
+            }
+            productionsP.emplace_back(new Production(terminal, terminalProductions));
+            terminalsT.erase(terminalsT.begin() + i);
+            i--;
+        }
+    }
+}
+
 
 rapidjson::Value strJSON(std::string str, rapidjson::Document::AllocatorType &allocator) {
     rapidjson::Value strVal;

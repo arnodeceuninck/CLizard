@@ -12,6 +12,6 @@ int main(int argc, char *argv[]) {
 
     std::cout << "Hello, World!" << std::endl;
 
-    std::string filename = "vbn/simple.cpp";
+    std::string filename = "vbn/int.cpp";
     AST ast(filename);
 }

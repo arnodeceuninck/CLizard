@@ -8,15 +8,16 @@ import itertools
 
 import sys
 
-intaVariables = ["translation-unit",
+intaVariables = ["translation-unit",  # List of variables for supporting int.cpp
                  "declaration-seq",
                  "declaration",
-                 "simple-declaration", # int a;
+                 "block-declaration",
+                 "simple-declaration",  # int a;
                  "attribute-specifier-seq", "decl-specifier-seq", "init-declarator-list",
                  "decl-specifier", "attribute-specifier-seq",
                  "type-specifier",
                  "trailing-type-specifier",
-                 "simple-type-specifier", # int
+                 "simple-type-specifier",  # int
                  "init-declarator-list",
                  "init-declarator",
                  "declarator",
@@ -26,7 +27,7 @@ intaVariables = ["translation-unit",
                  "unqualified-id",
                  "identifier",
                  "identifier-nondigit",
-                 "nondigit"] # a
+                 "nondigit"]  # a
 
 supportedVariables = intaVariables
 
