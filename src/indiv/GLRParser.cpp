@@ -8,6 +8,7 @@
 #include <stack>
 #include <string>
 #include <utility>
+#include <fstream>
 
 #include "CFG.h"
 #include "functions.h"
@@ -363,9 +364,45 @@ const set<Production *> &GLRState::getProdEstablished() const {
     return prodEstablished;
 }
 
-void GLRParser::addState(GLRState *s) {
-    states.insert(s);
+std::string GLRState::toStr() const {
+    std::string uniqueID = "";
+    std::string returnStr = "";
+
+    // name
+    returnStr += "#STATE.NAME#\n";
+    returnStr += name + "\n";
+    returnStr += "#STATE.ACCEPTING#\n";
+    // accepting
+    if (accepting) {
+        returnStr += "1\n";
+    } else {
+        returnStr += "0\n";
+    }
+    returnStr += "#STATE.PRODUCTIONS#\n";
+    // productions
+    for (auto production: productions) {
+        returnStr += "#STATE.PRODUCTION#\n" + production->toStr() + "\n";
+    }
+    returnStr += "#STATE.STATESTO#";
+    if (!statesTo.empty()) {
+        returnStr += "\n";
+    }
+
+    // Statesto
+    int i = 0;
+    for (auto state: statesTo) {
+        i++;
+        returnStr += "#STATE.STATETO#\n" + state->getStateTo()->getName() + "\n#LABEL#\n" + state->getLabel();
+        if (i != statesTo.size()) {
+            returnStr += "\n";
+        }
+    }
+    return returnStr;
 }
+
+//void GLRParser::addState(GLRState *s) {
+//    states.insert(s);
+//}
 
 void GLRParser::toDot(std::string filename) {
     Graph graph = Graph();
@@ -406,75 +443,75 @@ void GLRParser::toDot(std::string filename) {
     graph.build_file(std::move(filename));
 }
 
-void GLRParser::buildTable() {
-    // TODO
-    // Nummers in tabel zijn verschillende state
-    // ingevulde dinges zijn dan verschillende producties
-    // Komt wel goed
-    // xoxo Arno van gisteren
-    for (auto state: states) {
-        if (!state->isAccepting()) {
-            for (auto nextChar: state->getStatesTo()) {
+//void GLRParser::buildTable() {
+//    // TODO
+//    // Nummers in tabel zijn verschillende state
+//    // ingevulde dinges zijn dan verschillende producties
+//    // Komt wel goed
+//    // xoxo Arno van gisteren
+//    for (auto state: states) {
+//        if (!state->isAccepting()) {
+//            for (auto nextChar: state->getStatesTo()) {
+//
+//                std::string input = nextChar->getLabel();
+//                GLRState *newState = nextChar->getStateTo();
+//
+//                auto *parseOperation = new ParseOperation(newState);
+//                std::pair<std::string, GLRState *> searchKey{input, state};
+//                std::set<ParseOperation *> parseOperations = parseTable[searchKey]; // TODO: What if searchkey hasn't been introduced yet? does this return an empty set?
+//
+//                parseOperations.insert(parseOperation);
+//
+//                // TODO: What if there already exists an element with this searchkey? (I want it to be replaced then)
+//                parseTable[searchKey] = parseOperations; // TODO: In what case can there be more than 1 ParseOperation?
+//            }
+//        } else if (state->isAccepting()) {
+//            for (auto prod: state->getProductions()) {
+//                if (prod->getToP()[prod->getToP().size() - 1] ==
+//                    getMarker()) { // TODO: what todo with the nonFinal productions
+//                    //. https://www.geeksforgeeks.org/follow-set-in-syntax-analysis/
+//                    auto *parseOperationb = new ParseOperation(prod);
+////                    std::pair<std::string, GLRState *> searchKeyb{input, newState};
+////                    std::set<ParseOperation *> parseOperationsb = parseTable[searchKey];
+////                        if(parseOperations == nullptr){
+////                            parseOperations = new std::set<ParseOperation*>;
+////                        }
+////                    parseOperationsb.insert(parseOperationb);
+////                    parseTable[searchKeyb] = parseOperationsb;
+////                        parseTable.insert(
+////                                std::pair<std::pair<std::string, GLRState *>, std::set<ParseOperation *>>(searchKeyb,
+////                                                                                                          parseOperationsb));
+//
+//                }
+//
+//            }
+//        }
+//    }
+//}
 
-                std::string input = nextChar->getLabel();
-                GLRState *newState = nextChar->getStateTo();
-
-                auto *parseOperation = new ParseOperation(newState);
-                std::pair<std::string, GLRState *> searchKey{input, state};
-                std::set<ParseOperation *> parseOperations = parseTable[searchKey]; // TODO: What if searchkey hasn't been introduced yet? does this return an empty set?
-
-                parseOperations.insert(parseOperation);
-
-                // TODO: What if there already exists an element with this searchkey? (I want it to be replaced then)
-                parseTable[searchKey] = parseOperations; // TODO: In what case can there be more than 1 ParseOperation?
-            }
-        } else if (state->isAccepting()) {
-            for (auto prod: state->getProductions()) {
-                if (prod->getToP()[prod->getToP().size() - 1] ==
-                    getMarker()) { // TODO: what todo with the nonFinal productions
-                    //. https://www.geeksforgeeks.org/follow-set-in-syntax-analysis/
-                    auto *parseOperationb = new ParseOperation(prod);
-//                    std::pair<std::string, GLRState *> searchKeyb{input, newState};
-//                    std::set<ParseOperation *> parseOperationsb = parseTable[searchKey];
-//                        if(parseOperations == nullptr){
-//                            parseOperations = new std::set<ParseOperation*>;
-//                        }
-//                    parseOperationsb.insert(parseOperationb);
-//                    parseTable[searchKeyb] = parseOperationsb;
-//                        parseTable.insert(
-//                                std::pair<std::pair<std::string, GLRState *>, std::set<ParseOperation *>>(searchKeyb,
-//                                                                                                          parseOperationsb));
-
-                }
-
-            }
-        }
-    }
-}
-
-void GLRParser::printTable() {
-    std::cout << "From (state, input) to newState(shift) or ReduceOp" << std::endl;
-    for (const auto &el: parseTable) {
-        auto searchKey = el.first;
-        auto opSet = el.second;
-
-        std::cout << "From (" << searchKey.second->getName() << ", " << searchKey.first << ") to ";
-
-        for (auto op: opSet) {
-            if (op->getOperationType() == op->shift) {
-                std::cout << op->getNewState()->getName() << " ";
-            } else if (op->getOperationType() == op->reduce) {
-                std::cout << op->getReduceProduction()->getFromP() << "->";
-                for (const auto &reduceTo: op->getReduceProduction()->getToP()) {
-                    std::cout << reduceTo;
-                }
-                std::cout << " ";
-            }
-        }
-
-        std::cout << endl;
-    }
-}
+//void GLRParser::printTable() {
+//    std::cout << "From (state, input) to newState(shift) or ReduceOp" << std::endl;
+//    for (const auto &el: parseTable) {
+//        auto searchKey = el.first;
+//        auto opSet = el.second;
+//
+//        std::cout << "From (" << searchKey.second->getName() << ", " << searchKey.first << ") to ";
+//
+//        for (auto op: opSet) {
+//            if (op->getOperationType() == op->shift) {
+//                std::cout << op->getNewState()->getName() << " ";
+//            } else if (op->getOperationType() == op->reduce) {
+//                std::cout << op->getReduceProduction()->getFromP() << "->";
+//                for (const auto &reduceTo: op->getReduceProduction()->getToP()) {
+//                    std::cout << reduceTo;
+//                }
+//                std::cout << " ";
+//            }
+//        }
+//
+//        std::cout << endl;
+//    }
+//}
 
 // ParseString using the transition scheme
 set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
@@ -684,7 +721,7 @@ GLRParser::findParseOptions(std::string inputChar, const GLRState *currentState,
 }
 
 
-GLRState *GLRParser::findState(std::string stateName) {
+GLRState *GLRParser::findState(const std::string &stateName) {
 //    return *std::find(states.begin(), states.end(), stateName);
     for (GLRState *state: states) {
         if (state->getName() == stateName) {
@@ -702,6 +739,48 @@ const vector<std::string> &GLRParser::getNonTerminalsV() const {
     return nonTerminalsV;
 }
 
+void GLRParser::writeToFile(std::string filename) {
+    std::string uniqueTag = "";
+    std::string nonTerminalsTag = uniqueTag + "#NONTERMINALS#";
+    std::string terminalTag = uniqueTag + "#TERMINALS#";
+    std::string statesTag = uniqueTag + "#STATES#";
+    std::string acceptStateTag = uniqueTag + "#ACCEPTSTATE#";
+    std::string startStateTag = uniqueTag + "#STARTSTATE#";
+    std::string endTag = "#END#";
+    std::string startTag = "#BEGIN#";
+
+    ofstream outputFile;
+    outputFile.open(filename);
+
+    // Nonterminals
+    outputFile << nonTerminalsTag << std::endl;
+    for (auto var: nonTerminalsV) {
+        outputFile << var << std::endl;
+    }
+
+    // Terminals
+    outputFile << terminalTag << std::endl;
+    for (auto var: terminalsT) {
+        outputFile << var << endl;
+    }
+    // States
+    int i = 0;
+    outputFile << statesTag << std::endl;
+    for (auto var: states) {
+        i++;
+        outputFile << var->toStr() << std::endl;
+    }
+
+    // Acceptstate
+    outputFile << acceptStateTag << std::endl;
+    outputFile << acceptState->toStr() << std::endl;
+    // StartState
+    outputFile << startStateTag << std::endl;
+    outputFile << startState->getName();
+
+    outputFile.close();
+}
+
 GLRTransition::GLRTransition(
         const std::string &label, GLRState
 *stateTo) : label(label), stateTo(stateTo) {}
@@ -710,17 +789,17 @@ const string &GLRTransition::getLabel() const {
     return label;
 }
 
-void GLRTransition::setLabel(const string &label) {
-    GLRTransition::label = label;
-}
+//void GLRTransition::setLabel(const string &label) {
+//    GLRTransition::label = label;
+//}
 
 GLRState *GLRTransition::getStateTo() const {
     return stateTo;
 }
 
-void GLRTransition::setStateTo(GLRState *stateTo) {
-    GLRTransition::stateTo = stateTo;
-}
+//void GLRTransition::setStateTo(GLRState *stateTo) {
+//    GLRTransition::stateTo = stateTo;
+//}
 
 ParseOperation::ParseOperation(Production *reduceProduction) : reduceProduction(
         reduceProduction) {

@@ -8,8 +8,37 @@ import itertools
 
 import sys
 
-supportedSections = ["lex.name", "basic.link", "expr.prim.general", "dcl.dcl", "dcl.spec", "dct.type.simple",
-                     "dcl.attr.grammar", "dcl.decl"]
+supportedSections = ["lex.name",
+                     "basic.link",
+                     "expr.prim.general",
+                     "dcl.dcl", "dcl.spec",
+                     "dct.type.simple",
+                     "dcl.attr.grammar",
+                     "dcl.decl",  # Till here required for parsing int a;
+                     "dcl.fct.spec",
+                     "dcl.spec",
+                     "dcl.fct",
+                     "dcl.init",
+                     "expr.ass",
+                     "expr.cond",
+                     "expr.log.or",
+                     "expr.log.and",
+                     "expr.or",
+                     "expr.xor",
+                     "expr.bit.and",
+                     "expr.eq",
+                     "expr.rel",
+                     "expr.shift",
+                     "expr.add",
+                     "expr.mul",
+                     "expr.mptr.oper",
+                     "expr.cast",
+                     "expr.unary",
+                     "expr.post",
+                     "expr.prim.general",
+                     "lex.literal.kinds",
+                     "lex.icon" # till here required for int a(); (function declaration)
+                     ]
 
 intaVariables = ["translation-unit",  # List of variables for supporting int.cpp
                  "declaration-seq",

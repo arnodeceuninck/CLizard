@@ -1,1 +1,1 @@
-int aNum;
+int aNum();

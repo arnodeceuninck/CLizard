@@ -34,6 +34,27 @@ bool Production::operator==(const Production &p) {
     return p.getFromP() == fromP && p.getToP() == toP;
 }
 
+std::string Production::toStr() {
+    std::string uniqueID = "";
+    std::string returnStr = "";
+
+    // from
+    returnStr += "#PROD.FROM#\n" + fromP + "\n";
+    returnStr += "#PROD.STATES#\n";
+
+    // to
+    int i = 0;
+    for (auto state: toP) {
+        i++;
+        returnStr += "#PROD.STATE#\n" + state;
+        if (i != toP.size()) {
+            returnStr += "\n";
+        }
+    }
+
+    return returnStr;
+}
+
 CFG::CFG(const std::vector<std::string> &nonTerminalsV, const std::vector<std::string> &terminalsT,
          const std::vector<Production *> &productionsP, const std::string &startS) {
     this->nonTerminalsV = nonTerminalsV;

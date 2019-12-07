@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
 
         readJson(inputFile, nonTerminalsV, terminalsT, productionsP, startS);
 
-        CFG* cfg = new CFG(nonTerminalsV, terminalsT, productionsP, startS);
+        CFG *cfg = new CFG(nonTerminalsV, terminalsT, productionsP, startS);
 
         std::string outputFile = argv[3];
 
@@ -147,9 +147,11 @@ int main(int argc, char *argv[]) {
         std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
         std::cout.rdbuf(out.rdbuf()); //redirect std::cout to outputFile!
 
-        GLRParser* glrParser = new GLRParser(cfg);
+        GLRParser *glrParser = new GLRParser(cfg);
 
-        if(argc > 4){
+        glrParser->writeToFile("output/parser.glp");
+
+        if (argc > 4) {
             std::set<std::stack<Production *>> parsedVersions = glrParser->parseString(argv[4]);
             switch (parsedVersions.size()) {
                 case 0:
