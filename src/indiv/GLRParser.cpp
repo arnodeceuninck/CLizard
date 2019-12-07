@@ -491,7 +491,7 @@ set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
     for (auto c: toParse) {
         position++;
 
-        if (c == ' ') { continue; } // TODO: fix support for spaces
+        if (c == ' ' or c == '\n') { continue; }
 
         std::vector<std::pair<std::stack<std::string>, std::stack<Production *>>> newPossibleParseStacks;
         for (int i = 0; i < possibleParseStacks.size(); i++) {

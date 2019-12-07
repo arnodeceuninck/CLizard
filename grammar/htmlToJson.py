@@ -8,6 +8,9 @@ import itertools
 
 import sys
 
+supportedSections = ["lex.name", "basic.link", "expr.prim.general", "dcl.dcl", "dcl.spec", "dct.type.simple",
+                     "dcl.attr.grammar", "dcl.decl"]
+
 intaVariables = ["translation-unit",  # List of variables for supporting int.cpp
                  "declaration-seq",
                  "declaration",
@@ -56,6 +59,7 @@ productions = []
 lastReadRuleFrom = ""
 currentProductionTo = []
 
+sectionName = ""
 for line in html:
 
     # Check production from
@@ -75,6 +79,7 @@ for line in html:
             currentProductionTo.append(optionalTag)  # TODO: filter out all optional
         currentProductionTo.append(nonTerminalSymbol)
 
+
     # Check production to element terminal
     elif 'class="TerminalSymbol"' in line:
         terminalSymbolWithTags = re.search("<b>(.*)</b>", line)  # <b>ProductionFrom:</b>
@@ -84,13 +89,28 @@ for line in html:
             currentProductionTo.append(optionalTag)
         currentProductionTo.append(terminalSymbol)
 
+    elif '<td><h2><a name=' in line:
+        sectionNameWithTags = re.search('">(.*)</a>', line)
+        sectionName = sectionNameWithTags.group(1)
+
     # Check end of production to
     elif '</td>' in line:
-        if currentProductionTo:  # and lastReadRuleFrom in supportedVariables:
-            if lastReadRuleFrom not in supportedVariables and filter:
+        # Own additions
+        # if lastReadRuleFrom == "id-expression":
+        #     currentProductionTo.append(optionalTag)
+        #     terminals.add(" ")
+        #     currentProductionTo.append(" ")
+
+        # Default handling
+        if currentProductionTo:
+            # if lastReadRuleFrom not in supportedVariables and filter:
+            #     currentProductionTo = []
+            #     continue
+            if sectionName not in supportedSections and filter:
                 currentProductionTo = []
                 continue
             # Only add it when currentProductionTo is not empty
+            print(sectionName)
             production = Production()
             production.fromV = lastReadRuleFrom
             production.toV = currentProductionTo
@@ -143,8 +163,8 @@ for line in html:
             continue
 html.close()
 
-if filter:
-    nonTerminals = supportedVariables
+# if filter:
+#     nonTerminals = supportedVariables
 
 # Remove all OPTIONALTAGS (by generating all combinations with/without them
 for production in productions:
