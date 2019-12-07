@@ -400,6 +400,30 @@ std::string GLRState::toStr() const {
     return returnStr;
 }
 
+bool GLRState::operator==(const GLRState &b) const {
+    return name == b.getName();
+}
+
+bool GLRState::operator!=(const GLRState &b) const {
+    return name != b.getName();
+}
+
+bool GLRState::operator<(const GLRState &b) const {
+    return name < b.getName();
+}
+
+bool GLRState::operator>(const GLRState &b) const {
+    return name > b.getName();
+}
+
+bool GLRState::operator<=(const GLRState &b) const {
+    return name <= b.getName();
+}
+
+bool GLRState::operator>=(const GLRState &b) const {
+    return false;
+}
+
 //void GLRParser::addState(GLRState *s) {
 //    states.insert(s);
 //}
@@ -723,14 +747,17 @@ GLRParser::findParseOptions(std::string inputChar, const GLRState *currentState,
 
 GLRState *GLRParser::findState(const std::string &stateName) {
 //    return *std::find(states.begin(), states.end(), stateName);
+    if (stateName == "accept") {
+        return acceptState;
+    }
+
+
     for (GLRState *state: states) {
         if (state->getName() == stateName) {
             return state;
         }
     }
-    if (stateName == "accept") {
-        return acceptState;
-    }
+
 
     return nullptr;
 }

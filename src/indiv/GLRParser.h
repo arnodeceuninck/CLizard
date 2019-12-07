@@ -64,6 +64,18 @@ class GLRState {
     bool accepting;
     std::set<Production *> prodEstablished;
 public:
+    bool operator==(const GLRState &b) const;
+
+    bool operator!=(const GLRState &b) const;
+
+    bool operator<(const GLRState &b) const;
+
+    bool operator>(const GLRState &b) const;
+
+    bool operator<=(const GLRState &b) const;
+
+    bool operator>=(const GLRState &b) const;
+
     [[nodiscard]] const std::set<Production *> &getProdEstablished() const;
 
     std::string toStr() const;
