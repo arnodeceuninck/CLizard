@@ -8,6 +8,31 @@ import itertools
 
 import sys
 
+intaVariables = ["translation-unit",
+                 "declaration-seq",
+                 "declaration",
+                 "simple-declaration", # int a;
+                 "attribute-specifier-seq", "decl-specifier-seq", "init-declarator-list",
+                 "decl-specifier", "attribute-specifier-seq",
+                 "type-specifier",
+                 "trailing-type-specifier",
+                 "simple-type-specifier", # int
+                 "init-declarator-list",
+                 "init-declarator",
+                 "declarator",
+                 "noptr-declarator",
+                 "declarator-id",
+                 "id-expression",
+                 "unqualified-id",
+                 "identifier",
+                 "identifier-nondigit",
+                 "nondigit"] # a
+
+supportedVariables = intaVariables
+
+# "simple-type-specifier",
+# "keyword",
+
 charactersToEscape = ["\"", "\\"]  # A list of all characters that need an \ in front of them in json
 uniqueTag = "#715585#"  # Random number to ensure this is unique and not accidentally in the code
 optionalTag = "#OPTIONAL" + uniqueTag
@@ -36,7 +61,7 @@ for line in html:
         betweenTags = ruleColumn.group(1)
         rule = betweenTags[:-1]  # Remove the ":" at the end
         lastReadRuleFrom = rule
-        nonTerminals.add(rule);
+        nonTerminals.add(rule)
 
     # Check production to element non-terminal
     elif 'class="NonTerminalSymbol"' in line:
@@ -58,7 +83,10 @@ for line in html:
 
     # Check end of production to
     elif '</td>' in line:
-        if currentProductionTo:
+        if currentProductionTo:  # and lastReadRuleFrom in supportedVariables:
+            if lastReadRuleFrom not in supportedVariables:
+                currentProductionTo = []
+                continue
             # Only add it when currentProductionTo is not empty
             production = Production()
             production.fromV = lastReadRuleFrom
@@ -112,6 +140,8 @@ for line in html:
             continue
 html.close()
 
+nonTerminals = supportedVariables
+
 # Remove all OPTIONALTAGS (by generating all combinations with/without them
 for production in productions:
     if optionalTag in production.toV:
@@ -132,10 +162,12 @@ for production in productions:
                     if combination[optionalTagNr]:
                         newProduction.toV.append(prodTo)
                     optionalel = False
+                    optionalTagNr += 1
                 else:
                     newProduction.toV.append(prodTo)
 
             productions.append(newProduction)
+            # print(newProduction.fromV, newProduction.toV)
 
 i = 0
 while i < len(productions):
