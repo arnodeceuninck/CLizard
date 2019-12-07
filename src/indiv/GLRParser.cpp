@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <stack>
 #include <string>
+#include <utility>
 
 #include "CFG.h"
 #include "functions.h"
@@ -29,7 +30,7 @@ GLRParser::GLRParser(CFG *cfg) {
     startS = std::to_string(stateNr++); // "Sb";
     nonTerminalsV.push_back(startS);
     // and letting this start state point to the original one
-    Production *start = new Production(startS, {oldStartState});
+    auto *start = new Production(startS, {oldStartState});
     // (This ensures the start state appears in only one rewrite rule)
     productionsP.push_back(start);
 
@@ -38,11 +39,11 @@ GLRParser::GLRParser(CFG *cfg) {
     // Introduce the marker ^ in all productions
     std::set<Production *> markedProductions = {};
     for (auto production: productionsP) {
-        std::vector<std::string> prodTo = production->getToP();
+        const std::vector<std::string> &prodTo = production->getToP();
         for (int i = 0; i <= prodTo.size(); ++i) { // TODO: Check whether <= doesn't give an overflow error
             std::vector<std::string> prodToMarked = prodTo;
             prodToMarked.insert(prodToMarked.begin() + i, getMarker());
-            Production *markedProduction = new Production(production->getFromP(), prodToMarked);
+            auto *markedProduction = new Production(production->getFromP(), prodToMarked);
             markedProductions.insert(markedProduction);
             if (production->getFromP() == startS && i == 0) {
                 start = markedProduction;
@@ -179,7 +180,7 @@ GLRParser::GLRParser(CFG *cfg) {
         }
     }
 
-    toDot("output/GLRParserTransitionScheme.dot");
+//    toDot("output/GLRParserTransitionScheme.dot");
 //    buildTable();
 //    printTable();
 }
@@ -301,7 +302,7 @@ bool GLRParser::closure(std::set<Production *> &markedProductions, std::set<Prod
 }
 
 std::set<Production *>
-GLRParser::initialProductionsFromVar(std::string var, std::set<Production *> &allMarkedProductions) {
+GLRParser::initialProductionsFromVar(const std::string &var, std::set<Production *> &allMarkedProductions) {
     std::set<Production *> initProdsFromVar = {};
     for (auto production: allMarkedProductions) {
         if (production->getFromP() == var &&
@@ -324,14 +325,14 @@ const std::set<GLRTransition *> &GLRState::getStatesTo() const {
     return statesTo;
 }
 
-GLRState::GLRState(const std::string &name, const std::set<Production *> &productions) : name(name),
-                                                                                         productions(productions),
-                                                                                         accepting(false) {
+GLRState::GLRState(std::string name, const std::set<Production *> &productions) : name(std::move(name)),
+                                                                                  productions(productions),
+                                                                                  accepting(false) {
 //    prodEstablished = productions.size();
 }
 
-void GLRState::addStateTo(GLRState *glrState, std::string label) {
-    GLRTransition *transition = new GLRTransition(label, glrState);
+void GLRState::addStateTo(GLRState *glrState, const std::string &label) {
+    auto *transition = new GLRTransition(label, glrState);
     statesTo.insert(transition);
 }
 
@@ -348,7 +349,7 @@ void GLRState::increaseEstablished(Production *prod) {
     prodEstablished.insert(prod);
 }
 
-std::set<GLRState *> GLRState::statesOnInput(std::string input) {
+std::set<GLRState *> GLRState::statesOnInput(const std::string &input) {
     std::set<GLRState *> statesOnInp;
     for (GLRTransition *state: statesTo) {
         if (state->getLabel() == input) {
@@ -392,7 +393,7 @@ void GLRParser::toDot(std::string filename) {
         graph.addNode(Node(state->getName(), stateLable, "Mrecord"));
 
         for (auto transition: state->getStatesTo()) {
-            std::string connectionString = transition->getLabel();
+            const std::string &connectionString = transition->getLabel();
             std::string stateTo = transition->getStateTo()->getName();
             graph.addConnection(Connection(state->getName(), stateTo,
                                            connectionString));
@@ -402,7 +403,7 @@ void GLRParser::toDot(std::string filename) {
 
     graph.addNode(Node("invis", "invis", "circle", "style=invis"));
     graph.addConnection(Connection("invis", "1", "Start"));
-    graph.build_file(filename);
+    graph.build_file(std::move(filename));
 }
 
 void GLRParser::buildTable() {
@@ -418,7 +419,7 @@ void GLRParser::buildTable() {
                 std::string input = nextChar->getLabel();
                 GLRState *newState = nextChar->getStateTo();
 
-                ParseOperation *parseOperation = new ParseOperation(newState);
+                auto *parseOperation = new ParseOperation(newState);
                 std::pair<std::string, GLRState *> searchKey{input, state};
                 std::set<ParseOperation *> parseOperations = parseTable[searchKey]; // TODO: What if searchkey hasn't been introduced yet? does this return an empty set?
 
@@ -432,7 +433,7 @@ void GLRParser::buildTable() {
                 if (prod->getToP()[prod->getToP().size() - 1] ==
                     getMarker()) { // TODO: what todo with the nonFinal productions
                     //. https://www.geeksforgeeks.org/follow-set-in-syntax-analysis/
-                    ParseOperation *parseOperationb = new ParseOperation(prod);
+                    auto *parseOperationb = new ParseOperation(prod);
 //                    std::pair<std::string, GLRState *> searchKeyb{input, newState};
 //                    std::set<ParseOperation *> parseOperationsb = parseTable[searchKey];
 //                        if(parseOperations == nullptr){
@@ -453,7 +454,7 @@ void GLRParser::buildTable() {
 
 void GLRParser::printTable() {
     std::cout << "From (state, input) to newState(shift) or ReduceOp" << std::endl;
-    for (auto el: parseTable) {
+    for (const auto &el: parseTable) {
         auto searchKey = el.first;
         auto opSet = el.second;
 
@@ -464,7 +465,7 @@ void GLRParser::printTable() {
                 std::cout << op->getNewState()->getName() << " ";
             } else if (op->getOperationType() == op->reduce) {
                 std::cout << op->getReduceProduction()->getFromP() << "->";
-                for (auto reduceTo: op->getReduceProduction()->getToP()) {
+                for (const auto &reduceTo: op->getReduceProduction()->getToP()) {
                     std::cout << reduceTo;
                 }
                 std::cout << " ";
@@ -476,7 +477,7 @@ void GLRParser::printTable() {
 }
 
 // ParseString using the transition scheme
-set<stack<Production *>> GLRParser::parseString(std::string toParse) {
+set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
 
     std::vector<std::pair<std::stack<std::string>, std::stack<Production *>>> possibleParseStacks; // Must be a vector to be able to append at the end
 
@@ -491,9 +492,6 @@ set<stack<Production *>> GLRParser::parseString(std::string toParse) {
         position++;
 
         if (c == ' ') { continue; } // TODO: fix support for spaces
-
-        std::cout << std::endl << "Output before consuming " << toString(c) << std::endl;
-        printStackSet(possibleParseStacks);
 
         std::vector<std::pair<std::stack<std::string>, std::stack<Production *>>> newPossibleParseStacks;
         for (int i = 0; i < possibleParseStacks.size(); i++) {
@@ -526,6 +524,10 @@ set<stack<Production *>> GLRParser::parseString(std::string toParse) {
             }
         }
         possibleParseStacks = newPossibleParseStacks;
+
+        std::cout << std::endl << "Output after processing " << toString(c) << std::endl;
+        printStackSet(possibleParseStacks);
+
         std::set<std::pair<std::stack<std::string>, Production *>> alreadyReducedStacks; // S -> a, S->ab, after input a, you only want one of the stacks to be reduced
         // Check the production rules in the new added stacks
         for (int i = 0; i < possibleParseStacks.size(); ++i) {
@@ -549,6 +551,9 @@ set<stack<Production *>> GLRParser::parseString(std::string toParse) {
                 possibleParseStacks.erase(possibleParseStacks.begin() + j);
             }
         }
+
+        std::cout << "Output after reducing and eleminating doubles: " << std::endl;
+        printStackSet(possibleParseStacks);
     }
 
 //    bool final = false;
@@ -631,9 +636,9 @@ GLRParser::checkProductionRules(
                 possibleParseStacks.emplace_back(newNewStack,
                                                  newProductions); // i (on which we're iterating) mustn't decrease, because we're checking the size & inserting at the end
 
-                cout << "Reduced, new stack: ";
-                printStack(newNewStack);
-                cout << endl;
+//                cout << "Reduced, new stack: ";
+//                printStack(newNewStack);
+//                cout << endl;
             }
         }
     }

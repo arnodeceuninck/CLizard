@@ -21,6 +21,7 @@ intaVariables = ["translation-unit",  # List of variables for supporting int.cpp
                  "init-declarator-list",
                  "init-declarator",
                  "declarator",
+                 "ptr-declarator",
                  "noptr-declarator",
                  "declarator-id",
                  "id-expression",
@@ -30,6 +31,7 @@ intaVariables = ["translation-unit",  # List of variables for supporting int.cpp
                  "nondigit"]  # a
 
 supportedVariables = intaVariables
+filter = True
 
 # "simple-type-specifier",
 # "keyword",
@@ -85,7 +87,7 @@ for line in html:
     # Check end of production to
     elif '</td>' in line:
         if currentProductionTo:  # and lastReadRuleFrom in supportedVariables:
-            if lastReadRuleFrom not in supportedVariables:
+            if lastReadRuleFrom not in supportedVariables and filter:
                 currentProductionTo = []
                 continue
             # Only add it when currentProductionTo is not empty
@@ -141,7 +143,8 @@ for line in html:
             continue
 html.close()
 
-nonTerminals = supportedVariables
+if filter:
+    nonTerminals = supportedVariables
 
 # Remove all OPTIONALTAGS (by generating all combinations with/without them
 for production in productions:

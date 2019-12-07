@@ -67,7 +67,7 @@ public:
     const std::set<Production *> &getProdEstablished() const;
 
 public:
-    std::set<GLRState *> statesOnInput(std::string input);
+    std::set<GLRState *> statesOnInput(const std::string &input);
 
     void increaseEstablished(Production* prod);
 
@@ -77,9 +77,9 @@ public:
     void setAccepting(bool accepting);
 
 public:
-    GLRState(const std::string &name, const std::set<Production *> &productions);
+    GLRState(std::string name, const std::set<Production *> &productions);
 
-    void addStateTo(GLRState *glrState, std::string label);
+    void addStateTo(GLRState *glrState, const std::string &label);
 
     const std::string &getName() const;
 
@@ -100,7 +100,7 @@ public:
 
     void printTable();
 
-    std::set<std::stack<Production *>> parseString(std::string toParse);
+    std::set<std::stack<Production *>> parseString(const std::string &toParse);
 
 private:
     std::vector<std::string> nonTerminalsV;
@@ -126,7 +126,7 @@ private:
     bool closure(std::set<Production *> &markedProductions, std::set<Production *> &allMarkedProductions);
 
     std::set<Production *>
-    initialProductionsFromVar(std::string var, std::set<Production *> &allMarkedProductions);
+    initialProductionsFromVar(const std::string &var, std::set<Production *> &allMarkedProductions);
 
     GLRState *findState(std::string stateName);
 

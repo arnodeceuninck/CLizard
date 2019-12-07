@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <ctime>
 
 #include "AST.h"
 #include "indiv/CFG.h"
@@ -11,6 +12,13 @@
 
 
 AST::AST(std::string filename) {
+
+    // Source: https://stackoverflow.com/questions/3220477/how-to-use-clock-in-c
+    std::clock_t startTime;
+    double duration;
+
+    std::cout << "Creating CFG..." << std::endl;
+    startTime = std::clock();
 
     // Generate a CFG for the c++ language
     std::vector<std::string> nonTerminalsV;
@@ -22,8 +30,28 @@ AST::AST(std::string filename) {
 
     CFG *cfg = new CFG(nonTerminalsV, terminalsT, productionsP, startS);
 
+    duration = (std::clock() - startTime) / (double) CLOCKS_PER_SEC;
+    std::cout << "Time Required for creating CFG: " << duration << std::endl;
+    std::cout << "Generating GLRParser..." << std::endl;
+    startTime = std::clock();
+
     // Generate a GLRParser
     GLRParser *glrParser = new GLRParser(cfg);
+
+    duration = (std::clock() - startTime) / (double) CLOCKS_PER_SEC;
+    std::cout << "Time Required for creating GLRParser: " << duration << std::endl;
+
+//    std::cout << "Generating dot file for GLRParser..." << std::endl;
+//    startTime = std::clock();
+//
+//    glrParser->toDot("output/glrParser.dot");
+//
+//    duration = (std::clock() - startTime) / (double) CLOCKS_PER_SEC;
+//    std::cout << "Time Required for creating dot file: " << duration << std::endl;
+
+    std::cout << "Parsing string..." << std::endl;
+    startTime = std::clock();
+
 
     // Get the contents of the file (Source: https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring)
     std::ifstream t(filename);
@@ -33,6 +61,10 @@ AST::AST(std::string filename) {
 
     // Parse the contents of the file
     std::set<std::stack<Production *>> parsedVersions = glrParser->parseString(parseString);
+
+    duration = (std::clock() - startTime) / (double) CLOCKS_PER_SEC;
+    std::cout << "Time Required for parsing string: " << duration << std::endl;
+
 
     // Analyze the result of the parsing
     if (parsedVersions.size() == 0) {
