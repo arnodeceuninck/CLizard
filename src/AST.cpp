@@ -61,15 +61,15 @@ AST::AST(std::string filename) {
                 return;
             }
             // Create an ASTree with this list of productions
-            ast = ASTree(productions, nonTerminals, productions.top()->getFromP(), nullptr);
-            filename = "output/parsed" + std::to_string(i);
-            ast.toDot(filename);
+            ast = new ASTree(productions, nonTerminals, productions.top()->getFromP(), nullptr);
+            filename = "output/parsed" + std::to_string(i) + ".dot";
+            ast->toDot(filename);
             i++;
         }
     }
 }
 
 void AST::toDot(std::string filename) {
-    return ast.toDot(filename);
+    return ast->toDot(filename);
 }
 
