@@ -24,7 +24,7 @@ public:
     void toDot(std::string filename = "AST.dot");
 
 private:
-    ASTree ast;
+    ASTree *ast;
 };
 
 

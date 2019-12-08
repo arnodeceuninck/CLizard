@@ -24,22 +24,22 @@ public:
         undefined, shift, reduce, accept
     };
 
-    ParseOperation(GLRState *newState);
+    explicit ParseOperation(GLRState *newState);
 
-    ParseOperation(Production *reduceProduction);
+    explicit ParseOperation(Production *reduceProduction);
 
 private:
     operation operationType;
 public:
-    operation getOperationType() const;
+    [[nodiscard]] operation getOperationType() const;
 
-    Production *getReduceProduction() const;
+    [[nodiscard]] Production *getReduceProduction() const;
 
-    GLRState *getNewState() const;
+    [[nodiscard]] GLRState *getNewState() const;
 
 private:
-    Production *reduceProduction;
-    GLRState *newState;
+    Production *reduceProduction{};
+    GLRState *newState{};
 };
 
 class GLRTransition {
@@ -50,42 +50,56 @@ private:
     std::string label;
     GLRState *stateTo;
 public:
-    const std::string &getLabel() const;
+    [[nodiscard]] const std::string &getLabel() const;
 
-    void setLabel(const std::string &label);
+//    void setLabel(const std::string &label);
 
-    GLRState *getStateTo() const;
+    [[nodiscard]] GLRState *getStateTo() const;
 
-    void setStateTo(GLRState *stateTo);
+//    void setStateTo(GLRState *stateTo);
 };
 
 class GLRState {
     std::string name;
     bool accepting;
-    std::set<Production*> prodEstablished;
+    std::set<Production *> prodEstablished;
 public:
-    const std::set<Production *> &getProdEstablished() const;
+    bool operator==(const GLRState &b) const;
+
+    bool operator!=(const GLRState &b) const;
+
+    bool operator<(const GLRState &b) const;
+
+    bool operator>(const GLRState &b) const;
+
+    bool operator<=(const GLRState &b) const;
+
+    bool operator>=(const GLRState &b) const;
+
+    [[nodiscard]] const std::set<Production *> &getProdEstablished() const;
+
+    std::string toStr() const;
 
 public:
-    std::set<GLRState *> statesOnInput(std::string input);
+    std::set<GLRState *> statesOnInput(const std::string &input);
 
-    void increaseEstablished(Production* prod);
+    void increaseEstablished(Production *prod);
 
 public:
-    bool isAccepting() const;
+    [[nodiscard]] bool isAccepting() const;
 
     void setAccepting(bool accepting);
 
 public:
-    GLRState(const std::string &name, const std::set<Production *> &productions);
+    GLRState(std::string name, const std::set<Production *> &productions);
 
-    void addStateTo(GLRState *glrState, std::string label);
+    void addStateTo(GLRState *glrState, const std::string &label);
 
-    const std::string &getName() const;
+    [[nodiscard]] const std::string &getName() const;
 
-    const std::set<Production *> &getProductions() const;
+    [[nodiscard]] const std::set<Production *> &getProductions() const;
 
-    const std::set<GLRTransition *> &getStatesTo() const;
+    [[nodiscard]] const std::set<GLRTransition *> &getStatesTo() const;
 
 private:
     std::set<Production *> productions;
@@ -94,27 +108,31 @@ private:
 
 class GLRParser {
 public:
-    GLRParser(CFG *cfg);
+    void writeToFile(std::string filename);
+
+    GLRParser(std::string filename); // Read from file
+
+    explicit GLRParser(CFG *cfg);
 
     void toDot(std::string filename);
 
     void printTable();
 
-    std::set<std::stack<Production *>> parseString(std::string toParse);
+    std::set<std::stack<Production *>> parseString(const std::string &toParse);
 
 private:
     std::vector<std::string> nonTerminalsV;
 public:
-    const std::vector<std::string> &getNonTerminalsV() const;
+    [[nodiscard]] const std::vector<std::string> &getNonTerminalsV() const;
 
 private:
     GLRState *acceptState;
     std::vector<std::string> terminalsT;
 
-    void buildTable(); // Converts the states to the parseTable variable
-    std::map<std::pair<std::string, GLRState *>, std::set<ParseOperation *>> parseTable; // input in combination with statenumber gives you the parseoption
-
-    void addState(GLRState *s);
+//    void buildTable(); // Converts the states to the parseTable variable
+//    std::map<std::pair<std::string, GLRState *>, std::set<ParseOperation *>> parseTable; // input in combination with statenumber gives you the parseoption
+//
+//    void addState(GLRState *s);
 
     GLRState *startState;
     std::set<GLRState *> states;
@@ -126,9 +144,9 @@ private:
     bool closure(std::set<Production *> &markedProductions, std::set<Production *> &allMarkedProductions);
 
     std::set<Production *>
-    initialProductionsFromVar(std::string var, std::set<Production *> &allMarkedProductions);
+    initialProductionsFromVar(const std::string &var, std::set<Production *> &allMarkedProductions);
 
-    GLRState *findState(std::string stateName);
+    GLRState *findState(const std::string &stateName);
 
     std::set<ParseOperation *>
     findParseOptions(std::string inputChar, const GLRState *currentState, bool final = false) const;

@@ -23,7 +23,9 @@ public:
 
     const std::vector<std::string> &getToP() const;
 
-    bool operator ==(const Production& p);
+    std::string toStr();
+
+    bool operator==(const Production &p);
 
 private:
     std::string fromP;
