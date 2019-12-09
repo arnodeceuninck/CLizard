@@ -558,7 +558,7 @@ set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
     for (auto c: toParse) {
         position++;
 
-        if (c == ' ' or c == '\n') { continue; }
+//        if (c == ' ' or c == '\n') { continue; }
 
         std::vector<std::pair<std::stack<std::string>, std::stack<Production *>>> newPossibleParseStacks;
         for (int i = 0; i < possibleParseStacks.size(); i++) {
@@ -612,12 +612,7 @@ set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
             }
         }
 
-        // if there are two identical stacks, remove one of them
-        for (int j = 0; j < possibleParseStacks.size(); ++j) {
-            if (std::count(possibleParseStacks.begin(), possibleParseStacks.end(), possibleParseStacks[j]) > 1) {
-                possibleParseStacks.erase(possibleParseStacks.begin() + j);
-            }
-        }
+        removeDuplicates(possibleParseStacks);
 
         std::cout << "Output after reducing and eleminating doubles: " << std::endl;
         printStackSet(possibleParseStacks);
@@ -635,6 +630,16 @@ set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
         }
     }
     return finals;
+}
+
+void
+GLRParser::removeDuplicates(
+        vector<std::pair<std::stack<std::string>, std::stack<Production *>>> &possibleParseStacks) const {// if there are two identical stacks, remove one of them
+    for (int j = 0; j < possibleParseStacks.size(); ++j) {
+        if (count(possibleParseStacks.begin(), possibleParseStacks.end(), possibleParseStacks[j]) > 1) {
+            possibleParseStacks.erase(possibleParseStacks.begin() + j);
+        }
+    }
 }
 
 bool

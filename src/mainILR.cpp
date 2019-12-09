@@ -12,6 +12,6 @@ int main(int argc, char *argv[]) {
 
     std::cout << "Hello, World!" << std::endl;
 
-    std::string filename = "vbn/basic/int.cpp";
+    std::string filename = "vbn/basic/intFuncDef.cpp";
     AST ast(filename);
 }

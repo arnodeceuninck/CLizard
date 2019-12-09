@@ -161,6 +161,9 @@ private:
                          const GLRState *currentState,
                          std::set<std::pair<std::stack<std::string>, Production *>> &alreadyReduced,
                          bool final = false);
+
+    void
+    removeDuplicates(vector<std::pair<std::stack<std::string>, std::stack<Production *>>> &possibleParseStacks) const;
 };
 
 template<class T>
