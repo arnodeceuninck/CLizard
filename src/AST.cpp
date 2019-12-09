@@ -26,7 +26,7 @@ AST::AST(std::string filename) {
     std::vector<Production *> productionsP;
     std::string startS;
 
-    readJson("grammar/cpp.json", nonTerminalsV, terminalsT, productionsP, startS);
+    readJson("grammar/Simple Grammar/cpp.json", nonTerminalsV, terminalsT, productionsP, startS);
 
     CFG *cfg = new CFG(nonTerminalsV, terminalsT, productionsP, startS);
 
@@ -80,7 +80,7 @@ AST::AST(std::string filename) {
         // One unique parse combination found
 
         // Transform the vector of nonTerminals in a set (Source: https://www.techiedelight.com/convert-vector-set-cpp/)
-        std::vector<std::string> glrNonTerminals = glrParser->getNonTerminalsV();
+        std::set<std::string> glrNonTerminals = glrParser->getNonTerminalsV();
         std::set<std::string> nonTerminals(glrNonTerminals.begin(), glrNonTerminals.end());
 
 //        // Get the only element in the set
