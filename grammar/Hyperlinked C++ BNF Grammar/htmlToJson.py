@@ -37,7 +37,7 @@ supportedSections = ["lex.name",
                      "expr.post",
                      "expr.prim.general",
                      "lex.literal.kinds",
-                     "lex.icon" # till here required for int a(); (function declaration)
+                     "lex.icon"  # till here required for int a(); (function declaration)
                      ]
 
 intaVariables = ["translation-unit",  # List of variables for supporting int.cpp

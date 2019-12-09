@@ -121,13 +121,13 @@ public:
     std::set<std::stack<Production *>> parseString(const std::string &toParse);
 
 private:
-    std::vector<std::string> nonTerminalsV;
+    std::set<std::string> nonTerminalsV;
 public:
-    [[nodiscard]] const std::vector<std::string> &getNonTerminalsV() const;
+    [[nodiscard]] const set<string> getNonTerminalsV() const;
 
 private:
     GLRState *acceptState;
-    std::vector<std::string> terminalsT;
+    std::set<std::string> terminalsT;
 
 //    void buildTable(); // Converts the states to the parseTable variable
 //    std::map<std::pair<std::string, GLRState *>, std::set<ParseOperation *>> parseTable; // input in combination with statenumber gives you the parseoption

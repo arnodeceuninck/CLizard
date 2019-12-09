@@ -18,8 +18,14 @@ GLRParser::GLRParser(CFG *cfg) {
 
     cfg->splitUpLongerTerminals();
 
-    nonTerminalsV = cfg->getNonTerminalsV();
-    terminalsT = cfg->getTerminalsT();
+    // Convert vector to set
+    for (const auto &c: cfg->getNonTerminalsV()) {
+        nonTerminalsV.insert(c);
+    }
+    for (const auto &c: cfg->getTerminalsT()) {
+        terminalsT.insert(c);
+    }
+
     // TODO: fix all terminals only 1 char
     std::vector<Production *> productionsP = cfg->getProductionsP();
     std::string startS = cfg->getStartS();
@@ -29,7 +35,7 @@ GLRParser::GLRParser(CFG *cfg) {
     // Start by creating a new start state
     std::string oldStartState = startS;
     startS = std::to_string(stateNr++); // "Sb";
-    nonTerminalsV.push_back(startS);
+    nonTerminalsV.insert(startS);
     // and letting this start state point to the original one
     auto *start = new Production(startS, {oldStartState});
     // (This ensures the start state appears in only one rewrite rule)
@@ -140,7 +146,7 @@ GLRParser::GLRParser(CFG *cfg) {
 //        char newVariable = 'A';
 //        while (inVector(toString(newVariable), nonTerminalsV)) { newVariable++; }
         std::string var = std::to_string(stateNr++);
-        nonTerminalsV.emplace_back(var);
+        nonTerminalsV.insert(var);
 
         // Calculate the closure
         while (closure(sMovedRightOfX, markedProductions)) {}
@@ -762,7 +768,7 @@ GLRState *GLRParser::findState(const std::string &stateName) {
     return nullptr;
 }
 
-const vector<std::string> &GLRParser::getNonTerminalsV() const {
+const set<string> GLRParser::getNonTerminalsV() const {
     return nonTerminalsV;
 }
 
@@ -806,6 +812,64 @@ void GLRParser::writeToFile(std::string filename) {
     outputFile << startState->getName();
 
     outputFile.close();
+}
+
+GLRParser::GLRParser(std::string filename) {
+    // Source: https://stackoverflow.com/questions/7868936/read-file-line-by-line-using-ifstream-in-c
+    std::ifstream input(filename);
+
+    std::string stateName;
+    bool stateAccepting = false;
+    std::set<Production *> productions;
+    std::string productionFrom;
+    std::vector<std::string> prodTo;
+
+    std::string lastRead = "";
+    for (std::string line; getline(input, line);) {
+        // TODO: Remove \n from line
+        if (line == "#NONTERMINALS#" or line == "#TERMINALS#" or line == "#STATES#" or line == "#STATE.NAME#" or
+            line == "#STATE.ACCEPTING#" or line == "#STATE.PRODUCTIONS#" or line == "#STATE.PRODUCTION#" or
+            line == "#PROD.FROM#" or line == "#PROD.STATES#" or line == "#PROD.STATE#" or line == "#STARTSTATE#" or
+            line == "#ACCEPTSTATE#") {
+
+            if((lastRead == "#PROD.FROM#" or lastRead == "#PROD.STATES#" or lastRead == "#PROD.STATE#")
+            and line == "#STATE.PRODUCTION#"){
+                // Process the previous production
+                productions.insert(new Production(productionFrom, prodTo));
+                prodTo = {};
+                productionFrom = "";
+            }
+
+            lastRead = line;
+            continue;
+        } else if (lastRead == "#NONTERMINALS#") {
+            terminalsT.insert(line);
+        } else if (lastRead == "#TERMINALS#") {
+            terminalsT.insert(line);
+        } else if (lastRead == "#STATES#") {
+            // This shouldn't be possible, since this is immediately followed by a state.name
+        } else if (lastRead == "#STATE.NAME#"){
+            stateName = line;
+        } else if (lastRead == "#STATE.ACCEPTING#"){
+            if(line == "0"){
+                stateAccepting = false;
+            } else if (line == "1"){
+                stateAccepting = true;
+            }
+        } else if (lastRead == "#STATE.PRODUCTIONS#"){
+            // This shouldn't be possible, since this is immediately followed by a state.production
+        } else if (lastRead == "#STATE.PRODUCTION#"){
+            // This shouldn't be possible, since this is immediately followed by a prod.from
+        } else if (lastRead == "#PROD.FROM#"){
+            productionFrom = line;
+        } else if (lastRead == "#PROD.STATES#"){
+            // This shouldn't be possible, since this is immediately followed by a prod.from
+        } else if (lastRead == "#PROD.STATE#"){
+            prodTo.push_back(line);
+        } else if (lastRead == "#STARTSTATE#"){
+            startState = findState(line);
+        }
+    }
 }
 
 GLRTransition::GLRTransition(
