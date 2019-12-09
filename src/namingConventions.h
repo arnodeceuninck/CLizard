@@ -14,4 +14,9 @@ int namingConventionsVariables(const std::vector<std::string> &inputFiles);
 
 int namingConventionsFunctions(const std::vector<std::string> &inputFiles);
 
+
+
+
+
+
 #endif //CLIZARD_NAMINGCONVENTIONS_H

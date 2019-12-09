@@ -8,8 +8,9 @@ set(ALWAYS_REQUIRED src/AST.cpp src/AST.h ${INDIV})
 
 set(ARNO src/includeLoopRecognition.cpp src/includeLoopRecognition.h)
 set(SAM src/rearrangeFunctions.cpp src/rearrangeFunctions.h)
-set(TJENNE src/namingConventions.cpp src/namingConventions.h)
-set(TIM src/groupPublicPrivate.cpp src/groupPublicPrivate.h src/simplifyMathematicalExpressions.cpp src/simplifyMathematicalExpressions.h)
+set(TJENNE src/namingConventions.cpp src/namingConventions.h vbn/NamingConvTests/classInit.cpp src/indiv/Tjenne/Pda.cpp src/indiv/Tjenne/json.hpp src/indiv/Tjenne/Pda.h src/indiv/Tjenne/Node.cpp src/indiv/Tjenne/Node.h)
+set(TIM src/groupPublicPrivate.cpp src/groupPublicPrivate.h src/simplifyMathematicalExpressions.cpp src/simplifyMathematicalExpressions.h src/mainNamingConventions.cpp)
 
 add_executable(CLizard src/main.cpp ${ALWAYS_REQUIRED} ${ARNO} ${SAM} ${TJENNE} ${TIM})
 add_executable(Arno src/mainILR.cpp ${ALWAYS_REQUIRED} ${ARNO})
+add_executable(Tjenne src/mainNamingConventions.cpp ${TJENNE})
