@@ -14,7 +14,7 @@ int simplifyMathematicalExpressions(const std::vector<std::string> &inputFiles) 
     //std::vector<std::string> test = toPRN("((15/(7-(1+1)))*3)-(2+(1+1))");
     //std::vector<std::string> test2 = simplify(test);
     std::cout << toInfix(simplify(toPRN("((15/(7-(var+1)))*3)-(2+(1+1))"))) << std::endl;
-    std::cout << toInfix(simplify(toPRN("9/3*2"))) << std::endl;
+    std::cout << toInfix(simplify(toPRN("2+9/3*2"))) << std::endl;
     return 0;
 }
 
@@ -125,7 +125,7 @@ std::string toInfix(std::vector<std::string> input) {
 }
 
 std::vector<std::string> simplify(std::vector<std::string> input) {
-    std::vector<std::string>::iterator pos = input.begin();
+    std::vector<std::string>::iterator pos = std::next(input.begin());
     std::vector<std::string> operators{"+", "-", "*", "/"};
     while(pos != input.end() && std::next(pos) != input.end()){
         while(std::next(pos) != input.end() && !isOperator(*std::next(pos))){
@@ -135,13 +135,13 @@ std::vector<std::string> simplify(std::vector<std::string> input) {
         float temp;
         if(isNumber(*pos) && isNumber(*std::prev(pos))){
             std::string operatorToken = *std::next(pos);
-            if(operatorToken == "+"){
-                 temp = std::stof(*std::prev(pos)) + std::stof(*pos);
-            } else if (operatorToken == "-"){
+            if (operatorToken == "+") {
+                temp = std::stof(*std::prev(pos)) + std::stof(*pos);
+            } else if (operatorToken == "-") {
                 temp = std::stof(*std::prev(pos)) - std::stof(*pos);
-            } else if (operatorToken == "/"){
+            } else if (operatorToken == "/") {
                 temp = std::stof(*std::prev(pos)) / std::stof(*pos);
-            } else if (operatorToken == "*"){
+            } else if (operatorToken == "*") {
                 temp = std::stof(*std::prev(pos)) * std::stof(*pos);
             }
             *pos = std::to_string(temp);
