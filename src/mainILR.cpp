@@ -8,10 +8,7 @@
 #include "simplifyMathematicalExpressions.h"
 #include "AST.h"
 
-int main(int argc, char *argv[]) {
-
-    std::cout << "Hello, World!" << std::endl;
-
+void example() {
     std::string filename = "vbn/basic/simpleCombination.cpp";
     AST ast(filename);
 
@@ -19,4 +16,17 @@ int main(int argc, char *argv[]) {
 
     std::cout << "The first function in the parsed file is: " << std::endl;
     std::cout << funcDefs[0]->yield();
+}
+
+int main(int argc, char *argv[]) {
+
+    std::cout << "Hello, World!" << std::endl;
+
+    example(); // Assure this one keeps working when extending the grammar
+
+//    std::string filename = "vbn/basic/mathematicalExpressions.cpp";
+//    AST ast(filename);
+//
+//    filename = "output/parsed.dot";
+//    ast.toDot(filename);
 }

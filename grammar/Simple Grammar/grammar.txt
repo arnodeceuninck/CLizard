@@ -3,7 +3,16 @@ declaration-seq -> declaration | declaration-seq declaration |
 declaration -> block-declaration | function-definition | namespace-definition |
 block-declaration -> simple-declaration | function-declaration |
 function-declaration -> class-type \  function-name ( OPT:parameters ) ; OPT:newline |
-simple-declaration -> class-type \  variable ; OPT:newline |
+simple-declaration -> class-type \  variable OPT:assignment ; OPT:newline |
+assignment -> \  = \  expression |
+expression -> equality-expression |
+equality-expression -> relational-expression | equality-expression \  == \  relational-expression |
+relational-expression -> additive-expression | relational-expression \  < \  additive-expression | relational-expression \  > \  additive-expression | relational-expression \  <= \  additive-expression | relational-expression \  >= \  additive-expression |
+additive-expression -> multiplicative-expression | additive-expression \  + \  multiplicative-expression | additive-expression \  - \  multiplicative-expression |
+multiplicative-expression -> brackets-expression | multiplicative-expression \  * \  brackets-expression | multiplicative-expression \  / \  brackets-expression | multiplicative-expression \  % \  brackets-expression |
+brackets-expression -> ( expression-variable ) | expression-variable |
+expression-variable -> variable | literal |
+%identifier | literal
 % class-type used as alias for decl-specifier-seq
 % variable used instead of init-declarator-list
 class-type -> identifier |
@@ -16,4 +25,7 @@ function-definition -> class-type \  function-name ( OPT:parameters ) \  { OPT:n
 function-name -> identifier |
 parameters -> parameter | parameter , \  parameter |
 parameter -> class-type \  variable |
+literal -> number | char-literal |
+number -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+char-literal -> 'a'
 % using parameters ad parameter-declaration-claus

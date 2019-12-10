@@ -94,8 +94,8 @@ AST::AST(std::string filename) {
             }
             // Create an ASTree with this list of productions
             ast = new ASTree(productions, nonTerminals, productions.top()->getFromP(), nullptr);
-            filename = "output/parsed" + std::to_string(i) + ".dot";
-            ast->toDot(filename);
+//            filename = "output/parsed" + std::to_string(i) + ".dot";
+//            ast->toDot(filename);
             i++;
         }
     }

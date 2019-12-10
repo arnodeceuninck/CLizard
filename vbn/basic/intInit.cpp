@@ -1,1 +1,1 @@
-int a = 3; // TODO
+bool a = b;
