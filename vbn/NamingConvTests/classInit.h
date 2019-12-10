@@ -8,10 +8,14 @@ public:
 
 
 };
-class ClAs69S{
-
+class ClAASS69S{
+int hehn;
 };
 
 int integer = 0;class zeb{
 
 };
+
+
+ClAASS69S yeah;
+zeb Zebber;

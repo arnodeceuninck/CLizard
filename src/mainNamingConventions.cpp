@@ -9,11 +9,9 @@
 int main(int argc, char** argv){
 std::vector<std::string> filenames;
 
-    for (unsigned int file = 0; file < argc; ++file) {
+    for (unsigned int file = 1; file < argc; ++file) {
         filenames.emplace_back(argv[file]);
     }
-    std::string classTest = "-CL+__=AS69__S";
-    correctClassName(classTest);
 
     namingConventionsClasses(filenames);
 

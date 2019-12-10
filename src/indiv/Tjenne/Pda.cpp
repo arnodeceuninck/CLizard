@@ -97,7 +97,7 @@ bool Pda::traverse(std::string input) {
             std::map<const char, unsigned int> counter = initMap(n);
             // loop over transition
             for(auto& f: n->getTransitions()){
-                if((f->getInput() == input[i] && f->getOldStack() == n->getStack().top()) || (f->getInput() == ' ' && f->getOldStack() == n->getStack().top()) || (f->getInput() == input[i] && f->getOldStack() == ' ') ){
+                if((f->getInput() == input[i] && f->getOldStack() == n->getStack().top()) || (f->getInput() == ' ' && f->getOldStack() == n->getStack().top()) || (f->getInput() == input[i] && f->getOldStack() == ' ') || (f->getInput() == ' ' && f->getOldStack() == ' ') ){
 
                     //eclosurre adden
 
