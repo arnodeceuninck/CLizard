@@ -106,6 +106,18 @@ void AST::toDot(std::string filename) {
 }
 
 std::vector<AST *> AST::find(std::string varName) {
-    return std::vector<AST *>();
+    std::vector<ASTree *> trees1;
+    std::vector<AST *> trees2;
+    ast->find(varName, trees1);
+    for (auto tree: trees1) {
+        trees2.emplace_back(new AST(tree));
+    }
+    return trees2;
+}
+
+AST::AST(ASTree *ast) : ast(ast) {}
+
+std::string AST::yield() {
+    return ast->yield();
 }
 

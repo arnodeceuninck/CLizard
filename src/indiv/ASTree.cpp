@@ -105,3 +105,12 @@ const string &ASTree::getRoot() const {
 ASTree::ASTree() : root(""), parent(nullptr), subtrees({}) {
 
 }
+
+void ASTree::find(string basicString, vector<ASTree *> &vector) {
+    if (root == basicString) {
+        vector.emplace_back(this);
+    }
+    for (auto child: subtrees) {
+        child->find(basicString, vector);
+    }
+}

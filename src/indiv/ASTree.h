@@ -46,6 +46,8 @@ public:
 
     ASTree(std::stack<Production *> &productions, const std::set<std::string> &nonTerminals, std::string newRoot,
            ASTree *parent);
+
+    void find(string basicString, vector<ASTree *> &vector);
 };
 
 

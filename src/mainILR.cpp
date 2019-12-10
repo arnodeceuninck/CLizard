@@ -14,4 +14,9 @@ int main(int argc, char *argv[]) {
 
     std::string filename = "vbn/basic/simpleCombination.cpp";
     AST ast(filename);
+
+    std::vector<AST *> funcDefs = ast.find("function-definition");
+
+    std::cout << "The first function in the parsed file is: " << std::endl;
+    std::cout << funcDefs[0]->yield();
 }

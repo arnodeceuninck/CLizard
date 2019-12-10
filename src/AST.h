@@ -25,8 +25,12 @@ public:
 
     std::vector<AST *> find(std::string varName);
 
+    std::string yield();
+
 private:
     ASTree *ast;
+
+    AST(ASTree *ast);
 };
 
 
