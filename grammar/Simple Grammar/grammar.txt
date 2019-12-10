@@ -1,7 +1,8 @@
 translation-unit -> declaration-seq |
 declaration-seq -> declaration | declaration-seq declaration |
 declaration -> block-declaration | function-definition | namespace-definition |
-block-declaration -> simple-declaration |
+block-declaration -> simple-declaration | function-declaration |
+function-declaration -> class-type \  function-name ( OPT:parameters ) ; OPT:newline |
 simple-declaration -> class-type \  variable ; OPT:newline |
 % class-type used as alias for decl-specifier-seq
 % variable used instead of init-declarator-list
@@ -16,7 +17,3 @@ function-name -> identifier |
 parameters -> parameter | parameter , \  parameter |
 parameter -> class-type \  variable |
 % using parameters ad parameter-declaration-claus
-% TODO: function-definition | namespace-definition | simple-declaration
-% block-declaration -> opaque-enum-declaration
-% opaque-enum-declaration -> enum-key
-% enum-key -> enum

@@ -105,3 +105,7 @@ void AST::toDot(std::string filename) {
     return ast->toDot(filename);
 }
 
+std::vector<AST *> AST::find(std::string varName) {
+    return std::vector<AST *>();
+}
+

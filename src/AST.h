@@ -23,6 +23,8 @@ public:
      */
     void toDot(std::string filename = "AST.dot");
 
+    std::vector<AST *> find(std::string varName);
+
 private:
     ASTree *ast;
 };

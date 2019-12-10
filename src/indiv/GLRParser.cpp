@@ -554,6 +554,8 @@ set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
 
     bool finalStack = false;
 
+    std::string succes;
+
     int position = 0;
     for (auto c: toParse) {
         position++;
@@ -592,6 +594,10 @@ set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
         }
         possibleParseStacks = newPossibleParseStacks;
 
+        if (!possibleParseStacks.empty()) {
+            succes += c;
+        }
+
         std::cout << std::endl << "Output after processing " << toString(c) << std::endl;
         printStackSet(possibleParseStacks);
 
@@ -629,6 +635,12 @@ set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
             std::cout << "String accepted." << std::endl;
         }
     }
+
+    if (finals.empty()) {
+        std::cout << "Something went wrong, probably after this text: " << std::endl;
+        std::cout << succes << std::endl;
+    }
+
     return finals;
 }
 

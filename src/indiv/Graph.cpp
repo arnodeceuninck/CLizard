@@ -5,8 +5,11 @@
 #include "Graph.h"
 #include <fstream>
 #include <stdlib.h>
+#include <set>
+#include <algorithm>
 
-Node::Node(const string &name, const string &label, const string &shape) : name(name), label(label), shape(shape), extra("") {}
+Node::Node(const string &name, const string &label, const string &shape) : name(name), label(label), shape(shape),
+                                                                           extra("") {}
 
 const string &Node::getName() const {
     return name;
@@ -33,7 +36,18 @@ void Node::setShape(const string &shape) {
 }
 
 string Node::to_string() {
-    string str = name + "[label=\"" + label + "\" shape=" + shape + " " + extra + "]";
+    std::string newLabel;
+    std::set<char> escapeChars = {'{', '}'};
+    int i = 0;
+    for (char c: label) {
+        i++;
+        if (std::find(escapeChars.begin(), escapeChars.end(), c) != escapeChars.end() and i != 1 and
+            i != label.size()) {
+            newLabel += '\\';
+        }
+        newLabel += c;
+    }
+    string str = name + "[label=\"" + newLabel + "\" shape=" + shape + " " + extra + "]";
     return str;
 }
 
@@ -102,13 +116,13 @@ string Graph::to_string() {
 void Graph::build_file(string filename) {
     // Source: http://www.cplusplus.com/doc/tutorial/files/
     ofstream myfile;
-    myfile.open (filename);
+    myfile.open(filename);
     myfile << to_string();
     myfile.close();
 
     // Source: http://www.cplusplus.com/reference/cstdlib/system/
-    const string command = "dot -Tpng " + filename + " -o " + filename + ".png";
-    system(command.c_str());
+//    const string command = "dot -Tpng " + filename + " -o " + filename + ".png";
+//    system(command.c_str());
 }
 
 void Graph::setRankdir(const string &rankdir) {
