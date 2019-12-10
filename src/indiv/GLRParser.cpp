@@ -145,7 +145,7 @@ GLRParser::GLRParser(CFG *cfg) {
         // Find a new name for the variable
 //        char newVariable = 'A';
 //        while (inVector(toString(newVariable), nonTerminalsV)) { newVariable++; }
-        std::string var = std::to_string(stateNr++);
+        std::string var = "STATE#" + std::to_string(stateNr++);
         nonTerminalsV.insert(var);
 
         // Calculate the closure

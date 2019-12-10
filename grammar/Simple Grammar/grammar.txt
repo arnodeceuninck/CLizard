@@ -17,15 +17,16 @@ expression-variable -> variable | literal |
 % variable used instead of init-declarator-list
 class-type -> identifier |
 variable -> identifier |
-identifier -> OPT:identifier digit |
-% digit used as digit or non-digit
-digit -> a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | _ |
+identifier -> OPT:identifier non-digit |
+non-digit -> a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | _ |
 newline -> \\n | \  | newline newline |
 function-definition -> class-type \  function-name ( OPT:parameters ) \  { OPT:newline declaration-seq } OPT:newline |
 function-name -> identifier |
 parameters -> parameter | parameter , \  parameter |
 parameter -> class-type \  variable |
 literal -> number | char-literal |
-number -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
-char-literal -> 'a'
+number -> OPT:number digit |
+digit -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+char-literal -> ' character ' |
+character -> digit | non-digit |
 % using parameters ad parameter-declaration-claus
