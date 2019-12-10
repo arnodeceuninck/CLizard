@@ -1,0 +1,19 @@
+{
+	"States": ["q0", "q1", "q2", "q3", "q4", "qf"],
+	"Alphabet": ["c", "l", "a", "s", " "],
+	"StackAlphabet": ["0", "1", "Z0"],
+	
+	"Transitions": [
+		{"from": "q0", "input": "c", "stacktop": "Z0", "to": "q1", "replacement": []},
+		{"from": "q1", "input": "l", "stacktop": "Z0", "to": "q2", "replacement": []},
+		{"from": "q2", "input": "a", "stacktop": "Z0", "to": "q3", "replacement": []},
+		{"from": "q3", "input": "s", "stacktop": "Z0", "to": "q4", "replacement": []},
+		{"from": "q4", "input": "s", "stacktop": "Z0", "to": "qf", "replacement": []},
+		{"from": "q0", "input": " ", "stacktop": "Z0", "to": "q0", "replacement": []}
+	],
+
+	"StartState": "q0",
+	"StartStack": "Z0",
+	
+	"FinalStates": ["qf"]
+}
