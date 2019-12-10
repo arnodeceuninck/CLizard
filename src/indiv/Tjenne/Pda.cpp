@@ -11,7 +11,7 @@
 Pda::Pda() {}
 
 
-std::map<const char, unsigned int> Pda::initMap(Node *n) {
+std::map<const char, unsigned int> Pda::initMap(Tjen::Node *n) {
     std::map<const char, unsigned int> m;
     for (auto &f: n->getTransitions()) {
         m[f->getInput()] ++;
@@ -20,8 +20,8 @@ std::map<const char, unsigned int> Pda::initMap(Node *n) {
 }
 
 
-    bool Pda::checkForNode(std::vector<Node *> &v, Node *n) {
-        for (Node *current: v) {
+    bool Pda::checkForNode(std::vector<Tjen::Node *> &v, Tjen::Node *n) {
+        for (Tjen::Node *current: v) {
             if (n == current) {
                 return true;
             }
@@ -30,8 +30,8 @@ std::map<const char, unsigned int> Pda::initMap(Node *n) {
     }
 
 
-    bool Pda::checkIfDouble(std::vector<Node *> &v, Node *n) {
-    for(Node* state : v){
+    bool Pda::checkIfDouble(std::vector<Tjen::Node *> &v, Tjen::Node *n) {
+    for(Tjen::Node* state : v){
         if(state->getStack() == n->getStack() && state->getName() == n->getName()){
             return true;
         }
@@ -42,8 +42,8 @@ std::map<const char, unsigned int> Pda::initMap(Node *n) {
 
 
 
-void Pda::addFunct(Node *from, Node *to, char oldStack, std::string newStack, const char input) {
-    Node::Transition* t = new Node::Transition(from,to,oldStack,newStack,input);
+void Pda::addFunct(Tjen::Node *from, Tjen::Node *to, char oldStack, std::string newStack, const char input) {
+    Tjen::Node::Transition* t = new Tjen::Node::Transition(from,to,oldStack,newStack,input);
     this->alltransitions.push_back(t);
     from->addFunct(t);
 }
@@ -51,7 +51,7 @@ void Pda::addFunct(Node *from, Node *to, char oldStack, std::string newStack, co
 
 
 void Pda::addNode(std::string name, bool start, bool end) {
-    Node * n = new Node(name);
+    Tjen::Node * n = new Tjen::Node(name);
     this->allNodes.push_back(n);
 
     if(start){
@@ -62,7 +62,7 @@ void Pda::addNode(std::string name, bool start, bool end) {
     }
 }
 
-void Pda::addNode(Node *n, bool start, bool end) {
+void Pda::addNode(Tjen::Node *n, bool start, bool end) {
     this->allNodes.push_back(n);
 
     if(start){
@@ -84,16 +84,16 @@ bool Pda::traverse(std::string input) {
     std::stack<char> s;
     s.push('z');
     this->getStart()->setStack(s);
-    std::vector<Node*> activeStates = {findEclosure(this->getStart())};
+    std::vector<Tjen::Node*> activeStates = {findEclosure(this->getStart())};
 
 
     //begin traverse
     for (unsigned int i = 0; i < input.size(); ++i) {
-        std::vector<Node*> newActives;
+        std::vector<Tjen::Node*> newActives;
 
 
         // loop over active states
-        for(Node* n: activeStates){
+        for(Tjen::Node* n: activeStates){
             std::map<const char, unsigned int> counter = initMap(n);
             // loop over transition
             for(auto& f: n->getTransitions()){
@@ -101,10 +101,10 @@ bool Pda::traverse(std::string input) {
 
                     //eclosurre adden
 
-                    Node* next = new Node(f->getTo());
+                    Tjen::Node* next = new Tjen::Node(f->getTo());
                     next->setStack(n->getStack());
                     next->editStack(f->getNewstack());
-                    std::vector<Node*> eclos = findEclosure(next);
+                    std::vector<Tjen::Node*> eclos = findEclosure(next);
 
                     newActives.insert(newActives.begin(),eclos.begin() , eclos.end());
 
@@ -116,8 +116,8 @@ bool Pda::traverse(std::string input) {
 
     }
 
-    for(Node* n : activeStates){
-        for(Node* end : this->getEndNodes()){
+    for(Tjen::Node* n : activeStates){
+        for(Tjen::Node* end : this->getEndNodes()){
             if(end->getName() == n->getName()){
                 return true;
             }
@@ -127,8 +127,8 @@ bool Pda::traverse(std::string input) {
 
 }
 
-Node* Pda::searchNode(std::string &name) {
-    for(Node* node: allNodes){
+Tjen::Node* Pda::searchNode(std::string &name) {
+    for(Tjen::Node* node: allNodes){
         if(node->getName() == name){
             return node;
         }
@@ -136,16 +136,16 @@ Node* Pda::searchNode(std::string &name) {
     return nullptr;
 }
 
-std::vector<Node*> Pda::findEclosure(Node *n) {
+std::vector<Tjen::Node*> Pda::findEclosure(Tjen::Node *n) {
 
-    std::vector<Node *> eclosure; //totaal
+    std::vector<Tjen::Node *> eclosure; //totaal
     eclosure.push_back(n);
 
     bool found = true;
     bool first = true;
     while (found) {
 
-        std::vector<Node *> newclosure; //gevonden
+        std::vector<Tjen::Node *> newclosure; //gevonden
 
         found = false;
         for (auto &node: eclosure) {
@@ -153,7 +153,7 @@ std::vector<Node*> Pda::findEclosure(Node *n) {
                 const char in = f->getInput();
                 const char *e = "ε";
 
-                Node *next = new Node(f->getTo());
+                Tjen::Node *next = new Tjen::Node(f->getTo());
                 next->setStack(node->getStack());
                 if (in == *e) {
                     next->editStack(f->getNewstack());
@@ -179,8 +179,8 @@ std::vector<Node*> Pda::findEclosure(Node *n) {
 
 
 
-bool Pda::checkForTrans(std::vector<Node::Transition*> &v, Node::Transition *t) {
-    for (Node::Transition* trans:v) {
+bool Pda::checkForTrans(std::vector<Tjen::Node::Transition*> &v, Tjen::Node::Transition *t) {
+    for (Tjen::Node::Transition* trans:v) {
         if(t->getTo() == trans->getTo()  && t->getFrom() == trans->getFrom()){ return true;}
 
     }
@@ -198,15 +198,15 @@ void Pda::createDot() {
     s+= "invis [style=invisible] \n";
 
     //endstates dubbele rand geven
-    std::vector<Node*> ends = this->getEndNodes();
-    for (Node* node: this->getAllNodes()) {
+    std::vector<Tjen::Node*> ends = this->getEndNodes();
+    for (Tjen::Node* node: this->getAllNodes()) {
         if(checkForNode(ends, node)){
             s+= node->getName() + " [shape=doublecircle] \n";
         }
 
 
         //transities toevoegen
-        std::vector<Node::Transition*> used;
+        std::vector<Tjen::Node::Transition*> used;
         for (auto& t: node->getTransitions()) {
             if (!checkForTrans(used, t)) {
                 std::string label = "[label=\"";
@@ -315,9 +315,9 @@ void Pda::readJson(const std::string file) {
         }
 
         std::string n = parser["Transitions"][i]["from"];
-        Node* from = searchNode(n);
+        Tjen::Node* from = searchNode(n);
         n = parser["Transitions"][i]["to"];
-        Node* to = searchNode(n);
+        Tjen::Node* to = searchNode(n);
         std::string input_s = parser["Transitions"][i]["input"];
         char c = input_s[0];
         const char* input_c = &c;
@@ -344,7 +344,7 @@ void Pda::setStackAlphabet(std::string stackAlphabet) {
     stack_alphabet = stackAlphabet;
 }
 
-Node *Pda::getStart() const {
+Tjen::Node *Pda::getStart() const {
     return start;
 }
 
@@ -352,11 +352,11 @@ const std::string Pda::getAlphabet() const {
     return alphabet;
 }
 
-const std::vector<Node *> &Pda::getEndNodes() const {
+const std::vector<Tjen::Node *> &Pda::getEndNodes() const {
     return endNodes;
 }
 
-const std::vector<Node *> &Pda::getAllNodes() const {
+const std::vector<Tjen::Node *> &Pda::getAllNodes() const {
     return allNodes;
 }
 
