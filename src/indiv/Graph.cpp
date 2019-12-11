@@ -40,6 +40,9 @@ string Node::to_string() {
     std::set<char> escapeChars = {'{', '}', '"'};
     int i = 0;
     for (char c: label) {
+        if (c == '"' and i != 0 and i != label.size() - 1) {
+            std::cout << "Yeet" << std::endl;
+        }
         i++;
         if (std::find(escapeChars.begin(), escapeChars.end(), c) != escapeChars.end() and i != 1 and
             i != label.size()) {
