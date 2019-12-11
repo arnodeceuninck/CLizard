@@ -1,6 +1,11 @@
 translation-unit -> declaration-seq |
 declaration-seq -> declaration | declaration-seq declaration |
-declaration -> block-declaration | function-definition | namespace-definition | function-call \  ; | return-value | selection-statement |
+declaration -> block-declaration | function-definition | namespace-definition | function-call \  ; | return-value | selection-statement | stream-statements | assignment-line ; newline |
+assignment-line -> variable assignment | variable ++ | variable -- | variable \  +=  expression | variable \  +=  expression | variable \  -=  expression | variable \  /=  expression |
+stream-statements -> stream-statement \  << \  additive-expression ; newline | stream-statement \  >> \  additive-expression ; newline |
+stream-statement -> stream-statement \  << \  additive-expression | stream-statement \  >> \  additive-expression | additive-expression |
+stream-out -> expression \  | stream-out >> \  expression |
+stream-in -> expression \  | stream-in << \  expression |
 selection-statement -> if \  ( expression ) \  { newline declaration-seq } OPT:else-if-statements OPT:else-statement newline |
 else-if-statements -> OPT:else-if-statements else-if-statement |
 else-if-statement -> \  else \  eif \  ( expression ) \  { newline declaration-seq } |
@@ -33,12 +38,12 @@ return-value -> return OPT:return-expr ; OPT:newline |
 return-expr -> \  expression |
 function-name -> OPT:namespace identifier |
 parameters -> parameter | parameter , \  parameter |
-parameter -> class-type \  variable | expression |
+parameter -> class-type \  variable | expression | variable |
 literal -> number | char-literal | string-literal |
 string-literal -> " string " |
 string -> OPT:string string-character |
 string-character -> character | special-character |
-special-character -> \  | , | ! | ? | ; | - | ) | ( |
+special-character -> \  | , | ! | ? | ; | - | ) | ( | = | * | - | + | : |
 % . | ! | ? | * | @ | # | % | ^ | & | ( | ) | [ | { | } | ] | ' | / | , | < | > |
 number -> OPT:number digit |
 digit -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
