@@ -20,15 +20,17 @@ expression-variable -> variable | literal | function-call |
 %identifier | literal
 % class-type used as alias for decl-specifier-seq
 % variable used instead of init-declarator-list
-class-type -> identifier |
-variable -> identifier |
+class-type -> OPT:namespace identifier |
+variable -> OPT:namespace identifier |
+namespace -> identifier :: |
+namespace-name -> identifier |
 identifier -> OPT:identifier non-digit |
 non-digit -> a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | _ |
 newline -> \\n | \  | newline newline |
 function-definition -> class-type \  function-name ( OPT:parameters ) \  { OPT:newline declaration-seq } OPT:newline |
 return-value -> return OPT:return-expr ; OPT:newline |
 return-expr -> \  expression |
-function-name -> identifier |
+function-name -> OPT:namespace identifier |
 parameters -> parameter | parameter , \  parameter |
 parameter -> class-type \  variable | expression |
 literal -> number | char-literal | string-literal |

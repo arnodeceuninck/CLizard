@@ -1,1 +1,1 @@
-string a = "Waarom werkt dit niet? Ah oei, het werkt wel! ;-)";
+std::string a = "Waarom werkt dit niet? Ah oei, het werkt wel! ;-)";

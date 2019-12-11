@@ -37,7 +37,7 @@ void Node::setShape(const string &shape) {
 
 string Node::to_string() {
     std::string newLabel;
-    std::set<char> escapeChars = {'{', '}'};
+    std::set<char> escapeChars = {'{', '}', '"'};
     int i = 0;
     for (char c: label) {
         i++;
