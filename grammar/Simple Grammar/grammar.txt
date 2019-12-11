@@ -1,6 +1,11 @@
 translation-unit -> declaration-seq |
 declaration-seq -> declaration | declaration-seq declaration |
-declaration -> block-declaration | function-definition | namespace-definition |
+declaration -> block-declaration | function-definition | namespace-definition | function-call \  ; | return-value | selection-statement |
+selection-statement -> if \  ( expression ) \  { newline declaration-seq } OPT:else-if-statements OPT:else-statement newline |
+else-if-statements -> OPT:else-if-statements else-if-statement |
+else-if-statement -> \  else \  if \  ( expression ) \  { newline declaration-seq } |
+else-statement -> \  else \  { newline declaration-seq } |
+function-call -> function-name ( OPT:parameters ) |
 block-declaration -> simple-declaration | function-declaration |
 function-declaration -> class-type \  function-name ( OPT:parameters ) ; OPT:newline |
 simple-declaration -> class-type \  variable OPT:assignment ; OPT:newline |
@@ -11,7 +16,7 @@ relational-expression -> additive-expression | relational-expression \  < \  add
 additive-expression -> multiplicative-expression | additive-expression \  + \  multiplicative-expression | additive-expression \  - \  multiplicative-expression |
 multiplicative-expression -> brackets-expression | multiplicative-expression \  * \  brackets-expression | multiplicative-expression \  / \  brackets-expression | multiplicative-expression \  % \  brackets-expression |
 brackets-expression -> ( expression-variable ) | expression-variable |
-expression-variable -> variable | literal |
+expression-variable -> variable | literal | function-call |
 %identifier | literal
 % class-type used as alias for decl-specifier-seq
 % variable used instead of init-declarator-list
@@ -20,12 +25,12 @@ variable -> identifier |
 identifier -> OPT:identifier non-digit |
 non-digit -> a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | _ |
 newline -> \\n | \  | newline newline |
-function-definition -> class-type \  function-name ( OPT:parameters ) \  { OPT:newline declaration-seq OPT:return-value } OPT:newline |
+function-definition -> class-type \  function-name ( OPT:parameters ) \  { OPT:newline declaration-seq } OPT:newline |
 return-value -> return OPT:return-expr ; OPT:newline |
 return-expr -> \  expression |
 function-name -> identifier |
 parameters -> parameter | parameter , \  parameter |
-parameter -> class-type \  variable |
+parameter -> class-type \  variable | expression |
 literal -> number | char-literal |
 number -> OPT:number digit |
 digit -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
