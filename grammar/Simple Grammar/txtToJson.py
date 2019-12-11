@@ -9,7 +9,7 @@ import itertools
 import sys
 
 # charactersToEscape = ["\"", "\\"]  # A list of all characters that need an \ in front of them in json
-charactersToEscape = []
+charactersToEscape = ["\""]
 uniqueTag = "#715585#"  # Random number to ensure this is unique and not accidentally in the code
 optionalTag = "#OPTIONAL" + uniqueTag
 

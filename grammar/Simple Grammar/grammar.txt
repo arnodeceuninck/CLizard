@@ -3,7 +3,7 @@ declaration-seq -> declaration | declaration-seq declaration |
 declaration -> block-declaration | function-definition | namespace-definition | function-call \  ; | return-value | selection-statement |
 selection-statement -> if \  ( expression ) \  { newline declaration-seq } OPT:else-if-statements OPT:else-statement newline |
 else-if-statements -> OPT:else-if-statements else-if-statement |
-else-if-statement -> \  else \  if \  ( expression ) \  { newline declaration-seq } |
+else-if-statement -> \  else \  eif \  ( expression ) \  { newline declaration-seq } |
 else-statement -> \  else \  { newline declaration-seq } |
 function-call -> function-name ( OPT:parameters ) |
 block-declaration -> simple-declaration | function-declaration |
@@ -31,7 +31,12 @@ return-expr -> \  expression |
 function-name -> identifier |
 parameters -> parameter | parameter , \  parameter |
 parameter -> class-type \  variable | expression |
-literal -> number | char-literal |
+literal -> number | char-literal | string-literal |
+string-literal -> " string " |
+string -> OPT:string string-character |
+string-character -> character | special-character |
+special-character -> \  | , | ! | ? | ; | - | ) | ( |
+% . | ! | ? | * | @ | # | % | ^ | & | ( | ) | [ | { | } | ] | ' | / | , | < | > |
 number -> OPT:number digit |
 digit -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
 char-literal -> ' character ' |

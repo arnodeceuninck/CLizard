@@ -8,5 +8,6 @@ int factorial(int i) {
 
 
 int main() {
+    string s = "yeet";
     int a = factorial(9);
 }
