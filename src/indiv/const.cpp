@@ -11,3 +11,7 @@ char getEPSILON() {
 std::string getMarker() {
     return "^";
 }
+
+std::string startStateName() {
+    return "STATE#1";
+}

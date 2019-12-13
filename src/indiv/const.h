@@ -10,5 +10,7 @@
 char getEPSILON();
 std::string getMarker();
 
+std::string startStateName();
+
 #endif //MB_CONST_H
 

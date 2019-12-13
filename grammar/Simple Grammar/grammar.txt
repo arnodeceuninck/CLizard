@@ -1,6 +1,11 @@
 translation-unit -> declaration-seq |
 declaration-seq -> declaration | declaration-seq declaration |
-declaration -> block-declaration | function-definition | namespace-definition | function-call \  ; | return-value | selection-statement | stream-statements | assignment-line ; newline |
+declaration -> block-declaration | function-definition | namespace-definition | function-call \  ; | return-value | selection-statement | stream-statements | assignment-line ; newline | class-declaration | pp-statements |
+pp-statements -> public : newline declaration-seq | private : newline declaration-seq |
+% something weird happend when naming this public-private-statements
+class-declaration -> c l a s s \  class-type \  { OPT:newline declaration-seq } OPT:newline |
+% Weird errors when class not written as c l a s s
+%class-declaration ->
 assignment-line -> variable assignment | variable ++ | variable -- | variable \  +=  expression | variable \  +=  expression | variable \  -=  expression | variable \  /=  expression |
 stream-statements -> stream-statement \  << \  additive-expression ; newline | stream-statement \  >> \  additive-expression ; newline |
 stream-statement -> stream-statement \  << \  additive-expression | stream-statement \  >> \  additive-expression | additive-expression |
@@ -43,7 +48,7 @@ literal -> number | char-literal | string-literal |
 string-literal -> " string " |
 string -> OPT:string string-character |
 string-character -> character | special-character |
-special-character -> \  | , | ! | ? | ; | - | ) | ( | = | * | - | + | : |
+special-character -> \  | , | ! | ? | ; | - | ) | ( | = | * | - | + | : | ' |
 % . | ! | ? | * | @ | # | % | ^ | & | ( | ) | [ | { | } | ] | ' | / | , | < | > |
 number -> OPT:number digit |
 digit -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |

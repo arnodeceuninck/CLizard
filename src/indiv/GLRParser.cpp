@@ -34,7 +34,8 @@ GLRParser::GLRParser(CFG *cfg) {
 
     // Start by creating a new start state
     std::string oldStartState = startS;
-    startS = std::to_string(stateNr++); // "Sb";
+    startS = startStateName();
+    stateNr++;
     nonTerminalsV.insert(startS);
     // and letting this start state point to the original one
     auto *start = new Production(startS, {oldStartState});
@@ -469,7 +470,7 @@ void GLRParser::toDot(std::string filename) {
 
 
     graph.addNode(Node("invis", "invis", "circle", "style=invis"));
-    graph.addConnection(Connection("invis", "1", "Start"));
+    graph.addConnection(Connection("invis", startStateName(), "Start"));
     graph.build_file(std::move(filename));
 }
 
@@ -746,8 +747,8 @@ GLRParser::findParseOptions(std::string inputChar, const GLRState *currentState,
 
     set<ParseOperation *> parseOperations;
 
-    if (currentState->getName() == "1" && inputChar == startState->getName()) {
-        parseOperations.insert(new ParseOperation(new Production("accept", {"1"})));
+    if (currentState->getName() == startStateName() && inputChar == startState->getName()) {
+        parseOperations.insert(new ParseOperation(new Production("accept", {startStateName()})));
     }
 
     for (auto stateTo: currentState->getStatesTo()) {
@@ -849,8 +850,8 @@ GLRParser::GLRParser(std::string filename) {
             line == "#PROD.FROM#" or line == "#PROD.STATES#" or line == "#PROD.STATE#" or line == "#STARTSTATE#" or
             line == "#ACCEPTSTATE#") {
 
-            if((lastRead == "#PROD.FROM#" or lastRead == "#PROD.STATES#" or lastRead == "#PROD.STATE#")
-            and line == "#STATE.PRODUCTION#"){
+            if ((lastRead == "#PROD.FROM#" or lastRead == "#PROD.STATES#" or lastRead == "#PROD.STATE#")
+                and line == "#STATE.PRODUCTION#") {
                 // Process the previous production
                 productions.insert(new Production(productionFrom, prodTo));
                 prodTo = {};
@@ -865,25 +866,25 @@ GLRParser::GLRParser(std::string filename) {
             terminalsT.insert(line);
         } else if (lastRead == "#STATES#") {
             // This shouldn't be possible, since this is immediately followed by a state.name
-        } else if (lastRead == "#STATE.NAME#"){
+        } else if (lastRead == "#STATE.NAME#") {
             stateName = line;
-        } else if (lastRead == "#STATE.ACCEPTING#"){
-            if(line == "0"){
+        } else if (lastRead == "#STATE.ACCEPTING#") {
+            if (line == "0") {
                 stateAccepting = false;
-            } else if (line == "1"){
+            } else if (line == "1") {
                 stateAccepting = true;
             }
-        } else if (lastRead == "#STATE.PRODUCTIONS#"){
+        } else if (lastRead == "#STATE.PRODUCTIONS#") {
             // This shouldn't be possible, since this is immediately followed by a state.production
-        } else if (lastRead == "#STATE.PRODUCTION#"){
+        } else if (lastRead == "#STATE.PRODUCTION#") {
             // This shouldn't be possible, since this is immediately followed by a prod.from
-        } else if (lastRead == "#PROD.FROM#"){
+        } else if (lastRead == "#PROD.FROM#") {
             productionFrom = line;
-        } else if (lastRead == "#PROD.STATES#"){
+        } else if (lastRead == "#PROD.STATES#") {
             // This shouldn't be possible, since this is immediately followed by a prod.from
-        } else if (lastRead == "#PROD.STATE#"){
+        } else if (lastRead == "#PROD.STATE#") {
             prodTo.push_back(line);
-        } else if (lastRead == "#STARTSTATE#"){
+        } else if (lastRead == "#STARTSTATE#") {
             startState = findState(line);
         }
     }
