@@ -1,4 +1,11 @@
-translation-unit -> declaration-seq |
+translation-unit -> OPT:newline OPT:preprocessing-begin declaration-seq OPT:preprocessing-end |
+preprocessing-line -> #include \  < libname \> newline |
+preprocessing-line -> # include \  " filename " newline |
+preprocessing-begin -> OPT:preprocessing-begin preprocessing-line |
+libname -> location-identifier |
+filename -> location-identifier |
+location-identifier -> OPT:location-identifier character | OPT:location-identifier location-specific-char |
+location-specific-char -> . | / |
 declaration-seq -> declaration | declaration-seq declaration |
 declaration -> block-declaration | function-definition | namespace-definition | function-call \  ; | return-value | selection-statement | stream-statements | assignment-line ; newline | class-declaration | pp-statements |
 pp-statements -> public : newline declaration-seq | private : newline declaration-seq |
@@ -22,7 +29,7 @@ simple-declaration -> class-type \  variable OPT:assignment ; OPT:newline |
 assignment -> \  = \  expression |
 expression -> equality-expression |
 equality-expression -> relational-expression | equality-expression \  == \  relational-expression |
-relational-expression -> additive-expression | relational-expression \  < \  additive-expression | relational-expression \  > \  additive-expression | relational-expression \  <= \  additive-expression | relational-expression \  >= \  additive-expression |
+relational-expression -> additive-expression | relational-expression \  < \  additive-expression | relational-expression \  \> \  additive-expression | relational-expression \  <= \  additive-expression | relational-expression \  >= \  additive-expression |
 additive-expression -> multiplicative-expression | additive-expression \  + \  multiplicative-expression | additive-expression \  - \  multiplicative-expression |
 multiplicative-expression -> brackets-expression | multiplicative-expression \  * \  brackets-expression | multiplicative-expression \  / \  brackets-expression | multiplicative-expression \  % \  brackets-expression |
 brackets-expression -> ( expression-variable ) | expression-variable |
@@ -37,7 +44,7 @@ namespace-name -> identifier |
 identifier -> OPT:identifier non-digit |
 non-digit -> a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | _ |
 newline -> \\n | \  | newline newline | comment-block |
-comment-block -> // string \\n |
+comment-block -> // OPR:string \\n |
 function-definition -> class-type \  function-name ( OPT:parameters ) \  { OPT:newline declaration-seq } OPT:newline |
 return-value -> return OPT:return-expr ; OPT:newline |
 return-expr -> \  expression |
@@ -48,7 +55,7 @@ literal -> number | char-literal | string-literal |
 string-literal -> " string " |
 string -> OPT:string string-character |
 string-character -> character | special-character |
-special-character -> \  | , | ! | ? | ; | - | ) | ( | = | * | - | + | : | ' |
+special-character -> \  | , | ! | ? | ; | - | ) | ( | = | * | - | + | : | ' | # |
 % . | ! | ? | * | @ | # | % | ^ | & | ( | ) | [ | { | } | ] | ' | / | , | < | > |
 number -> OPT:number digit |
 digit -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |

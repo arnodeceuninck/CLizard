@@ -65,6 +65,7 @@ for line in html:
                 if char == ">":
                     arrowFormed = True
                     readingFrom = False
+                    # arrowForming = False
                     nonTerminals.add(lastReadRuleFrom)
                     allChars.add(lastReadRuleFrom)
                 else:
@@ -89,7 +90,8 @@ for line in html:
                 continue
             else:
                 if char == " ":
-                    if previousChar == "|" or previousChar == ">":
+                    if previousChar == "|" or (previousChar == ">" and arrowForming):
+                        arrowForming = False
                         if previousPreviousChar != "\\":
                             previousPreviousChar = previousChar
                             previousChar = char
