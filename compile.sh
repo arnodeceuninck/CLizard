@@ -1,2 +1,2 @@
-python grammar/htmlToJson.py "grammar/Hyperlinked C++ BNF Grammar.html" "grammar/cpp.json"
+python "grammar/Simple Grammar/txtToJson.py" "grammar/Simple Grammar/grammar.txt" "grammar/Simple Grammar/cpp.json"
 #g++ -std=c++17 src/*.cpp -o clizard # TODO: Fix selection of the right input files
