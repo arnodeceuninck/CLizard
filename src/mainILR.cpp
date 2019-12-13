@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 
 //    example(); // Assure this one keeps working when extending the grammar
 
-    std::string filename = "vbn/basic/includes.cpp";
+    std::string filename = "vbn/basic/test.h";
     AST ast(filename);
 
     filename = "output/parsed.dot";

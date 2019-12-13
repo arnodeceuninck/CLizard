@@ -1,6 +1,10 @@
 translation-unit -> OPT:newline OPT:preprocessing-begin declaration-seq OPT:preprocessing-end |
-preprocessing-line -> #include \  < libname \> newline |
+preprocessing-line -> # include \  < libname \> newline |
 preprocessing-line -> # include \  " filename " newline |
+preprocessing-line -> # ifndef \  variable newline |
+preprocessing-line -> # define \  variable newline |
+preprocessing-end-line -> # endif newline |
+preprocessing-end -> OPT:preprocessing-end preprocessing-end-line |
 preprocessing-begin -> OPT:preprocessing-begin preprocessing-line |
 libname -> location-identifier |
 filename -> location-identifier |
@@ -10,7 +14,7 @@ declaration-seq -> declaration | declaration-seq declaration |
 declaration -> block-declaration | function-definition | namespace-definition | function-call \  ; | return-value | selection-statement | stream-statements | assignment-line ; newline | class-declaration | pp-statements |
 pp-statements -> public : newline declaration-seq | private : newline declaration-seq |
 % something weird happend when naming this public-private-statements
-class-declaration -> c l a s s \  class-type \  { OPT:newline declaration-seq } OPT:newline |
+class-declaration -> c l a s s \  class-type \  { OPT:newline declaration-seq } OPT:; OPT:newline |
 % Weird errors when class not written as c l a s s
 %class-declaration ->
 assignment-line -> variable assignment | variable ++ | variable -- | variable \  +=  expression | variable \  +=  expression | variable \  -=  expression | variable \  /=  expression |
@@ -44,7 +48,7 @@ namespace-name -> identifier |
 identifier -> OPT:identifier non-digit |
 non-digit -> a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | _ |
 newline -> \\n | \  | newline newline | comment-block |
-comment-block -> // OPR:string \\n |
+comment-block -> // OPT:string \\n |
 function-definition -> class-type \  function-name ( OPT:parameters ) \  { OPT:newline declaration-seq } OPT:newline |
 return-value -> return OPT:return-expr ; OPT:newline |
 return-expr -> \  expression |
