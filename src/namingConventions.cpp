@@ -10,121 +10,73 @@
 #include "AST.h"
 
 
+    // checkt of een bepaalde string voorkomt in een vector of niet, true als aanwezig
+    bool namingConventions::findNameInVector(const std::vector<std::string> &allNames, const std::string &name) {
+        for (auto &testName: allNames) {
+            if (name == testName) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 //searches the filename in a given path and returns this
-std::string getFileName(const std::string &filePath) {
-    unsigned int pos = filePath.size() - 1;
-    while (filePath[pos - 1] != '/') {
-        pos -= 1;
+    std::string namingConventions::getFileName(const std::string &filePath) {
+        unsigned int pos = filePath.size() - 1;
+        while (filePath[pos - 1] != '/') {
+            pos -= 1;
+        }
+        std::string fileName;
+        while (pos != filePath.size()) {
+            fileName += filePath[pos];
+            pos += 1;
+        }
+        return fileName;
     }
-    std::string fileName;
-    while (pos != filePath.size()) {
-        fileName += filePath[pos];
-        pos += 1;
-    }
-    return fileName;
-}
 
 
 // dit maakt een pda aan die een bepaalde string kan herkennen in een tekst
-Pda *makeNamePda(std::string &name) {
-    Pda *p = new Pda();
-    std::string alphabeth;
-    unsigned int nodeCount = 1;
-    for (unsigned int c = 0; c < name.size() + 1; ++c) {
-        std::string nodename = "q" + std::to_string(c);
-        p->addNode(nodename, c == 0, c == name.size());
-        bool present = false;
-        for (char &ch: alphabeth) {
-            if (ch == name[c]) {
-                present = true;
+    Pda *namingConventions::makeNamePda(std::string &name) {
+        Pda *p = new Pda();
+        std::string alphabeth;
+        unsigned int nodeCount = 1;
+        for (unsigned int c = 0; c < name.size() + 1; ++c) {
+            std::string nodename = "q" + std::to_string(c);
+            p->addNode(nodename, c == 0, c == name.size());
+            bool present = false;
+            for (char &ch: alphabeth) {
+                if (ch == name[c]) {
+                    present = true;
+                }
+            }
+            if (!present) {
+                alphabeth += name[c];
             }
         }
-        if (!present) {
-            alphabeth += name[c];
+        for (unsigned int i = 0; i < p->getAllNodes().size() - 1; ++i) {
+            p->addFunct(p->getAllNodes()[i], p->getAllNodes()[i + 1], ' ', " ", name[i]);
         }
-    }
-    for (unsigned int i = 0; i < p->getAllNodes().size() - 1; ++i) {
-        p->addFunct(p->getAllNodes()[i], p->getAllNodes()[i + 1], ' ', " ", name[i]);
-    }
-    p->addFunct(p->getAllNodes()[0], p->getAllNodes()[0], ' ', " ", ' ');
-    p->addFunct(p->getAllNodes()[p->getAllNodes().size() - 1], p->getAllNodes()[p->getAllNodes().size() - 1], ' ',
-                " ", ' ');
+        p->addFunct(p->getAllNodes()[0], p->getAllNodes()[0], ' ', " ", ' ');
+        p->addFunct(p->getAllNodes()[p->getAllNodes().size() - 1], p->getAllNodes()[p->getAllNodes().size() - 1], ' ',
+                    " ", ' ');
 
 
-    p->setAlphabet(alphabeth);
-    p->setStackAlphabet(alphabeth);
-    return p;
-}
-
-std::string editToNewName(std::string &word, const std::string &oldName, const std::string &correctName) {
-    unsigned int correctCount = 0;
-    unsigned int start = 0;
-    unsigned int end = 0;
-    std::string newName;
-
-    bool found = false;
-    unsigned int oldname_i = 0;
-    for (unsigned int c = 0; c < word.size(); ++c) {
-
-         if (word[c] == oldName[oldname_i] && !found) {
-             if (correctCount == oldName.size() - 1) {
-                 end = c;
-                 found = true;
-             }else{
-                 correctCount += 1;
-                 oldname_i += 1;
-                 if (correctCount == 1) {
-                     start = c;
-                 }
-             }
-
-        } else {
-            correctCount = 0;
-            oldname_i = 0;
-        }
-    }
-    unsigned int pos = 0;
-    while (pos != start) {
-        newName += word[pos];
-        pos += 1;
-    }
-    newName += correctName;
-    pos = end + 1;
-    while (pos < word.size()) {
-        newName += word[pos];
-        pos += 1;
-    }
-    return newName;
-
-
-}
-
-
-
-namespace classConventions {
-
-//dit zoekt de classname in een blokje code bv: class CooleKlass{} -> cooleKlass wordt gereturned
-    std::string findClassName(std::string &word) {
-        std::string name;
-        for (unsigned int c = 0; c < word.size(); ++c) {
-            if (word[c] != '{') {
-                name.push_back(word[c]);
-            } else {
-                return name;
-            }
-        }
-        return name;
+        p->setAlphabet(alphabeth);
+        p->setStackAlphabet(alphabeth);
+        return p;
     }
 
-// verbetert de incorrecte class names volgens de conventions
-    std::string correctClassName(std::string &name) {
+
+// verbetert de incorrecte variable -en function names volgens de conventions
+    std::string namingConventions::correctName(std::string name) {
         std::string corrected;
         unsigned int c = 0;
         while (!isalpha(name[c])) {
             c++;
         }
-        if (islower(name[c])) {
-            name[c] = toupper(name[c]);
+        if (isupper(name[c])) {
+            name[c] = tolower(name[c]);
         }
         for (; c < name.size(); ++c) {
             if (isupper(name[c]) && isupper(name[c + 1])) {
@@ -142,59 +94,56 @@ namespace classConventions {
 
     }
 
+    std::string namingConventions::editToNewName(std::string &word, const std::string &oldName, const std::string &correctName) {
+        unsigned int correctCount = 0;
+        unsigned int start = 0;
+        unsigned int end = 0;
+        std::string newName;
 
+        bool found = false;
+        unsigned int oldname_i = 0;
+        for (unsigned int c = 0; c < word.size(); ++c) {
 
-// past een reeks c++ files aan zodat alle classnames hier voldoen aan de conventions
-    int namingConventionsClasses(const std::vector<std::string> &inputFiles) {
-
-        Pda classRecognizer;
-        classRecognizer.readJson("vbn/NamingConvTests/classRec.json");
-        Pda *classChecker = new Pda();
-        classChecker->readJson("vbn/NamingConvTests/classChecker.json");
-        std::fstream buffer;
-        std::vector<std::string> oldclassNames;
-        std::vector<std::string> newclassNames;
-        std::vector<Pda *> classPdas;
-
-
-// loop over files om alle classes te bepalen en een verbeterde versie hiervan op te slaan
-        for (auto &file: inputFiles) {
-            buffer.open(file.c_str());
-            std::string line;
-            while (std::getline(buffer, line)) {
-                bool found = false;
-                std::stringstream stream(line);
-                std::string word;
-                while (stream >> word) {
-                    if (found) {
-                        std::string name = findClassName(word);
-                        if (!classChecker->traverse(name)) {
-                            oldclassNames.push_back(name);
-                            classPdas.push_back(makeNamePda(name));
-                            newclassNames.push_back(correctClassName(name));
-                            found = false;
-
-                        } else {
-                            found = false;
-                        }
+            if (word[c] == oldName[oldname_i] && !found) {
+                if (correctCount == oldName.size() - 1) {
+                    end = c;
+                    found = true;
+                } else {
+                    correctCount += 1;
+                    oldname_i += 1;
+                    if (correctCount == 1) {
+                        start = c;
                     }
-                    if (classRecognizer.traverse(word)) {
-                        found = true;
-                    }
-
                 }
 
+            } else {
+                correctCount = 0;
+                oldname_i = 0;
             }
-            buffer.close();
         }
-        // loopt een tweede maal over alle files om alle instanties van de foutieve class names aan te passen naar de verbeterde versie
-//            system("exec rm vbn/NamingConvTests/outputs/*"); // nog een goede if statement vinden
+        unsigned int pos = 0;
+        while (pos != start) {
+            newName += word[pos];
+            pos += 1;
+        }
+        newName += correctName;
+        pos = end + 1;
+        while (pos < word.size()) {
+            newName += word[pos];
+            pos += 1;
+        }
+        return newName;
+
+    }
 
 
-        for (auto &file: inputFiles) {
-            buffer.open(file.c_str());
-            std::string line = "vbn/NamingConvTests/outputs/" + getFileName(file);
-            std::ofstream editedfile(line);
+    // past voor gegeven files alle oude namen aan volgens de conventions
+    void namingConventions::adjustForAllFiles(const std::vector<std::string> &inputFiles, std::vector<std::string> &oldNames,
+                           std::vector<Pda *> &pdas, bool forClass) {
+        for (auto &file:inputFiles) {
+            std::fstream buffer(file.c_str());
+            std::string fileName = "vbn/NamingConvTests/outputs/" + getFileName(file);
+            std::string line;
             std::string editedstring;
 
             while (std::getline(buffer, line)) {
@@ -203,155 +152,220 @@ namespace classConventions {
 
                 while (stream >> word) {
 
-                    for (unsigned int i = 0; i < classPdas.size(); ++i) {
-                        Pda *tester = classPdas[i];
+                    std::string longestFit;
+                    for (unsigned int i = 0; i < pdas.size(); ++i) {
+                        Pda *tester = pdas[i];
                         if (tester->traverse(word)) {
-                            word = editToNewName(word, oldclassNames[i], newclassNames[i]);
-                            std::cout << "ye";
+                            if (forClass) {
+                                word = editToNewName(word, oldNames[i], namingConventions::correctClassName(oldNames[i]));
 
+                            } else {
+                                word = editToNewName(word, oldNames[i], correctName(oldNames[i]));
+                            }
+                            if (word.size() > longestFit.size()) {
+                                longestFit = word;
+                            }
 
                         }
                     }
-                    editedstring += word + ' ';
+                    if (!longestFit.empty()) {
+                        editedstring += longestFit + ' ';
+                    } else {
+                        editedstring += word + ' ';
+                    }
                 }
                 editedstring += "\n";
 
             }
-            editedfile << editedstring;
-            editedfile.close();
-            buffer.close();
-
-        }
-
-        return 0;
-    }
-}
-
-bool findNameInVector(const std::vector<std::string>& allNames, const std::string& name){
-    for(auto& testName: allNames){
-        if(name == testName){
-            return true;
-        }
-    }
-    return false;
-}
+            if(forClass) {
 
 
-// verbetert de incorrecte var names volgens de conventions
-std::string correctVarName(std::string name) {
-    std::string corrected;
-    unsigned int c = 0;
-    while (!isalpha(name[c])) {
-        c++;
-    }
-    if (isupper(name[c])) {
-        name[c] = tolower(name[c]);
-    }
-    for (; c < name.size(); ++c) {
-        if (isupper(name[c]) && isupper(name[c + 1])) {
-            name[c + 1] = _tolower(name[c + 1]);
-            corrected += name[c];
-        } else if (name[c] == '_' && name[c + 1] == '_') {
-            name.erase(c, 1);
-        } else if (!isalpha(name[c]) && !isdigit(name[c])) {
-            name.erase(c, 1);
-        } else {
-            corrected += name[c];
-        }
-    }
-    return corrected;
-
-}
-
-int namingConventionsVariables(const std::vector<std::string> &inputFiles) {
-    fstream buffer("vbn/NamingConvTests/allVarTypes");
-    std::stringstream stream;
-    stream << buffer.rdbuf();
-    buffer.close();
-    std::string varfile = stream.str();
-    std::vector<std::string> allVarNames;
-    std::vector<std::string> correctVarNames;
-    std::vector<Pda *> varPdas;
-
-
-    // bepaalt via ast alle nieuwe varNames
-
-    for(const std::string& input: inputFiles) {
-
-        std::vector<std::string> newVarNames;
-
-        AST *ast = new AST(input);
-        ast->toDot("vbn/NamingConvTests/outputs/yeeters.dot");
-        std::vector<AST *> vars = ast->find("variable"); // all found var types
-
-        //update de allVarTypes met de nieuwe var types
-        for (unsigned int i = 0; i < vars.size(); ++i) {
-            std::string name = vars[i]->yield();
-            if (!(name == "true" || name == "false") && !findNameInVector(allVarNames, name)) {
-                varfile += name + '\n';
-                allVarNames.push_back(name);
-                newVarNames.push_back(name);
+                buffer.close();
+                std::ofstream editedFile;
+                editedFile.open(fileName, std::ofstream::out | std::ofstream::trunc);
+                editedFile << editedstring;
+                editedFile.close();
             }
-        }
-        ofstream outPutter;
-        outPutter.open("vbn/NamingConvTests/allVarTypes");
-        outPutter << varfile;
-        outPutter.close();
+            else{
+                buffer.close();
+                std::ofstream editedFile;
+                editedFile.open(fileName + "_1", std::ofstream::out | std::ofstream::trunc);
+                editedFile << editedstring;
+                editedFile.close();
 
 
-        for (std::string &oldName: newVarNames) {
-            varPdas.emplace_back(makeNamePda(oldName));
-            correctVarNames.push_back(correctVarName(oldName));
+            }
+
         }
     }
 
 
-    for(auto& file: inputFiles){
-        std::string fileName = "vbn/NamingConvTests/outputs/" + getFileName(file);
-        buffer.open(file.c_str());
-        std::string line;
-        std::ofstream editedfile(fileName);
-        std::string editedstring;
+//dit zoekt de classname in een blokje code bv: class CooleKlass{} -> cooleKlass wordt gereturned
+        std::string namingConventions::findClassName(std::string &word) {
+            std::string name;
+            for (unsigned int c = 0; c < word.size(); ++c) {
+                if (word[c] != '{') {
+                    name.push_back(word[c]);
+                } else {
+                    return name;
+                }
+            }
+            return name;
+        }
 
-        while (std::getline(buffer, line)) {
-            std::stringstream stream(line);
-            std::string word;
+// verbetert de incorrecte class names volgens de conventions
+        std::string namingConventions::correctClassName(std::string name) {
+            std::string corrected;
+            unsigned int c = 0;
+            while (!isalpha(name[c])) {
+                c++;
+            }
+            if (islower(name[c])) {
+                name[c] = toupper(name[c]);
+            }
+            for (; c < name.size(); ++c) {
+                if (isupper(name[c]) && isupper(name[c + 1])) {
+                    name[c + 1] = _tolower(name[c + 1]);
+                    corrected += name[c];
+                } else if (name[c] == '_' && name[c + 1] == '_') {
+                    name.erase(c, 1);
+                } else if (!isalpha(name[c]) && !isdigit(name[c])) {
+                    name.erase(c, 1);
+                } else {
+                    corrected += name[c];
+                }
+            }
+            return corrected;
 
-            while (stream >> word) {
+        }
 
-                std::string longestFit;
-                for (unsigned int i = 0; i < varPdas.size(); ++i) {
-                    Pda *tester = varPdas[i];
-                    if (tester->traverse(word)) {
-                        word = editToNewName(word, allVarNames[i], correctVarNames[i]);
-                        if(word.size() > longestFit.size()){
-                            longestFit = word;
+
+// past een reeks c++ files aan zodat alle classnames hier voldoen aan de conventions
+        int namingConventions::namingConventionsClasses(const std::vector<std::string> &inputFiles) {
+            std:string cl = "class";
+            Pda* classRecognizer = makeNamePda(cl);
+//            classRecognizer.readJson("vbn/NamingConvTests/classRec.json");
+            Pda *classChecker = new Pda();
+            classChecker->readJson("vbn/NamingConvTests/classChecker.json");
+            std::fstream buffer;
+            std::vector<std::string> oldclassNames;
+            std::vector<std::string> newclassNames;
+            std::vector<Pda *> classPdas;
+
+
+// loop over files om alle classes te bepalen en een verbeterde versie hiervan op te slaan
+            for (auto &file: inputFiles) {
+                buffer.open(file.c_str());
+                std::string line;
+                while (std::getline(buffer, line)) {
+                    bool found = false;
+                    std::stringstream stream(line);
+                    std::string word;
+                    while (stream >> word) {
+                        if (found) {
+                            std::string name = findClassName(word);
+                            if (!classChecker->traverse(name) && name != "") {
+                                oldclassNames.push_back(name);
+                                classPdas.push_back(makeNamePda(name));
+                                newclassNames.push_back(correctClassName(name));
+                                found = false;
+
+                            } else {
+                                found = false;
+                            }
+                        }
+                        if (classRecognizer->traverse(word)) {
+                            found = true;
                         }
 
                     }
+
                 }
-                if(!longestFit.empty()){
-                    editedstring += longestFit + ' ';
-                }else{
-                    editedstring += word + ' ';
-                }
+                buffer.close();
             }
-            editedstring += "\n";
+            adjustForAllFiles(inputFiles, oldclassNames, classPdas, true);
+            return 0;
 
         }
-        editedfile << editedstring;
-        editedfile.close();
-        buffer.close();
 
+
+
+    int namingConventions::namingConventionsVariables(const std::vector<std::string> &inputFiles) {
+
+        std::vector<std::string> allVarNames;
+        std::vector<Pda *> varPdas;
+
+        // bepaalt via ast alle nieuwe varNames
+        for (const std::string &input: inputFiles) {
+
+            std::vector<std::string> newVarNames;
+
+            AST *ast = new AST(input);
+            ast->toDot("vbn/NamingConvTests/outputs/yeeters.dot");
+            std::vector<AST *> vars = ast->find("variable"); // all found var types
+
+            //update de allVarTypes met de nieuwe var types
+            for (unsigned int i = 0; i < vars.size(); ++i) {
+                std::string name = vars[i]->yield();
+                if (!(name == "true" || name == "false") && !findNameInVector(allVarNames, name)) {
+                    allVarNames.push_back(name);
+                    newVarNames.push_back(name);
+                }
+            }
+
+            for (std::string &oldName: newVarNames) {
+                varPdas.emplace_back(makeNamePda(oldName));
+            }
+        }
+
+        // verbetert in alle files de functieNames
+        adjustForAllFiles(inputFiles, allVarNames, varPdas, false);
+
+        return 0;
+    }
+
+    int namingConventions::namingConventionsFunctions(const std::vector<std::string> &inputFiles) {
+        std::stringstream stream;
+        std::vector<std::string> allfunctNames;
+        std::vector<std::string> correctfunctNames;
+        std::vector<Pda *> functPdas;
+
+        for (const std::string &input: inputFiles) {
+
+            std::vector<std::string> newVarNames;
+
+            AST *ast = new AST(input);
+//        ast->toDot("vbn/NamingConvTests/outputs/yeeters.dot");
+            std::vector<AST *> functionNames = ast->find("function-name"); // all found functions
+
+            //update de allVarTypes met de nieuwe var types
+            for (unsigned int i = 0; i < functionNames.size(); ++i) {
+                std::string name = functionNames[i]->yield();
+                if (!(name == "true" || name == "false") && !findNameInVector(allfunctNames, name)) {
+                    allfunctNames.push_back(name);
+                    newVarNames.push_back(name);
+                }
+            }
+
+            for (std::string &oldName: newVarNames) {
+                functPdas.emplace_back(makeNamePda(oldName));
+                correctfunctNames.push_back(correctName(oldName));
+            }
+        }
+        adjustForAllFiles(inputFiles, allfunctNames, functPdas, false);
+
+        return 0;
     }
 
 
-
-
-
-    return 0;
+    int namingConventions::convertToConventions(const std::vector<std::string> & inputFiles) {
+    std::vector<std::string> outputFiles;
+    for(auto file: inputFiles){
+        outputFiles.push_back("vbn/NamingConvTests/outputs/" + namingConventions::getFileName(file));
+    }
+    namingConventionsClasses(inputFiles);
+    namingConventionsFunctions(outputFiles);
+    namingConventionsVariables(outputFiles);
+        return 0;
 }
 
-int namingConventionsFunctions(const std::vector<std::string> &inputFiles) {
-    return 0;
-}
