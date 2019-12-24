@@ -13,6 +13,7 @@ std::vector<std::string> filenames;
         filenames.emplace_back(argv[file]);
     }
 
-    namingConventionsClasses(filenames);
+//    namingConventionsClasses(filenames);
+    namingConventionsVariables(filenames);
 
 }

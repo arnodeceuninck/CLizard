@@ -13,4 +13,4 @@ set(TIM src/groupPublicPrivate.cpp src/groupPublicPrivate.h src/simplifyMathemat
 
 add_executable(CLizard src/main.cpp ${ALWAYS_REQUIRED} ${ARNO} ${SAM} ${TJENNE} ${TIM})
 add_executable(Arno src/mainILR.cpp ${ALWAYS_REQUIRED} ${ARNO})
-add_executable(Tjenne src/mainNamingConventions.cpp ${TJENNE})
+add_executable(Tjenne src/mainNamingConventions.cpp ${TJENNE} ${ALWAYS_REQUIRED})
