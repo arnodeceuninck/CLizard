@@ -66,8 +66,8 @@ GLRParser::GLRParser(CFG *cfg, bool verbose) : verbose(verbose) {
     //     in the transition diastagram.
     // Start state is the new start
     std::set<Production *> startClosure = {start};
-    while (closure(startClosure, markedProductions)) {};
-    GLRState *newState = new GLRState(startS, startClosure);
+    while (closure(startClosure, markedProductions)) {}
+    auto *newState = new GLRState(startS, startClosure);
     states.insert(newState);
     startState = newState;
 //    std::set<Production *> establishedRulesInState = startClosure;
@@ -80,7 +80,7 @@ GLRParser::GLRParser(CFG *cfg, bool verbose) : verbose(verbose) {
         // a. Select a symbol s (terminal or nonterminal) appearing emmediately to the right of the marker in a rule in
         //     some established state A.
         std::string s;
-        GLRState *stateA;
+        GLRState *stateA{};
         for (int i = 0; i < states.size(); ++i) {
             // Get the i-th element
             auto glrStateItr = states.begin();
@@ -112,7 +112,7 @@ GLRParser::GLRParser(CFG *cfg, bool verbose) : verbose(verbose) {
 
             s = symbolAfterMarker(production);
             // Marker at end
-            if (s == "") {
+            if (s.empty()) {
                 i--;
                 continue;
             }
@@ -155,13 +155,13 @@ GLRParser::GLRParser(CFG *cfg, bool verbose) : verbose(verbose) {
         while (closure(sMovedRightOfX, markedProductions)) {}
 
         // Find another state with this closure
-        GLRState *closureY;
+        GLRState *closureY{};
         bool stateExists = false;
-        for (GLRState *s: states) {
-            if (s->getProductions() == sMovedRightOfX) {
-                var = s->getName();
+        for (GLRState *s2: states) {
+            if (s2->getProductions() == sMovedRightOfX) {
+                var = s2->getName();
                 stateExists = true;
-                closureY = s;
+                closureY = s2;
             }
         }
 
@@ -181,7 +181,7 @@ GLRParser::GLRParser(CFG *cfg, bool verbose) : verbose(verbose) {
         bool containsTerminalProduction = false; // TODO: check containsProduction or allProductions
         for (auto rule: state->getProductions()) {
             auto prodTo = rule->getToP();
-            if (prodTo.size() > 0 && prodTo[prodTo.size() - 1] == getMarker()) {
+            if (!prodTo.empty() && prodTo[prodTo.size() - 1] == getMarker()) {
                 containsTerminalProduction = true;
             }
         }
@@ -280,7 +280,7 @@ bool GLRParser::closure(std::set<Production *> &markedProductions, std::set<Prod
     // "Then, we add to the set the initial forms of all rewrite rules in the grammar whose left-hand sides consist of
     // those nonterminals as well." -> What do they mean with consists of? Contains all of them? Only contains those? ...
     for (auto production: allMarkedProductions) {
-        for (auto c: production->getToP()) {
+        for (const auto &c: production->getToP()) {
             std::string str;
             if (std::find(terminalsImmRightOfMarker.begin(), terminalsImmRightOfMarker.end(), c) ==
                 terminalsImmRightOfMarker.end()) {
@@ -295,7 +295,7 @@ bool GLRParser::closure(std::set<Production *> &markedProductions, std::set<Prod
                 for (auto prod: init) {
                     auto prodTo2 = prod->getToP();
                     prodTo2.erase(std::find(prodTo2.begin(), prodTo2.end(), getMarker()));
-                    if (prodTo1 == prodTo1) {
+                    if (prodTo1 == prodTo2) { // TODO: check if still working (changed from if true)
                         markedProductions.insert(production);
 //                        changed = true;
                     }
@@ -316,7 +316,7 @@ GLRParser::initialProductionsFromVar(const std::string &var, std::set<Production
     std::set<Production *> initProdsFromVar = {};
     for (auto production: allMarkedProductions) {
         if (production->getFromP() == var &&
-            production->getToP().size() > 0 && production->getToP()[0] == getMarker()) {
+            !production->getToP().empty() && production->getToP()[0] == getMarker()) {
             initProdsFromVar.insert(production);
         }
     }
@@ -335,9 +335,9 @@ const std::set<GLRTransition *> &GLRState::getStatesTo() const {
     return statesTo;
 }
 
-GLRState::GLRState(std::string name, const std::set<Production *> &productions) : name(std::move(name)),
-                                                                                  productions(productions),
-                                                                                  accepting(false) {
+GLRState::GLRState(std::string name, std::set<Production *> productions) : name(std::move(name)),
+                                                                           productions(std::move(productions)),
+                                                                           accepting(false) {
 //    prodEstablished = productions.size();
 }
 
@@ -373,41 +373,41 @@ const set<Production *> &GLRState::getProdEstablished() const {
     return prodEstablished;
 }
 
-std::string GLRState::toStr() const {
-    std::string uniqueID = "";
-    std::string returnStr = "";
-
-    // name
-    returnStr += "#STATE.NAME#\n";
-    returnStr += name + "\n";
-    returnStr += "#STATE.ACCEPTING#\n";
-    // accepting
-    if (accepting) {
-        returnStr += "1\n";
-    } else {
-        returnStr += "0\n";
-    }
-    returnStr += "#STATE.PRODUCTIONS#\n";
-    // productions
-    for (auto production: productions) {
-        returnStr += "#STATE.PRODUCTION#\n" + production->toStr() + "\n";
-    }
-    returnStr += "#STATE.STATESTO#";
-    if (!statesTo.empty()) {
-        returnStr += "\n";
-    }
-
-    // Statesto
-    int i = 0;
-    for (auto state: statesTo) {
-        i++;
-        returnStr += "#STATE.STATETO#\n" + state->getStateTo()->getName() + "\n#LABEL#\n" + state->getLabel();
-        if (i != statesTo.size()) {
-            returnStr += "\n";
-        }
-    }
-    return returnStr;
-}
+//std::string GLRState::toStr() const {
+//    std::string uniqueID = uniqueID;
+//    std::string returnStr = returnStr;
+//
+//    // name
+//    returnStr += "#STATE.NAME#\n";
+//    returnStr += name + "\n";
+//    returnStr += "#STATE.ACCEPTING#\n";
+//    // accepting
+//    if (accepting) {
+//        returnStr += "1\n";
+//    } else {
+//        returnStr += "0\n";
+//    }
+//    returnStr += "#STATE.PRODUCTIONS#\n";
+//    // productions
+//    for (auto production: productions) {
+//        returnStr += "#STATE.PRODUCTION#\n" + production->toStr() + "\n";
+//    }
+//    returnStr += "#STATE.STATESTO#";
+//    if (!statesTo.empty()) {
+//        returnStr += "\n";
+//    }
+//
+//    // Statesto
+//    int i = 0;
+//    for (auto state: statesTo) {
+//        i++;
+//        returnStr += "#STATE.STATETO#\n" + state->getStateTo()->getName() + "\n#LABEL#\n" + state->getLabel();
+//        if (i != statesTo.size()) {
+//            returnStr += "\n";
+//        }
+//    }
+//    return returnStr;
+//}
 
 bool GLRState::operator==(const GLRState &b) const {
     return name == b.getName();
@@ -445,12 +445,12 @@ void GLRParser::toDot(std::string filename) {
         std::string stateLable = "{" + state->getName() + "|";
         bool firstElem = true;
         for (auto prod: state->getProductions()) {
-            if (!firstElem) { stateLable += "\\n"; };
+            if (!firstElem) { stateLable += "\\n"; }
             firstElem = false;
 
             stateLable += prod->getFromP();
             stateLable += " -\\> ";
-            for (auto el: prod->getToP()) {
+            for (const auto &el: prod->getToP()) {
                 stateLable += el;
             }
         }
@@ -566,18 +566,16 @@ set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
 //        if (c == ' ' or c == '\n') { continue; }
 
         std::vector<std::pair<std::stack<std::string>, std::stack<Production *>>> newPossibleParseStacks;
-        for (int i = 0; i < possibleParseStacks.size(); i++) {
+        for (auto &stack : possibleParseStacks) {
             // Can't use auto iterator, because we're inserting elements during the loop
 
-            std::pair<std::stack<std::string>, std::stack<Production *>> &stack = possibleParseStacks[i];
             if (stack.first.top() == "accept" and position == toParse.size()) { break; }
             GLRState *currentState = findState(stack.first.top());
 
             //            std::pair<std::string, GLRState *> searchKey{toString(c), currentState};
 //            std::set<ParseOperation *> parseOperations = parseTable[searchKey];
 
-            set<ParseOperation *> parseOperations = findParseOptions(toString(c), currentState,
-                                                                     position == toParse.size());
+            set<ParseOperation *> parseOperations = findParseOptions(toString(c), currentState);
 
             for (auto parseOperation: parseOperations) {
 
@@ -665,7 +663,7 @@ bool
 GLRParser::checkProductionRules(
         vector<pair<std::stack<std::string>, std::stack<Production *>>> &possibleParseStacks,
         const std::stack<std::string> &stack,
-        std::stack<Production *> productions,
+        const std::stack<Production *> &productions,
         const GLRState *currentState,
         set<pair<std::stack<std::string>, Production *>> &alreadyReducedStacks,
         bool final) {// Check for possible reduces
@@ -702,7 +700,7 @@ GLRParser::checkProductionRules(
             newStack.push(newVariable);
             newProductions.push(parseOperation->getReduceProduction());
 
-            set<ParseOperation *> parseOperationsb = findParseOptions(newVariable, currentTopState, final);
+            set<ParseOperation *> parseOperationsb = findParseOptions(newVariable, currentTopState);
 
             for (auto stackOp: parseOperationsb) {
 
@@ -717,7 +715,7 @@ GLRParser::checkProductionRules(
 //                    acceptStack.push("accept");
 //                    possibleParseStacks.emplace_back(acceptStack,
 //                                                     newProductions);
-                    finalStack = true && final;
+                    finalStack = final;
                     stateName = "accept";
                 } else {
                     stateName = stackOp->getNewState()->getName();
@@ -740,8 +738,8 @@ GLRParser::checkProductionRules(
 
 void
 GLRParser::printStackSet(
-        vector<pair<std::stack<std::string>, std::stack<Production *>>> possibleParseStacks) const {
-    for (auto stack: possibleParseStacks) {
+        const vector<pair<std::stack<std::string>, std::stack<Production *>>> &possibleParseStacks) const {
+    for (const auto &stack: possibleParseStacks) {
         printStack(stack.first);
         cout << endl;
     }
@@ -749,7 +747,7 @@ GLRParser::printStackSet(
 }
 
 set<ParseOperation *>
-GLRParser::findParseOptions(std::string inputChar, const GLRState *currentState, bool final) const {
+GLRParser::findParseOptions(const std::string &inputChar, const GLRState *currentState) const {
 
     set<ParseOperation *> parseOperations;
 
@@ -792,113 +790,113 @@ GLRState *GLRParser::findState(const std::string &stateName) {
     return nullptr;
 }
 
-const set<string> GLRParser::getNonTerminalsV() const {
+set<string> GLRParser::getNonTerminalsV() const {
     return nonTerminalsV;
 }
+//
+//void GLRParser::writeToFile(const std::string& filename) {
+//    std::string uniqueTag = uniqueTag;
+//    std::string nonTerminalsTag = uniqueTag + "#NONTERMINALS#";
+//    std::string terminalTag = uniqueTag + "#TERMINALS#";
+//    std::string statesTag = uniqueTag + "#STATES#";
+//    std::string acceptStateTag = uniqueTag + "#ACCEPTSTATE#";
+//    std::string startStateTag = uniqueTag + "#STARTSTATE#";
+//    std::string endTag = "#END#";
+//    std::string startTag = "#BEGIN#";
+//
+//    ofstream outputFile;
+//    outputFile.open(filename);
+//
+//    // Nonterminals
+//    outputFile << nonTerminalsTag << std::endl;
+//    for (const auto& var: nonTerminalsV) {
+//        outputFile << var << std::endl;
+//    }
+//
+//    // Terminals
+//    outputFile << terminalTag << std::endl;
+//    for (const auto& var: terminalsT) {
+//        outputFile << var << endl;
+//    }
+//    // States
+//    int i = 0;
+//    outputFile << statesTag << std::endl;
+//    for (auto var: states) {
+//        i++;
+//        outputFile << var->toStr() << std::endl;
+//    }
+//
+//    // Acceptstate
+//    outputFile << acceptStateTag << std::endl;
+//    outputFile << acceptState->toStr() << std::endl;
+//    // StartState
+//    outputFile << startStateTag << std::endl;
+//    outputFile << startState->getName();
+//
+//    outputFile.close();
+//}
 
-void GLRParser::writeToFile(std::string filename) {
-    std::string uniqueTag = "";
-    std::string nonTerminalsTag = uniqueTag + "#NONTERMINALS#";
-    std::string terminalTag = uniqueTag + "#TERMINALS#";
-    std::string statesTag = uniqueTag + "#STATES#";
-    std::string acceptStateTag = uniqueTag + "#ACCEPTSTATE#";
-    std::string startStateTag = uniqueTag + "#STARTSTATE#";
-    std::string endTag = "#END#";
-    std::string startTag = "#BEGIN#";
-
-    ofstream outputFile;
-    outputFile.open(filename);
-
-    // Nonterminals
-    outputFile << nonTerminalsTag << std::endl;
-    for (auto var: nonTerminalsV) {
-        outputFile << var << std::endl;
-    }
-
-    // Terminals
-    outputFile << terminalTag << std::endl;
-    for (auto var: terminalsT) {
-        outputFile << var << endl;
-    }
-    // States
-    int i = 0;
-    outputFile << statesTag << std::endl;
-    for (auto var: states) {
-        i++;
-        outputFile << var->toStr() << std::endl;
-    }
-
-    // Acceptstate
-    outputFile << acceptStateTag << std::endl;
-    outputFile << acceptState->toStr() << std::endl;
-    // StartState
-    outputFile << startStateTag << std::endl;
-    outputFile << startState->getName();
-
-    outputFile.close();
-}
-
-GLRParser::GLRParser(std::string filename, bool verbose) : verbose(verbose) {
-    // Source: https://stackoverflow.com/questions/7868936/read-file-line-by-line-using-ifstream-in-c
-    std::ifstream input(filename);
-
-    std::string stateName;
-    bool stateAccepting = false;
-    std::set<Production *> productions;
-    std::string productionFrom;
-    std::vector<std::string> prodTo;
-
-    std::string lastRead = "";
-    for (std::string line; getline(input, line);) {
-        // TODO: Remove \n from line
-        if (line == "#NONTERMINALS#" or line == "#TERMINALS#" or line == "#STATES#" or line == "#STATE.NAME#" or
-            line == "#STATE.ACCEPTING#" or line == "#STATE.PRODUCTIONS#" or line == "#STATE.PRODUCTION#" or
-            line == "#PROD.FROM#" or line == "#PROD.STATES#" or line == "#PROD.STATE#" or line == "#STARTSTATE#" or
-            line == "#ACCEPTSTATE#") {
-
-            if ((lastRead == "#PROD.FROM#" or lastRead == "#PROD.STATES#" or lastRead == "#PROD.STATE#")
-                and line == "#STATE.PRODUCTION#") {
-                // Process the previous production
-                productions.insert(new Production(productionFrom, prodTo));
-                prodTo = {};
-                productionFrom = "";
-            }
-
-            lastRead = line;
-            continue;
-        } else if (lastRead == "#NONTERMINALS#") {
-            terminalsT.insert(line);
-        } else if (lastRead == "#TERMINALS#") {
-            terminalsT.insert(line);
-        } else if (lastRead == "#STATES#") {
-            // This shouldn't be possible, since this is immediately followed by a state.name
-        } else if (lastRead == "#STATE.NAME#") {
-            stateName = line;
-        } else if (lastRead == "#STATE.ACCEPTING#") {
-            if (line == "0") {
-                stateAccepting = false;
-            } else if (line == "1") {
-                stateAccepting = true;
-            }
-        } else if (lastRead == "#STATE.PRODUCTIONS#") {
-            // This shouldn't be possible, since this is immediately followed by a state.production
-        } else if (lastRead == "#STATE.PRODUCTION#") {
-            // This shouldn't be possible, since this is immediately followed by a prod.from
-        } else if (lastRead == "#PROD.FROM#") {
-            productionFrom = line;
-        } else if (lastRead == "#PROD.STATES#") {
-            // This shouldn't be possible, since this is immediately followed by a prod.from
-        } else if (lastRead == "#PROD.STATE#") {
-            prodTo.push_back(line);
-        } else if (lastRead == "#STARTSTATE#") {
-            startState = findState(line);
-        }
-    }
-}
+//GLRParser::GLRParser(const std::string& filename, bool verbose) : verbose(verbose) {
+//    // Source: https://stackoverflow.com/questions/7868936/read-file-line-by-line-using-ifstream-in-c
+//    std::ifstream input(filename);
+//
+//    std::string stateName;
+//    bool stateAccepting = false;
+//    std::set<Production *> productions;
+//    std::string productionFrom;
+//    std::vector<std::string> prodTo;
+//
+//    std::string lastRead = lastRead;
+//    for (std::string line; getline(input, line);) {
+//        // TODO: Remove \n from line
+//        if (line == "#NONTERMINALS#" or line == "#TERMINALS#" or line == "#STATES#" or line == "#STATE.NAME#" or
+//            line == "#STATE.ACCEPTING#" or line == "#STATE.PRODUCTIONS#" or line == "#STATE.PRODUCTION#" or
+//            line == "#PROD.FROM#" or line == "#PROD.STATES#" or line == "#PROD.STATE#" or line == "#STARTSTATE#" or
+//            line == "#ACCEPTSTATE#") {
+//
+//            if ((lastRead == "#PROD.FROM#" or lastRead == "#PROD.STATES#" or lastRead == "#PROD.STATE#")
+//                and line == "#STATE.PRODUCTION#") {
+//                // Process the previous production
+//                productions.insert(new Production(productionFrom, prodTo));
+//                prodTo = {};
+//                productionFrom = "";
+//            }
+//
+//            lastRead = line;
+//            continue;
+//        } else if (lastRead == "#NONTERMINALS#") {
+//            terminalsT.insert(line);
+//        } else if (lastRead == "#TERMINALS#") {
+//            terminalsT.insert(line);
+//        } else if (lastRead == "#STATES#") {
+//            // This shouldn't be possible, since this is immediately followed by a state.name
+//        } else if (lastRead == "#STATE.NAME#") {
+//            stateName = line;
+//        } else if (lastRead == "#STATE.ACCEPTING#") {
+//            if (line == "0") {
+//                stateAccepting = false;
+//            } else if (line == "1") {
+//                stateAccepting = true;
+//            }
+//        } else if (lastRead == "#STATE.PRODUCTIONS#") {
+//            // This shouldn't be possible, since this is immediately followed by a state.production
+//        } else if (lastRead == "#STATE.PRODUCTION#") {
+//            // This shouldn't be possible, since this is immediately followed by a prod.from
+//        } else if (lastRead == "#PROD.FROM#") {
+//            productionFrom = line;
+//        } else if (lastRead == "#PROD.STATES#") {
+//            // This shouldn't be possible, since this is immediately followed by a prod.from
+//        } else if (lastRead == "#PROD.STATE#") {
+//            prodTo.push_back(line);
+//        } else if (lastRead == "#STARTSTATE#") {
+//            startState = findState(line);
+//        }
+//    }
+//}
 
 GLRTransition::GLRTransition(
-        const std::string &label, GLRState
-*stateTo) : label(label), stateTo(stateTo) {}
+        std::string label, GLRState
+*stateTo) : label(std::move(label)), stateTo(stateTo) {}
 
 const string &GLRTransition::getLabel() const {
     return label;
@@ -942,7 +940,7 @@ GLRState *ParseOperation::getNewState() const {
 template<class T>
 void printStack(std::stack<T> stack) {
     std::string output;
-    int initSize = stack.size();
+//    int initSize = stack.size();
     while (!stack.empty()) {
         std::string top = stack.top();
         output = top + output;

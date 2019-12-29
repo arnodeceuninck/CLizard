@@ -44,7 +44,7 @@ private:
 
 class GLRTransition {
 public:
-    GLRTransition(const std::string &label, GLRState *stateTo);
+    GLRTransition(std::string label, GLRState *stateTo);
 
 private:
     std::string label;
@@ -78,7 +78,7 @@ public:
 
     [[nodiscard]] const std::set<Production *> &getProdEstablished() const;
 
-    std::string toStr() const;
+//    [[nodiscard]] std::string toStr() const;
 
 public:
     std::set<GLRState *> statesOnInput(const std::string &input);
@@ -91,7 +91,7 @@ public:
     void setAccepting(bool accepting);
 
 public:
-    GLRState(std::string name, const std::set<Production *> &productions);
+    GLRState(std::string name, std::set<Production *> productions);
 
     void addStateTo(GLRState *glrState, const std::string &label);
 
@@ -108,15 +108,15 @@ private:
 
 class GLRParser {
 public:
-    void writeToFile(std::string filename);
+//    void writeToFile(const std::string& filename);
 
-    GLRParser(std::string filename, bool verbose = false); // Read from file
+//    explicit GLRParser(const std::string& filename, bool verbose = false); // Read from file
 
     explicit GLRParser(CFG *cfg, bool verbose = false);
 
     void toDot(std::string filename);
 
-    void printTable();
+//    void printTable();
 
     std::set<std::stack<Production *>> parseString(const std::string &toParse);
 
@@ -124,10 +124,10 @@ private:
     bool verbose;
     std::set<std::string> nonTerminalsV;
 public:
-    [[nodiscard]] const set<string> getNonTerminalsV() const;
+    [[nodiscard]] set<string> getNonTerminalsV() const;
 
 private:
-    GLRState *acceptState;
+    GLRState *acceptState{};
     std::set<std::string> terminalsT;
 
 //    void buildTable(); // Converts the states to the parseTable variable
@@ -144,21 +144,22 @@ private:
 
     bool closure(std::set<Production *> &markedProductions, std::set<Production *> &allMarkedProductions);
 
-    std::set<Production *>
+    static std::set<Production *>
     initialProductionsFromVar(const std::string &var, std::set<Production *> &allMarkedProductions);
 
     GLRState *findState(const std::string &stateName);
 
-    std::set<ParseOperation *>
-    findParseOptions(std::string inputChar, const GLRState *currentState, bool final = false) const;
+    set<ParseOperation *>
+    findParseOptions(const std::string &inputChar, const GLRState *currentState) const;
 
     void
-    printStackSet(std::vector<std::pair<std::stack<std::string>, std::stack<Production *>>> possibleParseStacks) const;
+    printStackSet(
+            const std::vector<std::pair<std::stack<std::string>, std::stack<Production *>>> &possibleParseStacks) const;
 
     bool
     checkProductionRules(std::vector<std::pair<std::stack<std::string>, std::stack<Production *>>> &possibleParseStacks,
                          const std::stack<std::string> &stack,
-                         std::stack<Production *> productions,
+                         const std::stack<Production *> &productions,
                          const GLRState *currentState,
                          std::set<std::pair<std::stack<std::string>, Production *>> &alreadyReduced,
                          bool final = false);
