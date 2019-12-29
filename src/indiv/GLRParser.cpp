@@ -14,7 +14,9 @@
 #include "functions.h"
 #include "Graph.h"
 
-GLRParser::GLRParser(CFG *cfg) {
+#define VERBOSE false
+
+GLRParser::GLRParser(CFG *cfg, bool verbose) : verbose(verbose) {
 
     cfg->splitUpLongerTerminals();
 
@@ -599,8 +601,10 @@ set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
             succes += c;
         }
 
-        std::cout << std::endl << "Output after processing " << toString(c) << std::endl;
-        printStackSet(possibleParseStacks);
+        if (verbose) {
+            std::cout << std::endl << "Output after processing " << toString(c) << std::endl;
+            printStackSet(possibleParseStacks);
+        }
 
         std::set<std::pair<std::stack<std::string>, Production *>> alreadyReducedStacks; // S -> a, S->ab, after input a, you only want one of the stacks to be reduced
         // Check the production rules in the new added stacks
@@ -621,8 +625,10 @@ set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
 
         removeDuplicates(possibleParseStacks);
 
-        std::cout << "Output after reducing and eleminating doubles: " << std::endl;
-        printStackSet(possibleParseStacks);
+        if (verbose) {
+            std::cout << "Output after reducing and eleminating doubles: " << std::endl;
+            printStackSet(possibleParseStacks);
+        }
     }
 
 //    bool final = false;
@@ -832,7 +838,7 @@ void GLRParser::writeToFile(std::string filename) {
     outputFile.close();
 }
 
-GLRParser::GLRParser(std::string filename) {
+GLRParser::GLRParser(std::string filename, bool verbose) : verbose(verbose) {
     // Source: https://stackoverflow.com/questions/7868936/read-file-line-by-line-using-ifstream-in-c
     std::ifstream input(filename);
 

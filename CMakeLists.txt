@@ -4,7 +4,7 @@ project(CLizard)
 set(CMAKE_CXX_STANDARD 17)
 
 set(INDIV src/indiv/PDA.cpp src/indiv/Graph.cpp src/indiv/functions.h src/indiv/functions.cpp src/indiv/CFG.cpp src/indiv/CFG.h src/indiv/const.h src/indiv/const.cpp src/indiv/GLRParser.cpp src/indiv/GLRParser.h src/indiv/ASTree.cpp src/indiv/ASTree.h)
-set(ALWAYS_REQUIRED src/AST.cpp src/AST.h ${INDIV})
+set(ALWAYS_REQUIRED src/AST.cpp src/AST.h ${INDIV} src/GLRP.cpp src/GLRP.h)
 
 set(ARNO src/includeLoopRecognition.cpp src/includeLoopRecognition.h)
 set(SAM src/rearrangeFunctions.cpp src/rearrangeFunctions.h)

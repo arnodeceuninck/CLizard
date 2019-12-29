@@ -110,9 +110,9 @@ class GLRParser {
 public:
     void writeToFile(std::string filename);
 
-    GLRParser(std::string filename); // Read from file
+    GLRParser(std::string filename, bool verbose = false); // Read from file
 
-    explicit GLRParser(CFG *cfg);
+    explicit GLRParser(CFG *cfg, bool verbose = false);
 
     void toDot(std::string filename);
 
@@ -121,6 +121,7 @@ public:
     std::set<std::stack<Production *>> parseString(const std::string &toParse);
 
 private:
+    bool verbose;
     std::set<std::string> nonTerminalsV;
 public:
     [[nodiscard]] const set<string> getNonTerminalsV() const;
