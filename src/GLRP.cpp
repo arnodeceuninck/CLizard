@@ -27,7 +27,7 @@ void GLRP::loadParser() {
 
     std::cout << "Creating GLRParser..." << std::endl;
     // Generate a GLRParser
-    setGlrParser(new GLRParser(cfg, true));
+    setGlrParser(new GLRParser(cfg, false));
 
     std::cout << "Done" << std::endl;
 
