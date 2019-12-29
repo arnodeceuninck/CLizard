@@ -103,11 +103,11 @@ int main(int argc, char *argv[]) {
     } else if (operation == "roc") {
         returnCode = rearrangeFunctionsOrderCalled(inputFiles);
     } else if (operation == "ncc") {
-        returnCode = namingConventionsClasses(inputFiles);
+        returnCode = namingConventions::namingConventionsClasses(inputFiles);
     } else if (operation == "ncv") {
-        returnCode = namingConventionsVariables(inputFiles);
+        returnCode = namingConventions::namingConventionsVariables(inputFiles);
     } else if (operation == "ncf") {
-        returnCode = namingConventionsFunctions(inputFiles);
+        returnCode = namingConventions::namingConventionsFunctions(inputFiles);
     } else if (operation == "gpp") {
         returnCode = groupPublicPrivate(inputFiles);
     } else if (operation == "sme") {
