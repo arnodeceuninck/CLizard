@@ -22,8 +22,6 @@ int main(int argc, char *argv[]) {
 
     std::cout << "Hello, World!" << std::endl;
 
-//    example(); // Assure this one keeps working when extending the grammar
-
     std::string filename = "vbn/basic/factorial.cpp";
     AST ast(filename);
 

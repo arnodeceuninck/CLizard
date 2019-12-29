@@ -68,14 +68,22 @@ class Graph {
     vector<Node> nodes;
     vector<Connection> connections;
     std::string rankdir;
+
+    bool containsPathToNode(std::vector<std::string> visitedNodes, std::vector<std::vector<std::string>> &loops);
+
 public:
     void setRankdir(const string &rankdir);
 
 public:
     string to_string();
+
     void build_file(string filename);
+
     void addNode(Node node);
+
     void addConnection(Connection connection);
+
+    std::vector<std::vector<std::string>> checkLoops(); // The label of the loop nodes will be retu
 };
 
 

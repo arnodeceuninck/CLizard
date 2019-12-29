@@ -114,6 +114,10 @@ int main(int argc, char *argv[]) {
     // Everything is backed up, time to process it
     int returnCode;
     if (operation == "ilr") {
+        if (!overrideFile) {
+            std::cout << "It's illegal to run ilr with -b" << std::endl;
+            return 420;
+        }
         returnCode = includeLoopRecognition(inputFiles);
     } else if (operation == "rfh") {
         returnCode = rearrangeFunctionsH(inputFiles);

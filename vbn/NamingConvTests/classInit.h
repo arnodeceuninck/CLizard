@@ -8,15 +8,18 @@ public:
 
 
 };
-class ClAASS69S{
-int hehn;
+
+class ClAASS69S {
+    int hehn;
 };
 
-int integer = 0;class zeb{
+int integer = 0;
+
+class zeb {
 
 };
 
-class DO____OFUS{
+class DO____OFUS {
     unsigned int chadLvl;
 };
 

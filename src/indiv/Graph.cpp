@@ -50,12 +50,14 @@ string Node::to_string() {
     return str;
 }
 
-Node::Node(const string &name, const string &label, const string &shape, const string &extra) : name(name), label(label), shape(shape), extra(extra) {}
+Node::Node(const string &name, const string &label, const string &shape, const string &extra) : name(name),
+                                                                                                label(label),
+                                                                                                shape(shape),
+                                                                                                extra(extra) {}
 
 Connection::Connection(const string &name_from, const string &name_to, const string &label) : name_from(name_from),
                                                                                               name_to(name_to),
-                                                                                              label(label)
-                                                                                              {}
+                                                                                              label(label) {}
 
 const string &Connection::getName_from() const {
     return name_from;
@@ -109,13 +111,13 @@ void Graph::addConnection(Connection connection) {
 
 string Graph::to_string() {
     string str = "digraph G { \n";
-    for(vector<Node>::iterator node = nodes.begin(); node != nodes.end(); ++node){
+    for (vector<Node>::iterator node = nodes.begin(); node != nodes.end(); ++node) {
         str += node->to_string() + "\n";
     }
-    for(vector<Connection>::iterator connection = connections.begin(); connection != connections.end(); ++connection){
+    for (vector<Connection>::iterator connection = connections.begin(); connection != connections.end(); ++connection) {
         str += connection->to_string() + "\n";
     }
-    if(rankdir.empty()){
+    if (rankdir.empty()) {
         rankdir = "LR";
     }
     str += "rankdir=" + rankdir + "\n}";
@@ -137,3 +139,43 @@ void Graph::build_file(string filename) {
 void Graph::setRankdir(const string &rankdir) {
     Graph::rankdir = rankdir;
 }
+
+std::vector<std::vector<std::string>> Graph::checkLoops() {
+    std::vector<std::vector<std::string>> loops;
+    for (auto node: nodes) {
+        containsPathToNode({node.getName()}, loops);
+    }
+    for (auto &loop: loops) {
+        for (auto &nodeName: loop) {
+            for (auto node: nodes) {
+                if (node.getName() == nodeName) {
+                    nodeName = node.getLabel();
+                    break;
+                }
+            }
+        }
+    }
+    return loops;
+}
+
+bool Graph::containsPathToNode(std::vector<std::string> visitedNodes,
+                               std::vector<std::vector<std::string>> &loops) {
+    for (auto connection: connections) {
+        if (connection.getName_from() == visitedNodes[visitedNodes.size() - 1]) {
+            if (visitedNodes[0] == connection.getName_to()) {
+                // Found yah
+                loops.push_back(visitedNodes);
+                return true;
+            } else if (std::find(visitedNodes.begin(), visitedNodes.end(), connection.getName_to()) !=
+                       visitedNodes.end()) {
+                return false; // Just another cycle, not the one we're searching for
+            } else {
+                std::vector<std::string> copyVisited = visitedNodes;
+                copyVisited.emplace_back(connection.getName_to());
+                containsPathToNode(copyVisited, loops);
+            }
+        }
+    }
+    return false;
+}
+

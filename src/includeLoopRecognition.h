@@ -10,4 +10,6 @@
 
 int includeLoopRecognition(const std::vector<std::string> &inputFiles);
 
+std::string realFilename(std::string);
+
 #endif //CLIZARD_INCLUDELOOPRECOGNITION_H
