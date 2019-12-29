@@ -12,7 +12,10 @@ std::vector<std::string> filenames;
     for (unsigned int file = 1; file < argc; ++file) {
         filenames.emplace_back(argv[file]);
     }
+    namingConventions::convertToConventions(filenames);
 
-    namingConventionsClasses(filenames);
+//    namingConventions::namingConventionsClasses(filenames);
+//    namingConventions::namingConventionsVariables(filenames);
+//    namingConventions::namingConventionsFunctions(filenames);
 
 }
