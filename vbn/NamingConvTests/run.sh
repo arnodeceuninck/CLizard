@@ -1,0 +1,2 @@
+# This should be ran from the main project folder
+./CLizard -ncc  --b -i vbn/NamingConvTests/classInit.h vbn/NamingConvTests/classUses.cpp vbn/NamingConvTests/Combined.h vbn/NamingConvTests/Functions.cpp vbn/NamingConvTests/Functions.h vbn/NamingConvTests/Variables.cpp vbn/NamingConvTests/Variables.h

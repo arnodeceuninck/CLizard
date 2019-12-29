@@ -21,7 +21,8 @@ int main(int argc, char *argv[]) {
     // e.g. if the filename is a.cpp, it will be changed to [backupPrefix]a.cpp[backupSuffix]
     // One of them is most of the times empty
     std::string backupSuffix = "";
-    std::string backupPrefix = "backup/";
+    std::string backupPrefix = "backup-";
+    std::string outputPrefix = "output-"; // Overrides backup
 
     // Bool to check whether you should override your original file.
     // If this is true, the backup files will contain the original files.
@@ -69,13 +70,29 @@ int main(int argc, char *argv[]) {
 
     std::vector<std::string> backupInputFiles;
 
+    if (!overrideFile) {
+        backupPrefix = outputPrefix;
+    }
+
     // Backup all files
     for (const std::string &filename: inputFiles) {
 
         // The name of the backup file
-        std::string backupName = backupPrefix;
-        backupName += filename;
-        backupName += backupSuffix;
+        std::string backupName = backupSuffix;
+
+        // Add the prefix right after the last backslash
+        bool prefixAdded = false;
+        for (int i = filename.size() - 1; i >= 0; --i) {
+            char c = filename[i];
+            if (!prefixAdded && c == '/') {
+                backupName = backupPrefix + backupName;
+                prefixAdded = true;
+            }
+            backupName = c + backupName;
+        }
+        if (!prefixAdded) {
+            backupName = backupPrefix + backupName;
+        }
 
         // Copy the file
         // Source: https://stackoverflow.com/questions/10195343/copy-a-file-in-a-sane-safe-and-efficient-way
