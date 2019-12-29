@@ -599,6 +599,7 @@ set<stack<Production *>> GLRParser::parseString(const std::string &toParse) {
             succes += c;
         }
 
+        removeDuplicates(possibleParseStacks);
         if (verbose) {
             std::cout << std::endl << "Output after processing " << toString(c) << std::endl;
             printStackSet(possibleParseStacks);
@@ -655,6 +656,7 @@ GLRParser::removeDuplicates(
     for (int j = 0; j < possibleParseStacks.size(); ++j) {
         if (count(possibleParseStacks.begin(), possibleParseStacks.end(), possibleParseStacks[j]) > 1) {
             possibleParseStacks.erase(possibleParseStacks.begin() + j);
+            j--;
         }
     }
 }
