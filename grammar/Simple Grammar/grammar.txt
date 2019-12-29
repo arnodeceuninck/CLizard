@@ -33,10 +33,10 @@ simple-declaration -> class-type \  variable OPT:assignment ; OPT:newline |
 assignment -> \  = \  expression |
 expression -> equality-expression |
 equality-expression -> relational-expression | equality-expression \  == \  relational-expression |
-relational-expression -> additive-expression | relational-expression \  < \  additive-expression | relational-expression \  \> \  additive-expression | relational-expression \  <= \  additive-expression | relational-expression \  >= \  additive-expression |
-additive-expression -> multiplicative-expression | additive-expression \  + \  multiplicative-expression | additive-expression \  - \  multiplicative-expression |
-multiplicative-expression -> brackets-expression | multiplicative-expression \  * \  brackets-expression | multiplicative-expression \  / \  brackets-expression | multiplicative-expression \  % \  brackets-expression |
-brackets-expression -> ( expression-variable ) | expression-variable |
+relational-expression -> brackets-expression | expression \  < \  expression | expression \  \> \  expression | expression \  <= \  expression | expression \  >= \  expression |
+additive-expression -> expression-variable | expression \  + \  expression | expression \  - \  expression |
+multiplicative-expression -> additive-expression | expression \  * \  expression | expression \  / \  expression | expression \  % \  expression |
+brackets-expression -> ( expression ) | multiplicative-expression |
 expression-variable -> variable | literal | function-call |
 %identifier | literal
 % class-type used as alias for decl-specifier-seq

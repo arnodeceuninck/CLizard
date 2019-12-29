@@ -22,15 +22,9 @@ int main(int argc, char *argv[]) {
 
     std::cout << "Hello, World!" << std::endl;
 
-    std::string filename = "vbn/basic/factorial.cpp";
+    std::string filename = "vbn/tim.cpp";
     AST ast(filename);
-
-    std::string filename2 = "vbn/basic/includes.cpp";
-    AST ast2(filename2);
 
     filename = "output/parsed.dot";
     ast.toDot(filename);
-
-    filename2 = "output/parsed2.dot";
-    ast2.toDot(filename2);
 }
