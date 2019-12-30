@@ -45,7 +45,7 @@ class-type -> OPT:namespace identifier |
 variable -> OPT:namespace identifier |
 namespace -> identifier :: |
 namespace-name -> identifier |
-identifier -> OPT:identifier non-digit |
+identifier -> OPT:identifier non-digit | OPT:identifier digit |
 non-digit -> a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | _ |
 newline -> OPT:newline newline-element |
 newline-element -> \\n | \  | comment-block |
