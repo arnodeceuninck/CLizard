@@ -27,6 +27,8 @@ public:
 
     std::string yield();
 
+    ASTree *getASTree() { return ast; }
+
 private:
     ASTree *ast;
 
