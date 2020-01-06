@@ -11,7 +11,7 @@ filename -> location-identifier |
 location-identifier -> OPT:location-identifier character | OPT:location-identifier location-specific-char |
 location-specific-char -> . | / |
 declaration-seq -> declaration | declaration-seq declaration |
-declaration -> block-declaration | function-definition | namespace-definition | function-call \  ; | return-value | selection-statement | stream-statements | assignment-line ; OPT:newline | class-declaration | pp-statements |
+declaration -> block-declaration | function-definition | namespace-definition | function-call ; | return-value | selection-statement | stream-statements | assignment-line ; OPT:newline | class-declaration | pp-statements |
 pp-statements -> public : newline declaration-seq | private : newline declaration-seq |
 % something weird happend when naming this public-private-statements
 class-declaration -> c l a s s \  class-type \  { OPT:newline declaration-seq } OPT:; OPT:newline |
