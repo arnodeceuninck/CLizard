@@ -40,7 +40,6 @@ std::string namingConventions::getFileName(const std::string &filePath) {
 Pda *namingConventions::makeNamePda(std::string &name) {
     Pda *p = new Pda();
     std::string alphabeth;
-    unsigned int nodeCount = 1;
     for (unsigned int c = 0; c < name.size() + 1; ++c) {
         std::string nodename = "q" + std::to_string(c);
         p->addNode(nodename, c == 0, c == name.size());
@@ -60,6 +59,10 @@ Pda *namingConventions::makeNamePda(std::string &name) {
     p->addFunct(p->getAllNodes()[0], p->getAllNodes()[0], ' ', " ", ' ');
     p->addFunct(p->getAllNodes()[p->getAllNodes().size() - 1], p->getAllNodes()[p->getAllNodes().size() - 1], ' ',
                 " ", ' ');
+  p->addFunct(p->getAllNodes()[p->getAllNodes().size() - 1], p->getAllNodes()[p->getAllNodes().size() - 1], ' ',
+              " ", '(');
+  p->addFunct(p->getAllNodes()[p->getAllNodes().size() - 1], p->getAllNodes()[p->getAllNodes().size() - 1], ' ',
+              " ", ')');
 
 
     p->setAlphabet(alphabeth);
@@ -84,7 +87,7 @@ std::string namingConventions::correctName(std::string name) {
             corrected += name[c];
         } else if (name[c] == '_' && name[c + 1] == '_') {
             name.erase(c, 1);
-        } else if (!isalpha(name[c]) && !isdigit(name[c])) {
+        } else if (!isalpha(name[c]) && !isdigit(name[c]) && name[c] != '_') {
             name.erase(c, 1);
         } else {
             corrected += name[c];
@@ -99,6 +102,7 @@ namingConventions::editToNewName(std::string &word, const std::string &oldName, 
     unsigned int correctCount = 0;
     unsigned int start = 0;
     unsigned int end = 0;
+    unsigned int misses = 0;
     std::string newName;
 
     bool found = false;
@@ -120,7 +124,12 @@ namingConventions::editToNewName(std::string &word, const std::string &oldName, 
         } else {
             correctCount = 0;
             oldname_i = 0;
+            if(word[c] != '(' && word[c] != ')' && word[c] != ';' )
+            misses += 1;
         }
+    }
+    if(misses > 0){
+      return word;
     }
     unsigned int pos = 0;
     while (pos != start) {
@@ -144,7 +153,6 @@ namingConventions::adjustForAllFiles(const std::vector<std::string> &inputFiles,
                                      std::vector<Pda *> &pdas, bool forClass) {
     for (auto &file:inputFiles) {
         std::fstream buffer(file.c_str());
-        std::string fileName = "vbn/NamingConvTests/outputs/" + getFileName(file);
         std::string line;
         std::string editedstring;
 
@@ -179,23 +187,13 @@ namingConventions::adjustForAllFiles(const std::vector<std::string> &inputFiles,
             editedstring += "\n";
 
         }
-        if (forClass) {
 
 
             buffer.close();
             std::ofstream editedFile;
-            editedFile.open(fileName, std::ofstream::out | std::ofstream::trunc);
+            editedFile.open(file, std::ofstream::out | std::ofstream::trunc);
             editedFile << editedstring;
             editedFile.close();
-        } else {
-            buffer.close();
-            std::ofstream editedFile;
-            editedFile.open(fileName + "_1", std::ofstream::out | std::ofstream::trunc);
-            editedFile << editedstring;
-            editedFile.close();
-
-
-        }
 
     }
 }
@@ -230,7 +228,7 @@ std::string namingConventions::correctClassName(std::string name) {
             corrected += name[c];
         } else if (name[c] == '_' && name[c + 1] == '_') {
             name.erase(c, 1);
-        } else if (!isalpha(name[c]) && !isdigit(name[c])) {
+        } else if (!isalpha(name[c]) && !isdigit(name[c]) &&name[c] != '_') {
             name.erase(c, 1);
         } else {
             corrected += name[c];
@@ -240,13 +238,10 @@ std::string namingConventions::correctClassName(std::string name) {
 
 }
 
-
 // past een reeks c++ files aan zodat alle classnames hier voldoen aan de conventions
 int namingConventions::namingConventionsClasses(const std::vector<std::string> &inputFiles) {
-    std:
-    string cl = "class";
+    std::string cl = "class";
     Pda *classRecognizer = makeNamePda(cl);
-//            classRecognizer.readJson("vbn/NamingConvTests/classRec.json");
     Pda *classChecker = new Pda();
     classChecker->readJson("vbn/NamingConvTests/classChecker.json");
     std::fstream buffer;
@@ -266,7 +261,7 @@ int namingConventions::namingConventionsClasses(const std::vector<std::string> &
             while (stream >> word) {
                 if (found) {
                     std::string name = findClassName(word);
-                    if (!classChecker->traverse(name) && name != "") {
+                    if (!classChecker->traverse(name) && !name.empty()) {
                         oldclassNames.push_back(name);
                         classPdas.push_back(makeNamePda(name));
                         newclassNames.push_back(correctClassName(name));
@@ -314,7 +309,8 @@ int namingConventions::namingConventionsVariables(const std::vector<std::string>
             }
         }
 
-        for (std::string &oldName: newVarNames) {
+//      sortStringVector(newVarNames);
+      for (std::string &oldName: newVarNames) {
             varPdas.emplace_back(makeNamePda(oldName));
         }
     }
@@ -339,7 +335,6 @@ int namingConventions::namingConventionsFunctions(const std::vector<std::string>
 //        ast->toDot("vbn/NamingConvTests/outputs/yeeters.dot");
         std::vector<AST *> functionNames = ast->find("function-name"); // all found functions
 
-        //update de allVarTypes met de nieuwe var types
         for (unsigned int i = 0; i < functionNames.size(); ++i) {
             std::string name = functionNames[i]->yield();
             if (!(name == "true" || name == "false") && !findNameInVector(allfunctNames, name)) {
@@ -348,6 +343,7 @@ int namingConventions::namingConventionsFunctions(const std::vector<std::string>
             }
         }
 
+//        sortStringVector(newVarNames);
         for (std::string &oldName: newVarNames) {
             functPdas.emplace_back(makeNamePda(oldName));
             correctfunctNames.push_back(correctName(oldName));
@@ -360,13 +356,9 @@ int namingConventions::namingConventionsFunctions(const std::vector<std::string>
 
 
 int namingConventions::convertToConventions(const std::vector<std::string> &inputFiles) {
-    std::vector<std::string> outputFiles;
-    for (auto file: inputFiles) {
-        outputFiles.push_back("vbn/NamingConvTests/outputs/" + namingConventions::getFileName(file));
-    }
     namingConventionsClasses(inputFiles);
-    namingConventionsFunctions(outputFiles);
-    namingConventionsVariables(outputFiles);
+    namingConventionsFunctions(inputFiles);
+    namingConventionsVariables(inputFiles);
     return 0;
 }
 
