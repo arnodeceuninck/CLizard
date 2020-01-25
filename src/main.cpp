@@ -26,7 +26,7 @@ int main(int argc, char *argv1[]) {
     std::string outputPrefix = "output-"; // Overrides backup
 
     bool cli = argc == 1;
-    std::vector<std::string> argv(argv1 + 1, argv1 + argc);
+    std::vector<std::string> argv(argv1, argv1 + argc);
 
 
     while (cli or (argc >= 1 and argv[0] != "exit")) {
@@ -214,6 +214,8 @@ int main(int argc, char *argv1[]) {
 
             argc = argv.size();
 
+        } else {
+            argc = 0;
         }
 
         std::cout << std::endl;
