@@ -29,11 +29,11 @@ public:
 
     std::string yield();
 
+    ASTree *getASTree() { return ast; }
+
     const std::vector<ASTree *>& getSubtrees();
 
     AST(ASTree *ast);
-
-    ASTree *getAst() const;
 
 private:
     ASTree *ast;
