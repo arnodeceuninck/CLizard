@@ -104,15 +104,22 @@ namingConventions::editToNewName(std::string &word, const std::string &oldName, 
     unsigned int end = 0;
     unsigned int misses = 0;
     std::string newName;
+    unsigned int functionCall = 0;
 
     bool found = false;
     unsigned int oldname_i = 0;
     for (unsigned int c = 0; c < word.size(); ++c) {
+      if(word[c] == '('){
+        functionCall = c;
+      }
 
         if (word[c] == oldName[oldname_i] && !found) {
             if (correctCount == oldName.size() - 1) {
                 end = c;
                 found = true;
+                if(correctCount == 0){
+                  start = c;
+                }
             } else {
                 correctCount += 1;
                 oldname_i += 1;
@@ -123,12 +130,32 @@ namingConventions::editToNewName(std::string &word, const std::string &oldName, 
 
         } else {
             correctCount = 0;
+            found = false;
             oldname_i = 0;
             if(word[c] != '(' && word[c] != ')' && word[c] != ';' )
             misses += 1;
         }
     }
     if(misses > 0){
+      if(functionCall != 0 && found){
+        unsigned int pos = 0;
+        while (pos != functionCall + 1) { //variable in function call
+          newName += word[pos];
+          pos += 1;
+        }
+        newName += correctName;
+        return newName;
+
+      }else if(functionCall != 0){  // function being called
+        newName = correctName;
+        while (functionCall < word.size()) {
+          newName += word[functionCall];
+          functionCall += 1;
+        }
+        return newName;
+      }
+
+
       return word;
     }
     unsigned int pos = 0;
@@ -187,7 +214,6 @@ namingConventions::adjustForAllFiles(const std::vector<std::string> &inputFiles,
             editedstring += "\n";
 
         }
-
 
             buffer.close();
             std::ofstream editedFile;
@@ -261,7 +287,7 @@ int namingConventions::namingConventionsClasses(const std::vector<std::string> &
             while (stream >> word) {
                 if (found) {
                     std::string name = findClassName(word);
-                    if (!classChecker->traverse(name) && !name.empty()) {
+                    if (!classChecker->traverse(name) && name != "") {
                         oldclassNames.push_back(name);
                         classPdas.push_back(makeNamePda(name));
                         newclassNames.push_back(correctClassName(name));
@@ -303,13 +329,15 @@ int namingConventions::namingConventionsVariables(const std::vector<std::string>
         //update de allVarTypes met de nieuwe var types
         for (unsigned int i = 0; i < vars.size(); ++i) {
             std::string name = vars[i]->yield();
-            if (!(name == "true" || name == "false") && !findNameInVector(allVarNames, name)) {
+            if(isalpha(name[0])){
+              if (!(name == "true" || name == "false") && !findNameInVector(allVarNames, name)) {
                 allVarNames.push_back(name);
                 newVarNames.push_back(name);
+              }
             }
+
         }
 
-//      sortStringVector(newVarNames);
       for (std::string &oldName: newVarNames) {
             varPdas.emplace_back(makeNamePda(oldName));
         }
@@ -343,7 +371,6 @@ int namingConventions::namingConventionsFunctions(const std::vector<std::string>
             }
         }
 
-//        sortStringVector(newVarNames);
         for (std::string &oldName: newVarNames) {
             functPdas.emplace_back(makeNamePda(oldName));
             correctfunctNames.push_back(correctName(oldName));
@@ -356,9 +383,10 @@ int namingConventions::namingConventionsFunctions(const std::vector<std::string>
 
 
 int namingConventions::convertToConventions(const std::vector<std::string> &inputFiles) {
-    namingConventionsClasses(inputFiles);
     namingConventionsFunctions(inputFiles);
     namingConventionsVariables(inputFiles);
-    return 0;
+    namingConventionsClasses(inputFiles);
+
+  return 0;
 }
 

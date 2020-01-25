@@ -1,18 +1,18 @@
-int TEsTiNte_GeR = 9;
+int TEsTiNte_GeR = 0;
 
-int Factorial(int i) { 
-if (i == 0) { 
-return 1; 
+int Factorial(int I) {
+if (I == 0) {
+return; 
 } else { 
-i = i * Factorial(i - 1); 
-return i; 
+I = I * Factorial(I - 1);
+return I;
 } 
 } 
 
-class disNogOoOd_class {
+class DisNogOoOd___class {
 bool BOoLeRaN = true;
 }; 
 
 string DOOFUS = "BOOFUS";
 
-disNogOoOd_class SAAS = disNogOoOd_class();
+DisNogOoOd___class NUGGETBOI = DisNogOoOd___class();
