@@ -2,10 +2,10 @@
 by JetBigBrains
 
 ## Getting started
-Run the "compile.sh" file to compile the program, folowed by the "run.sh" to run the program. 
+Run the "compile.sh" file to compile and run the program
 
 ```
-./compile.sh && ./run.sh
+./compile.sh
 ```
 
 ## Features
