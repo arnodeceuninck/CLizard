@@ -27,7 +27,7 @@ int simplifyMathematicalExpressions(const std::vector<std::string> &inputFiles) 
 
         std::cout << ast.yield() << std::endl;
 
-
+        ast.toDot("math.dot");
         file.close();
     }
 

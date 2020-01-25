@@ -93,8 +93,3 @@ std::string AST::yield() {
 const std::vector<ASTree *>& AST::getSubtrees() {
     return ast->getSubtrees();
 }
-
-ASTree *AST::getAst() const {
-    return ast;
-}
-
