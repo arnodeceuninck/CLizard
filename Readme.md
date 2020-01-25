@@ -2,16 +2,16 @@
 by JetBigBrains
 
 ## Getting started
-Run the "compile.sh" file to compile the program, folowed by the "run.sh" to run the program. 
+Run the "compile.sh" file to compile and run the program
 
 ```
-./compile.sh && ./run.sh
+./compile.sh
 ```
 
 ## Features
 Note: Currently it's only possible to apply one feature per time.
 ### Include loop recognition
-This feature will fix the most common problem with include loops.
+This feature will help you find include loops.
 
 ```
 ./clizard -ilr -i a.cpp b.cpp a.h b.h

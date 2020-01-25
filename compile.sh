@@ -1,4 +1,7 @@
 python "grammar/Simple Grammar/txtToJson.py" "grammar/Simple Grammar/grammar.txt" "grammar/Simple Grammar/cpp.json"
+cmake .
+make
+./CLizard
 
 ## Update cmake
 #sudo apt remove cmake
