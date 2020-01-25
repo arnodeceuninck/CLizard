@@ -166,8 +166,8 @@ int main(int argc, char *argv1[]) {
             examples[3] = {"Naming conventions (class)", "clizard -ncc -i main.cpp a.cpp a.h"};
             examples[4] = {"Naming conventions (function)", "clizard -ncf -i main.cpp a.cpp a.h"};
             examples[5] = {"Naming conventions (variable)", "clizard -ncv -i main.cpp a.cpp a.h"};
-            examples[6] = {"Group public and private", "clizard -gpp -i main.cpp a.cpp a.h"};
-            examples[7] = {"Simplify mathematical expressions", "clizard -sme -i main.cpp a.cpp a.h"};
+            examples[6] = {"Group public and private", "clizard -gpp -i vbn/GroupingPPTests/TestClass.h"};
+            examples[7] = {"Simplify mathematical expressions", "clizard -sme -i vbn/SimplifyTests/MATHZ.cpp    "};
 
             for (int j = 0; j < examples.size(); ++j) {
                 auto example = examples[j];
