@@ -42,7 +42,7 @@ int includeLoopRecognition(const std::vector<std::string> &inputFiles) {
     auto loops = graph.checkLoops();
 
     for (auto loop: loops) {
-        std::cout << "Include loop found. \nThere is a circular dependency in the files ";
+        std::cout << std::endl << "Include loop found. \nThere is a circular dependency in the files ";
         for (auto file: loop) {
             if (file != loop[0]) {
                 std::cout << ", ";

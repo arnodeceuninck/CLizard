@@ -150,6 +150,9 @@ int main(int argc, char *argv1[]) {
         }
 
         if (cli) {
+
+            std::cout << std::endl;
+
             if (argc == 1)
                 std::cout << "You probably forgot some arguments, but you can still type them here" << std::endl;
             std::cout
@@ -212,6 +215,8 @@ int main(int argc, char *argv1[]) {
             argc = argv.size();
 
         }
+
+        std::cout << std::endl;
     }
 
     return 0;
