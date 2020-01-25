@@ -16,19 +16,29 @@ int simplifyMathematicalExpressions(const std::vector<std::string> &inputFiles) 
     //std::vector<std::string> test = toPRN("((15/(7-(1+1)))*3)-(2+(1+1))");
     //std::vector<std::string> test2 = simplify(test);
 
-    std::fstream file;
+    std::ifstream file;
 
     for (int i = 0; i < inputFiles.size(); ++i) {
 
         file.open(inputFiles[i]);
         AST ast(inputFiles[i]);
 
-        ast.find("pp-statements");
+        std::string fullYield = ast.yield();
 
-        std::cout << ast.yield() << std::endl;
+        std::vector<AST *> asts = ast.findNonRecursive("multiplicative-expression");
 
-        ast.toDot("math.dot");
+        for (int j = 0; j < asts.size(); ++j) {
+            std::string yield = asts[j]->yield();
+            std::string newYield = toInfix(simplify(toPRN(yield)));
+            fullYield.replace(fullYield.begin() + fullYield.find(yield), fullYield.begin() + fullYield.find(yield) + yield.size(), newYield);
+        }
+
+
+
         file.close();
+        std::ofstream file2(inputFiles[i]);
+        file2 << fullYield;
+        file2.close();
     }
 
 
@@ -82,7 +92,7 @@ std::vector<std::string> toPRN(std::string input) {
         output.push_back(stack.top());
         stack.pop();
     }
-
+    stringNormalizer(output);
     return output;
 }
 
@@ -191,4 +201,14 @@ int checkPrecedence(std::string op) {
         return 2;
     }
     return 0;
+}
+
+void stringNormalizer(std::vector<std::string> &vector) {
+    for (int i = 0; i < vector.size(); ++i) {
+        for (int j = 0; j < vector[i].size(); ++j) {
+            if(vector[i][j] == ' '){
+                vector[i].erase(vector[i].begin()+j);
+            }
+        }
+    }
 }

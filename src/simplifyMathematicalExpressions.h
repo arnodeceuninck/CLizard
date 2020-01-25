@@ -24,4 +24,6 @@ bool isOperator(std::string input);
 
 int checkPrecedence(std::string op);
 
+void stringNormalizer(std::vector<std::string>& vector);
+
 #endif //CLIZARD_SIMPLIFYMATHEMATICALEXPRESSIONS_H

@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <lzma.h>
 #include "includeLoopRecognition.h"
 #include "rearrangeFunctions.h"
 #include "namingConventions.h"

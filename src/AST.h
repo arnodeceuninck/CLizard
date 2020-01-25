@@ -33,6 +33,8 @@ public:
 
     const std::vector<ASTree *>& getSubtrees();
 
+    std::vector<AST*> findNonRecursive(std::string varName);
+
     AST(ASTree *ast);
 
 private:

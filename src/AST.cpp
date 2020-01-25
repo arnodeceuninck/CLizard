@@ -93,3 +93,13 @@ std::string AST::yield() {
 const std::vector<ASTree *>& AST::getSubtrees() {
     return ast->getSubtrees();
 }
+
+std::vector<AST *> AST::findNonRecursive(std::string varName) {
+    std::vector<ASTree *> trees1;
+    std::vector<AST *> trees2;
+    ast->findNonRecursive(varName, trees1);
+    for (auto tree: trees1) {
+        trees2.emplace_back(new AST(tree));
+    }
+    return trees2;
+}
