@@ -6,6 +6,8 @@
 #define CLIZARD_AST_H
 
 #include "indiv/ASTree.h"
+#include "groupPublicPrivate.h"
+
 
 //// IMPORTANT: Be sure to have executed ./compile.sh, so the grammar file is generated
 
@@ -27,11 +29,15 @@ public:
 
     std::string yield();
 
+    const std::vector<ASTree *>& getSubtrees();
+
+    AST(ASTree *ast);
+
+    ASTree *getAst() const;
+
 private:
     ASTree *ast;
 
-    AST(ASTree *ast);
 };
-
 
 #endif //CLIZARD_AST_H

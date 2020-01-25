@@ -8,11 +8,30 @@
 //#include <stdio.h>
 #include <iterator>
 #include <algorithm>
+#include <fstream>
+#include "AST.h"
 
 int simplifyMathematicalExpressions(const std::vector<std::string> &inputFiles) {
     //std::vector<std::string> test = divideNumbersOperators("((15 / (7 − (1 + 1))) × 3) − (2 + (1 + 1))");
     //std::vector<std::string> test = toPRN("((15/(7-(1+1)))*3)-(2+(1+1))");
     //std::vector<std::string> test2 = simplify(test);
+
+    std::fstream file;
+
+    for (int i = 0; i < inputFiles.size(); ++i) {
+
+        file.open(inputFiles[i]);
+        AST ast(inputFiles[i]);
+
+        ast.find("pp-statements");
+
+        std::cout << ast.yield() << std::endl;
+
+
+        file.close();
+    }
+
+
     std::cout << toInfix(simplify(toPRN("((15/(7-(var+1)))*3)-(2+(1+1))"))) << std::endl;
     std::cout << toInfix(simplify(toPRN("2+9/3*2"))) << std::endl;
     return 0;
