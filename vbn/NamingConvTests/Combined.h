@@ -1,15 +1,18 @@
-int TESTINTe___GER = 9;
+int TEsTiNte_GeR = 9;
 
-int Factorial(int i) {
-    if (i == 0) {
-        return 1;
-    } else {
-        i = i * factorial(i - 1);
-        return i;
-        // hack hack hack Dorien was hier
-    }
-}
+int Factorial(int i) { 
+if (i == 0) { 
+return 1; 
+} else { 
+i = i * Factorial(i - 1); 
+return i; 
+} 
+} 
 
-class dIsNOg__OOOD_class {
-    bool BOLERAN = true;
-};
+class disNogOoOd_class {
+bool BOoLeRaN = true;
+}; 
+
+string DOOFUS = "BOOFUS";
+
+disNogOoOd_class SAAS = disNogOoOd_class();
