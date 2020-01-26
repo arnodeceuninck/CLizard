@@ -23,21 +23,21 @@ int groupPublicPrivate(const std::vector<std::string> &inputFiles) {
             std::string nameOfClass = asts[j]->find("class-type")[0]->yield();
             //std::cout << asts[j]->yield() << std::endl;
 
-            ClassOperation(*asts[i], publics, privates);
+            ClassOperation(*asts[j], publics, privates);
             std::string newYield = writeToFile(publics,privates,asts[j]->yield());
 
-            fullyield.replace(fullyield.begin()+fullyield.find(nameOfClass)-6, fullyield.begin() + endOfClassFinder(nameOfClass, fullyield), newYield);
+            fullyield.replace(fullyield.begin()+fullyield.find("class " + nameOfClass + " "), fullyield.begin() + endOfClassFinder(nameOfClass, fullyield), newYield);
 
             //std::cout << fullyield << std::endl;
 
-            //std::string dotname = "tree" + std::to_string(j) + ".dot";
-            //asts[j]->toDot(dotname);
+            std::string dotname = "tree" + std::to_string(j) + ".dot";
+            asts[j]->toDot(dotname);
         }
 
         //std::cout << fullyield << std::endl;
         //ast.toDot("tree.dot");
         file.close();
-        std::ofstream file2(inputFiles[i]);
+        std::ofstream file2(inputFiles[i], std::ios::trunc);
         file2 << fullyield;
         file2.close();
     }
@@ -60,6 +60,8 @@ int ClassOperation(AST &parsetree, std::vector<std::string>& publics, std::vecto
             currentState = &publics;
         }
         currentState->push_back(found->getSubtrees()[0]->yield());
+    }else{
+        currentState->push_back(current.yield());
     }
     currentTree = currentTree->getParent()->getParent();
     current = AST(currentTree->getSubtrees()[1]);

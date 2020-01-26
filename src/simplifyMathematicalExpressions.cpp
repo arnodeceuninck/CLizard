@@ -42,8 +42,8 @@ int simplifyMathematicalExpressions(const std::vector<std::string> &inputFiles) 
     }
 
 
-    std::cout << toInfix(simplify(toPRN("((15/(7-(var+1)))*3)-(2+(1+1))"))) << std::endl;
-    std::cout << toInfix(simplify(toPRN("2+9/3*2"))) << std::endl;
+    //std::cout << toInfix(simplify(toPRN("((15/(7-(var+1)))*3)-(2+(1+1))"))) << std::endl;
+    //std::cout << toInfix(simplify(toPRN("2+9/3*2"))) << std::endl;
     return 0;
 }
 

@@ -4,10 +4,13 @@
 
 class TestClass {
 
-    //test
     int hello;
 
+public:
+
     int calc(int help);
+
+private:
 
     int welldone;
 
@@ -24,24 +27,24 @@ private:
 
 };
 
-class TestClass2 {
+class E {
 
-    //test
-    int hello;
+    float yes;
+private:
 
-    int calc(int help);
-
-    int welldone;
+    int how;
 
 public:
 
-    int calcc(int how);
-
-    int devider;
+    void you(int how);
 
 private:
 
-    int calccc(int idk);
+    int all;
+
+public:
+
+    std::string doing(int idk);
 
 
 };

@@ -1,11 +1,6 @@
-//
-// Created by treap on 09.12.19.
-//
 
 class FreeFolk {
     bool peacefull;
-public:
-
 
 };
 

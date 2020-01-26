@@ -1,15 +1,18 @@
-int TESTINTe___GER = 9;
+int TEsTiNte_GeR = 0;
 
-int Factorial(int i) {
-    if (i == 0) {
-        return 1;
-    } else {
-        i = i * factorial(i - 1);
-        return i;
-        // hack hack hack Dorien was hier
-    }
-}
+int Factorial(int I) {
+if (I == 0) {
+return; 
+} else { 
+I = I * Factorial(I - 1);
+return I;
+} 
+} 
 
-class dIsNOg__OOOD_class {
-    bool BOLERAN = true;
-};
+class DisNogOoOd___class {
+bool BOoLeRaN = true;
+}; 
+
+string DOOFUS = "BOOFUS";
+
+DisNogOoOd___class NUGGETBOI = DisNogOoOd___class();

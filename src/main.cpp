@@ -163,11 +163,11 @@ int main(int argc, char *argv1[]) {
 
             examples[1] = {"Rearrange functions (.h)", "clizard -rfh -b -i a.cpp a.h"};
             examples[2] = {"Rearrange functions (order called)", "clizard -roc -b -i a.cpp a.h"};
-            examples[3] = {"Naming conventions (class)", "clizard -ncc -i main.cpp a.cpp a.h"};
-            examples[4] = {"Naming conventions (function)", "clizard -ncf -i main.cpp a.cpp a.h"};
-            examples[5] = {"Naming conventions (variable)", "clizard -ncv -i main.cpp a.cpp a.h"};
-            examples[6] = {"Group public and private", "clizard -gpp -i main.cpp a.cpp a.h"};
-            examples[7] = {"Simplify mathematical expressions", "clizard -sme -i main.cpp a.cpp a.h"};
+            examples[3] = {"Naming conventions (class)", "clizard -ncc -i main.cpp vbn/NamingConvTests/Combined.cpp vbn/NamingConvTests/Combined.h"};
+            examples[4] = {"Naming conventions (function)", "clizard -ncf -i main.cpp vbn/NamingConvTests/Combined.cpp vbn/NamingConvTests/Combined.h"};
+            examples[5] = {"Naming conventions (variable)", "clizard -ncv -i main.cpp vbn/NamingConvTests/Combined.cpp vbn/NamingConvTests/Combined.h"};
+            examples[6] = {"Group public and private", "clizard -gpp -i vbn/GroupingPPTests/TestClass.h"};
+            examples[7] = {"Simplify mathematical expressions", "clizard -sme -i vbn/SimplifyTests/MATHZ.cpp    "};
 
             for (int j = 0; j < examples.size(); ++j) {
                 auto example = examples[j];
