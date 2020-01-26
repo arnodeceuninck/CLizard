@@ -161,8 +161,8 @@ int main(int argc, char *argv1[]) {
             examples[0] = {"Include loop recognition",
                            "CLizard -ilr -i vbn/ILR/A.h vbn/ILR/A.cpp vbn/ILR/B.h vbn/ILR/B.cpp vbn/ILR/C.h vbn/ILR/C.cpp vbn/ILR/D.h vbn/ILR/D.cpp"};
 
-            examples[1] = {"Rearrange functions (.h)", "clizard -rfh -b -i a.cpp a.h"};
-            examples[2] = {"Rearrange functions (order called)", "clizard -roc -b -i a.cpp a.h"};
+            examples[1] = {"Rearrange functions (.h)", "clizard -rfh -b -i vbn/rfh.cpp vbn/rfh.h"};
+            examples[2] = {"Rearrange functions (order called)", "clizard -roc -b -i vbn/roc-main.cpp vbn/roc.h vbn/roc.cpp"};
             examples[3] = {"Naming conventions (class)", "clizard -ncc -i main.cpp vbn/NamingConvTests/Combined.cpp vbn/NamingConvTests/Combined.h"};
             examples[4] = {"Naming conventions (function)", "clizard -ncf -i main.cpp vbn/NamingConvTests/Combined.cpp vbn/NamingConvTests/Combined.h"};
             examples[5] = {"Naming conventions (variable)", "clizard -ncv -i main.cpp vbn/NamingConvTests/Combined.cpp vbn/NamingConvTests/Combined.h"};
