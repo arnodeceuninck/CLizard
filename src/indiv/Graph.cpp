@@ -9,7 +9,14 @@
 #include <algorithm>
 
 Node::Node(const string &name, const string &label, const string &shape) : name(name), label(label), shape(shape),
-                                                                           extra("") {}
+                                                                           extra("") {
+    this->name = "";
+    for (char c: name) {
+        if (c == '#')
+            c = '_';
+        this->name += c;
+    }
+}
 
 const string &Node::getName() const {
     return name;
@@ -37,10 +44,14 @@ void Node::setShape(const string &shape) {
 
 string Node::to_string() {
     std::string newLabel;
-    std::set<char> escapeChars = {'{', '}', '"'};
+    std::set<char> escapeChars = {'{', '}', '"', ';', '(', ')', '\n'};
     int i = 0;
     for (char c: label) {
         i++;
+        if (c == '\n')
+            continue;
+        if (c == '#')
+            c = '_';
         if (std::find(escapeChars.begin(), escapeChars.end(), c) != escapeChars.end()) {
             newLabel += '\\';
         }
@@ -53,11 +64,32 @@ string Node::to_string() {
 Node::Node(const string &name, const string &label, const string &shape, const string &extra) : name(name),
                                                                                                 label(label),
                                                                                                 shape(shape),
-                                                                                                extra(extra) {}
+                                                                                                extra(extra) {
+    this->name = "";
+    for (char c: name) {
+        if (c == '#')
+            c = '_';
+        this->name += c;
+    }
+}
 
 Connection::Connection(const string &name_from, const string &name_to, const string &label) : name_from(name_from),
                                                                                               name_to(name_to),
-                                                                                              label(label) {}
+                                                                                              label(label) {
+    this->name_from = "";
+    for (char c: name_from) {
+        if (c == '#')
+            c = '_';
+        this->name_from += c;
+    }
+
+    this->name_to = "";
+    for (char c: name_to) {
+        if (c == '#')
+            c = '_';
+        this->name_to += c;
+    }
+}
 
 const string &Connection::getName_from() const {
     return name_from;
@@ -87,9 +119,13 @@ string Connection::to_string() {
     string str = name_from + "->" + name_to;
     if (!label.empty()) {
         std::string newLabel;
-        std::set<char> escapeChars = {'{', '}', '"'};
+        std::set<char> escapeChars = {'{', '}', '"', ';', '(', ')', '\n'};
         int i = 0;
         for (char c: label) {
+            if (c == '\n')
+                continue;
+            if (c == '#')
+                c = '_';
             i++;
             if (std::find(escapeChars.begin(), escapeChars.end(), c) != escapeChars.end()) {
                 newLabel += '\\';

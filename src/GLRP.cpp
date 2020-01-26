@@ -29,6 +29,8 @@ void GLRP::loadParser() {
     // Generate a GLRParser
     setGlrParser(new GLRParser(cfg, false));
 
+//    glrParser->toDot("output/GLRParser202500126.dot");
+
     std::cout << "Done" << std::endl;
 
     setLoaded(true);

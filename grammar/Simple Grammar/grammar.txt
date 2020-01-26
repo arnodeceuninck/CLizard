@@ -11,13 +11,15 @@ filename -> location-identifier |
 location-identifier -> OPT:location-identifier character | OPT:location-identifier location-specific-char |
 location-specific-char -> . | / |
 declaration-seq -> declaration | declaration-seq declaration |
-declaration -> block-declaration | function-definition | namespace-definition | function-call ; | return-value | selection-statement | stream-statements | assignment-line ; OPT:newline | class-declaration | pp-statements |
+declaration -> block-declaration | function-definition | namespace-definition | function-call ; | return-value | selection-statement | for-loop | stream-statements | assignment-line ; OPT:newline | class-declaration | pp-statements |
+for-loop -> for \  ( simple-declaration \  expression ; \  assignment-line ) \  { OPT:newline declaration-seq } newline |
+% for -> f o r |
 pp-statements -> public : newline declaration-seq | private : newline declaration-seq |
 % something weird happend when naming this public-private-statements
 class-declaration -> c l a s s \  class-type \  { OPT:newline declaration-seq } OPT:; OPT:newline |
 % Weird errors when class not written as c l a s s
 %class-declaration ->
-assignment-line -> variable assignment | variable ++ | variable -- | variable \  +=  expression | variable \  +=  expression | variable \  -=  expression | variable \  /=  expression |
+assignment-line -> variable assignment | variable ++ | ++ variable | variable -- | -- variable | variable \  +=  expression | variable \  +=  expression | variable \  -=  expression | variable \  /=  expression |
 stream-statements -> stream-statement \  << \  additive-expression ; newline | stream-statement \  >> \  additive-expression ; newline |
 stream-statement -> stream-statement \  << \  additive-expression | stream-statement \  >> \  additive-expression | additive-expression |
 stream-out -> expression \  | stream-out >> \  expression |
@@ -60,8 +62,8 @@ literal -> number | char-literal | string-literal |
 string-literal -> " string " |
 string -> OPT:string string-character |
 string-character -> character | special-character |
-special-character -> \  | , | ! | ? | ; | - | ) | ( | = | * | - | + | : | ' | # | . |
-% . | ! | ? | * | @ | # | % | ^ | & | ( | ) | [ | { | } | ] | ' | / | , | < | > |
+special-character -> \  | , | ! | ? | ; | - | ) | ( | = | * | - | + | : | ' | # | . | { | } | [ | ] | > | < |
+% . | ! | ? | * | @ | # | % | ^ | & | ( | ) | [ | ] | ' | / | , | < | > |
 number -> OPT:number digit |
 digit -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
 char-literal -> ' character ' |

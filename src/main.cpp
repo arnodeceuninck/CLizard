@@ -7,6 +7,7 @@
 #include "namingConventions.h"
 #include "groupPublicPrivate.h"
 #include "simplifyMathematicalExpressions.h"
+#include "AST.h"
 
 enum ReadOp {
     Unspecified, BackupSuffix, BackupPrefix, InputFiles
@@ -118,31 +119,44 @@ int main(int argc, char *argv1[]) {
             inputFiles = backupInputFiles;
         }
 
-        // Everything is backed up, time to process it
-        int returnCode;
-        if (operation == "ilr") {
-            if (!overrideFile) {
-                std::cout << "It's illegal to run ilr with -b" << std::endl;
-                return 420;
+        int returnCode{0};
+        try {
+            // Everything is backed up, time to process it
+            if (operation == "ilr") {
+                if (!overrideFile) {
+                    std::cout << "It's illegal to run ilr with -b" << std::endl;
+                    return 420;
+                }
+                returnCode = includeLoopRecognition(inputFiles);
+            } else if (operation == "rfh") {
+                returnCode = rearrangeFunctionsH(inputFiles);
+            } else if (operation == "roc") {
+                returnCode = rearrangeFunctionsOrderCalled(inputFiles);
+            } else if (operation == "ncc") {
+                returnCode = namingConventions::namingConventionsClasses(inputFiles);
+            } else if (operation == "ncv") {
+                returnCode = namingConventions::namingConventionsVariables(inputFiles);
+            } else if (operation == "ncf") {
+                returnCode = namingConventions::namingConventionsFunctions(inputFiles);
+            } else if (operation == "gpp") {
+                returnCode = groupPublicPrivate(inputFiles);
+            } else if (operation == "sme") {
+                returnCode = simplifyMathematicalExpressions(inputFiles);
+            } else if (operation == "glr") {
+                int i{0};
+                for (auto file: inputFiles) {
+                    AST ast(file);
+                    ast.toDot("output/AST" + std::to_string(i++) + ".dot");
+                }
+                returnCode = 0;
+            } else {
+                returnCode = 404;
+                std::cout << "Operation " << operation << " not found." << std::endl;
             }
-            returnCode = includeLoopRecognition(inputFiles);
-        } else if (operation == "rfh") {
-            returnCode = rearrangeFunctionsH(inputFiles);
-        } else if (operation == "roc") {
-            returnCode = rearrangeFunctionsOrderCalled(inputFiles);
-        } else if (operation == "ncc") {
-            returnCode = namingConventions::namingConventionsClasses(inputFiles);
-        } else if (operation == "ncv") {
-            returnCode = namingConventions::namingConventionsVariables(inputFiles);
-        } else if (operation == "ncf") {
-            returnCode = namingConventions::namingConventionsFunctions(inputFiles);
-        } else if (operation == "gpp") {
-            returnCode = groupPublicPrivate(inputFiles);
-        } else if (operation == "sme") {
-            returnCode = simplifyMathematicalExpressions(inputFiles);
-        } else {
-            returnCode = 404;
-            std::cout << "Operation " << operation << " not found." << std::endl;
+
+        } catch (...) {
+            if (!returnCode)
+                returnCode = 420;
         }
 
         if (returnCode != 0) {
@@ -169,6 +183,7 @@ int main(int argc, char *argv1[]) {
             examples[5] = {"Naming conventions (variable)", "clizard -ncv -i main.cpp a.cpp a.h"};
             examples[6] = {"Group public and private", "clizard -gpp -i main.cpp a.cpp a.h"};
             examples[7] = {"Simplify mathematical expressions", "clizard -sme -i main.cpp a.cpp a.h"};
+            examples[8] = {"GLR Parser", "clizard -glr -i vbn/basic/classes.cpp"};
 
             for (int j = 0; j < examples.size(); ++j) {
                 auto example = examples[j];

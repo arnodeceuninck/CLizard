@@ -39,6 +39,7 @@ AST::AST(std::string filename) {
     if (parsedVersions.size() == 0) {
         // No possible parse combinations found
         std::cerr << "Error parsing: Incorrect code" << std::endl;
+        throw std::runtime_error("Parsing error");
     } else {
 
         if (parsedVersions.size() > 1) {
