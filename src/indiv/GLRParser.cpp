@@ -692,9 +692,14 @@ GLRParser::checkProductionRules(
             // Pop the left side of the production from the stack
             for (int i = 0; i < parseOperation->getReduceProduction()->getToP().size() - 1; ++i) {
                 // pop all elements from the stack (exclude the marker)
-                newStack.pop(); // pop the state marker
-                newStack.pop(); // pop the string element
+                if(!newStack.empty())
+                    newStack.pop(); // pop the state marker
+                if(!newStack.empty())
+                    newStack.pop(); // pop the string element
             }
+
+            if(newStack.empty())
+                continue;
 
             // Push the right side and determine the new top state
             string newVariable = parseOperation->getReduceProduction()->getFromP();

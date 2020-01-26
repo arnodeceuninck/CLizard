@@ -3,6 +3,7 @@
 //
 
 #include "GLRP.h"
+#define VERBOSE true
 
 GLRP &GLRP::getInstance() {
     static GLRP glrParser;
@@ -27,7 +28,7 @@ void GLRP::loadParser() {
 
     std::cout << "Creating GLRParser..." << std::endl;
     // Generate a GLRParser
-    setGlrParser(new GLRParser(cfg, false));
+    setGlrParser(new GLRParser(cfg, VERBOSE));
 
 //    glrParser->toDot("output/GLRParser202500126.dot");
 
