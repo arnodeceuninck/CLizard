@@ -178,11 +178,11 @@ int main(int argc, char *argv1[]) {
             examples[8] = {"GLR Parser", "clizard -glr -i vbn/basic/classes.cpp"};
             examples[1] = {"Rearrange functions (.h)", "clizard -rfh -b -i vbn/rfh.cpp vbn/rfh.h"};
             examples[2] = {"Rearrange functions (order called)", "clizard -roc -b -i vbn/roc-main.cpp vbn/roc.h vbn/roc.cpp"};
-            examples[3] = {"Naming conventions (class)", "clizard -ncc -i main.cpp vbn/NamingConvTests/Combined.cpp vbn/NamingConvTests/Combined.h"};
-            examples[4] = {"Naming conventions (function)", "clizard -ncf -i main.cpp vbn/NamingConvTests/Combined.cpp vbn/NamingConvTests/Combined.h"};
-            examples[5] = {"Naming conventions (variable)", "clizard -ncv -i main.cpp vbn/NamingConvTests/Combined.cpp vbn/NamingConvTests/Combined.h"};
-            examples[6] = {"Group public and private", "clizard -gpp -i vbn/GroupingPPTests/TestClass.h"};
-            examples[7] = {"Simplify mathematical expressions", "clizard -sme -i vbn/SimplifyTests/MATHZ.cpp    "};
+            examples[3] = {"Naming conventions (class)", "clizard -ncc -b -i main.cpp vbn/NamingConvTests/Combined.cpp vbn/NamingConvTests/Combined.h"};
+            examples[4] = {"Naming conventions (function)", "clizard -ncf -b -i main.cpp vbn/NamingConvTests/Combined.cpp vbn/NamingConvTests/Combined.h"};
+            examples[5] = {"Naming conventions (variable)", "clizard -ncv -b -i main.cpp vbn/NamingConvTests/Combined.cpp vbn/NamingConvTests/Combined.h"};
+            examples[6] = {"Group public and private", "clizard -gpp -b -i vbn/GroupingPPTests/TestClass.h"};
+            examples[7] = {"Simplify mathematical expressions", "clizard -sme -b -i vbn/SimplifyTests/MATHZ.cpp    "};
 
             for (int j = 0; j < examples.size(); ++j) {
                 auto example = examples[j];
