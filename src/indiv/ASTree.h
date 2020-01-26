@@ -50,6 +50,8 @@ public:
     void find(string basicString, vector<ASTree *> &vector);
 
     friend void swapNodes(ASTree *p, ASTree *q);
+
+    void findNonRecursive(string basicString, vector<ASTree *> &vector);
 };
 
 

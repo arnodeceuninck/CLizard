@@ -114,3 +114,13 @@ void ASTree::find(string basicString, vector<ASTree *> &vector) {
         child->find(basicString, vector);
     }
 }
+
+void ASTree::findNonRecursive(string basicString, vector<ASTree *> &vector) {
+    if (root == basicString) {
+        vector.emplace_back(this);
+        return;
+    }
+    for (auto child: subtrees) {
+        child->findNonRecursive(basicString, vector);
+    }
+}
