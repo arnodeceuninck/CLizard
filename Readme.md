@@ -9,7 +9,7 @@ Run the "compile.sh" file to compile and run the program
 ```
 
 ## Features
-Note: Currently it's only possible to apply one feature per time.
+Note: Is the parser not working? Then first try ctrl+alt+L in CLion. This fixes a lot of problems. Still not working? Maybe you used features of c++ that are not supported by the parser.
 ### Include loop recognition
 This feature will help you find include loops.
 
@@ -65,6 +65,12 @@ Simplify all mathematical expressions in your code.
 ./clizard -sme -i main.cpp a.cpp a.h
 ```
 
+### GLR Parser
+Generate an AST int the output folder for the given input files.
+```
+./clizard -glr -i main.cpp a.cpp a.h
+```
+
 ## Arguments
 ### Features
 `-ilr`  Include loop recognition <br>
@@ -79,6 +85,3 @@ Simplify all mathematical expressions in your code.
 `-b`    Write output to backup instead of to the original file <br>
 `-suf`  Override the default backup suffix with the string given after this argument <br>
 `-pre`  Override the default backup prefix with the string given after this argument <br>
-
-## Running the tests
-(Insert instruction of how to run GTests)
