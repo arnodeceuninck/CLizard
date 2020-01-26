@@ -108,6 +108,8 @@ namingConventions::editToNewName(std::string &word, const std::string &oldName, 
 
     bool found = false;
     unsigned int oldname_i = 0;
+
+    // zoekt start en eindpunt van gezochte naam in stukje tekst, telt het aantal misses, etc..
     for (unsigned int c = 0; c < word.size(); ++c) {
       if(word[c] == '('){
         functionCall = c;
@@ -136,6 +138,8 @@ namingConventions::editToNewName(std::string &word, const std::string &oldName, 
             misses += 1;
         }
     }
+
+    // past de tekst aan
     if(misses > 0){
       if(functionCall != 0 && found){
         unsigned int pos = 0;
@@ -154,8 +158,6 @@ namingConventions::editToNewName(std::string &word, const std::string &oldName, 
         }
         return newName;
       }
-
-
       return word;
     }
     unsigned int pos = 0;
@@ -183,12 +185,13 @@ namingConventions::adjustForAllFiles(const std::vector<std::string> &inputFiles,
         std::string line;
         std::string editedstring;
 
+        // loop over alle lines
         while (std::getline(buffer, line)) {
             std::stringstream stream(line);
             std::string word;
-
+            // loop over elk woord op een line
             while (stream >> word) {
-
+                // zoekt de juiste classname aan de hand van pda's, past word correct aan
                 std::string longestFit;
                 for (unsigned int i = 0; i < pdas.size(); ++i) {
                     Pda *tester = pdas[i];
@@ -214,7 +217,7 @@ namingConventions::adjustForAllFiles(const std::vector<std::string> &inputFiles,
             editedstring += "\n";
 
         }
-
+            // schrijft string naar file
             buffer.close();
             std::ofstream editedFile;
             editedFile.open(file, std::ofstream::out | std::ofstream::trunc);
@@ -381,7 +384,7 @@ int namingConventions::namingConventionsFunctions(const std::vector<std::string>
     return 0;
 }
 
-
+// voert de drie grote operaties na elkaar uit
 int namingConventions::convertToConventions(const std::vector<std::string> &inputFiles) {
     namingConventionsFunctions(inputFiles);
     namingConventionsVariables(inputFiles);
