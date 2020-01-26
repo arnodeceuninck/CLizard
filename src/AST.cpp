@@ -14,6 +14,8 @@
 
 AST::AST(std::string filename) {
 
+    std::cout << "Creating an AST for " << filename << std::endl;
+
     if (!GLRP::getInstance().isLoaded()) {
         GLRP::getInstance().loadParser();
     }

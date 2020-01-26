@@ -3,7 +3,7 @@
 //
 
 #include "GLRP.h"
-#define VERBOSE true
+#define VERBOSE false
 
 GLRP &GLRP::getInstance() {
     static GLRP glrParser;
