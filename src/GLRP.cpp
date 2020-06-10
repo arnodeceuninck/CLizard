@@ -27,6 +27,8 @@ void GLRP::loadParser() {
     CFG *cfg = new CFG(nonTerminalsV, terminalsT, productionsP, startS);
 
     std::cout << "Creating GLRParser..." << std::endl;
+    std::cout << "This might take a while..." << std::endl;
+    std::cout << "Hint: The parser has to be created only once per runtime. Once generated, all feautures will work a lot faster." << std::endl;
     // Generate a GLRParser
     setGlrParser(new GLRParser(cfg, VERBOSE));
 
